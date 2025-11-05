@@ -1,0 +1,56 @@
+{
+  "name": "03-api-solid",
+  "version": "1.0.0",
+  "description": "GymPass style app.",
+  "main": "index.js",
+  "scripts": {
+    "start:prod": "node build/server.js",
+    "start:dev": "tsx watch src/server.ts",
+    "test:create-prisma-environment": "npm link ./prisma/vitest-environment-prisma",
+    "test:install-prisma-environment": "npm link vitest-environment-prisma",
+    "build": "tsup src --out-dir build",
+    "test": "vitest run --dir src/use-cases",
+    "seed": "tsx prisma/seed.ts",
+    "test:watch": "vitest --dir src/use-cases",
+    "pretest:e2e": "run-s test:create-prisma-environment test:install-prisma-environment",
+    "test:e2e": "vitest run --dir src/http",
+    "test:e2e:watch": "vitest --dir src/http",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "2.4.6",
+    "@types/node": "20.12.13",
+    "@vitest/coverage-v8": "1.6.0",
+    "@vitest/ui": "1.6.0",
+    "globals": "15.3.0",
+    "prisma": "5.14.0",
+    "tsup": "8.0.2",
+    "tsx": "4.11.0",
+    "typescript": "5.4.5",
+    "vite-tsconfig-paths": "4.3.2",
+    "vitest": "1.6.0"
+  },
+  "dependencies": {
+    "@fastify/cookie": "11.0.2",
+    "@fastify/cors": "11.0.1",
+    "@fastify/jwt": "5.0.1",
+    "@fastify/multipart": "9.0.3",
+    "@fastify/static": "8.2.0",
+    "@prisma/client": "5.14.0",
+    "@types/supertest": "6.0.2",
+    "bcryptjs": "2.4.3",
+    "dayjs": "1.11.11",
+    "dotenv": "16.4.5",
+    "fastify": "5.3.3",
+    "npm-run-all": "4.1.5",
+    "supertest": "7.0.0",
+    "zod": "3.23.8"
+  }
+}

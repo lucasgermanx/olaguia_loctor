@@ -1,0 +1,185 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  password_hash String
+  avatar        String? // URL da imagem do avatar
+  role          Role      @default(MEMBER)
+  created_at    DateTime  @default(now())
+  Post          Post[]
+  Comment       Comment[]
+
+  @@map("users")
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  // Relacionamento com posts
+  posts Post[]
+
+  @@index([slug])
+  @@map("categories")
+}
+
+model Post {
+  id             String    @id @default(uuid())
+  title          String
+  slug           String    @unique
+  excerpt        String?
+  content        String
+  featured_image String?
+  published      Boolean   @default(false)
+  published_at   DateTime?
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+
+  // Relacionamentos
+  author      User          @relation(fields: [author_id], references: [id])
+  author_id   String
+  category    Category      @relation(fields: [category_id], references: [id])
+  category_id String
+  comments    Comment[]
+  tags        TagsOnPosts[]
+  views       ViewLog[]
+
+  @@index([slug])
+  @@index([author_id])
+  @@index([category_id])
+  @@index([published, published_at])
+  @@map("posts")
+}
+
+model Comment {
+  id          String   @id @default(uuid())
+  content     String
+  is_approved Boolean  @default(false)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  // Relacionamentos
+  post      Post   @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  post_id   String
+  author    User   @relation(fields: [author_id], references: [id])
+  author_id String
+
+  // Auto-relacionamento para comentários aninhados
+  parent_id String?
+  parent    Comment?  @relation("CommentToComment", fields: [parent_id], references: [id])
+  replies   Comment[] @relation("CommentToComment")
+
+  @@index([post_id])
+  @@index([author_id])
+  @@index([parent_id])
+  @@map("comments")
+}
+
+model Tag {
+  id         String   @id @default(uuid())
+  name       String   @unique
+  slug       String   @unique
+  color      String   @default("")
+  created_at DateTime @default(now())
+
+  // Relacionamento com posts
+  posts TagsOnPosts[]
+
+  @@index([slug])
+  @@map("tags")
+}
+
+model TagsOnPosts {
+  // Relacionamento muitos-para-muitos
+  post       Post     @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  post_id    String
+  tag        Tag      @relation(fields: [tag_id], references: [id], onDelete: Cascade)
+  tag_id     String
+  created_at DateTime @default(now())
+
+  @@id([post_id, tag_id])
+  @@map("posts_tags")
+}
+
+model ViewLog {
+  id         String   @id @default(uuid())
+  ip_address String?
+  user_agent String?
+  referer    String?
+  created_at DateTime @default(now())
+
+  // Relacionamento com post
+  post    Post   @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  post_id String
+
+  @@index([post_id])
+  @@index([created_at])
+  @@map("view_logs")
+}
+
+model Upload {
+  id           String   @id @default(uuid())
+  filename     String
+  originalName String
+  mimetype     String
+  size         Int
+  url          String
+  type         String // "user" ou "post"
+  entityId     String? // ID do usuário ou post
+  created_at   DateTime @default(now())
+
+  @@index([entityId])
+  @@index([type])
+  @@map("uploads")
+}
+
+model SiteSettings {
+  id               String   @id @default(uuid())
+  site_name        String   @default("Blog Loctor")
+  site_description String?  @db.Text
+  primary_color    String   @default("#2563eb")
+  secondary_color  String   @default("#1e40af")
+  accent_color     String   @default("#f59e0b")
+  logo_url         String?
+  favicon_url      String?
+  hero_title       String?  @db.Text
+  hero_subtitle    String?  @db.Text
+  footer_text      String?  @db.Text
+  contact_email    String?
+  contact_phone    String?
+  social_facebook  String?
+  social_instagram String?
+  social_linkedin  String?
+  social_twitter   String?
+  google_analytics String?
+  meta_keywords    String?  @db.Text
+  meta_description String?  @db.Text
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  @@map("site_settings")
+}
