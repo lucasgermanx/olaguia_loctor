@@ -28,7 +28,7 @@ export function Header() {
         isScrolled ? "bg-white shadow-md py-3" : "bg-white py-4",
       )}
     >
-      <div className="container mx-auto flex items-center justify-between px-4 md:px-6">
+      <div className="container max-w-7xl mx-auto flex items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center space-x-3">
           <Image src="/images/logo-olaguia.png" alt="Logo" width={276} height={54} />
         </Link>

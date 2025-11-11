@@ -27,11 +27,11 @@ export function AdBanner({
 }: AdBannerProps) {
   const [imageError, setImageError] = useState(false)
   const isVertical = variant === "vertical" || className.includes("h-full")
-  
+
   return (
     <div className={`${backgroundColor} ${className} ${isVertical ? "flex items-center justify-center" : "py-6"}`}>
       <Link href={buttonLink} className="block group w-full h-full">
-        <div className={`relative ${isVertical ? "h-full w-full min-h-[400px]" : "h-48 md:h-64"} rounded-lg overflow-hidden border-2 border-gray-200`}>
+        <div className={`relative ${isVertical ? "h-full w-full" : "h-48 md:h-64"} rounded-lg overflow-hidden border-2 border-gray-200`}>
           {imageUrl && !imageError ? (
             <Image
               src={imageUrl}
