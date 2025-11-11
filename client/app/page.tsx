@@ -56,9 +56,9 @@ export default function Home() {
   return (
     <div className="flex flex-col bg-white pt-20">
       {/* Hero Carousel */}
-      <section className="relative w-full h-[300px] sm:h-[350px] lg:h-[400] mb-12">
+      <section className="relative w-full h-[250px] sm:h-[300px] lg:h-[350px]">
         <Carousel className="w-full h-full" opts={{ loop: true }}>
-          <CarouselContent className="h-[400px]">
+          <CarouselContent className="h-[350px]">
             {[1, 2, 3].map((item) => (
               <CarouselItem key={item} className="h-full">
                 <div className="relative w-full h-full">
@@ -72,7 +72,7 @@ export default function Home() {
                   </div>
                   <div className="flex max-w-7xl mx-auto w-full">
                     <div className="absolute top-1/2 -translate-y-1/2 w-[calc(100%-2rem)] sm:w-[calc(100%-4rem)] md:w-[calc(100%-8rem)] lg:w-auto lg:max-w-xl">
-                      <div className="bg-white p-4 sm:p-6 md:p-8 shadow-xl border-t-[4px] sm:border-t-[6px] border-black">
+                      <div className="bg-white p-4 sm:p-4 md:p-5 shadow-xl border-t-[4px] sm:border-t-[6px] border-black">
                         <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-3 sm:mb-4 text-xs sm:text-sm">GASTRONOMIA</Badge>
                         <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-open-sans font-semibold mb-3 sm:mb-4 text-gray-900 text-left leading-tight">
                           LOREM IPSUM DOLOR SIT AMET SEE YOU
