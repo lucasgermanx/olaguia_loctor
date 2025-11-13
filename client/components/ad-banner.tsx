@@ -37,7 +37,7 @@ export function AdBanner({
               src={imageUrl}
               alt={title || "Banner de anúncio"}
               fill
-              className="object-cover group-hover:scale-105 transition-transform duration-300"
+              className="object-cover transition-transform duration-300"
               onError={() => setImageError(true)}
             />
           ) : (

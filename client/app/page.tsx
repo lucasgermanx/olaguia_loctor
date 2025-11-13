@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { useState, useEffect } from "react"
+import { useState, useEffect, type ReactNode } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -14,6 +14,35 @@ import {
 } from "@/components/ui/carousel"
 import { AdBanner } from "@/components/ad-banner"
 import { placeholderImages } from "@/lib/placeholder-images"
+
+const cn = (...classes: (string | false | null | undefined)[]) =>
+  classes.filter(Boolean).join(" ")
+
+const SectionWrapper = ({
+  children,
+  className,
+  contentClassName,
+}: {
+  children: ReactNode
+  className?: string
+  contentClassName?: string
+}) => (
+  <section
+    className={cn(
+      "w-full bg-white px-4 sm:px-6 lg:px-8 py-10 sm:py-12 flex flex-col justify-center min-h-[calc(100svh-6rem)]",
+      className,
+    )}
+  >
+    <div
+      className={cn(
+        "w-full max-w-7xl mx-auto flex-1 flex flex-col justify-center gap-8",
+        contentClassName,
+      )}
+    >
+      {children}
+    </div>
+  </section>
+)
 
 interface Post {
   id: string
@@ -74,7 +103,7 @@ export default function Home() {
                     <div className="absolute top-1/2 -translate-y-1/2 w-[calc(100%-2rem)] sm:w-[calc(100%-4rem)] md:w-[calc(100%-8rem)] lg:w-auto lg:max-w-xl">
                       <div className="bg-white p-4 sm:p-4 md:p-5 shadow-xl border-t-[4px] sm:border-t-[6px] border-black">
                         <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-3 sm:mb-4 text-xs sm:text-sm">GASTRONOMIA</Badge>
-                        <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-open-sans font-semibold mb-3 sm:mb-4 text-gray-900 text-left leading-tight">
+                        <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl 2xl:text-4xl font-open-sans font-semibold mb-3 sm:mb-4 text-gray-900 text-left leading-tight">
                           LOREM IPSUM DOLOR SIT AMET SEE YOU
                         </h1>
                         <p className="text-sm sm:text-base mb-4 sm:mb-6 text-gray-600 text-left line-clamp-3 sm:line-clamp-none">
@@ -109,14 +138,14 @@ export default function Home() {
       <section className="max-w-7xl mx-auto py-12 px-0 bg-white">
         <div className="flex items-center justify-center">
           <div className="h-3 w-full bg-gray-300"></div>
-          <h2 className="text-5xl font-volkhov text-nowrap mx-12 font-bold text-[#126861]"><span className="text-[#928575]">EM</span> DESTAQUE</h2>
+          <h2 className=" text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-volkhov text-nowrap mx-12 font-bold text-[#126861]"><span className="text-[#928575]">EM</span> DESTAQUE</h2>
           <div className="h-3 w-full bg-gray-300"></div>
         </div>
         <p className="text-center font-lato text-xl text-gray-500 mb-8">Place for the subtitle</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {/* Main Featured Article */}
-          <div className="relative h-[500px] group">
+          <div className="relative h-[400px] 2xl:h-[500px] group">
             <Image
               src={placeholderImages.car}
               alt="Featured"
@@ -126,26 +155,26 @@ export default function Home() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
             <div className="absolute bottom-6 left-6 right-6 text-white">
               <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-3">EMPRESAS & NEGÓCIOS</Badge>
-              <h3 className="text-3xl font-open-sans font-semibold mb-3">
+              <h3 className="text-2xl 2xl:text-3xl font-open-sans font-semibold mb-3">
                 LOREM IPSUM DOLOR SIT YOU SEE CONSETETUR
               </h3>
             </div>
           </div>
 
           {/* Side Articles */}
-          <div className="grid grid-rows-3">
+          <div className="grid grid-rows-3 h-[400px] 2xl:h-[500px]">
             {[1, 2, 3].map((item, index) => (
-              <div key={item} className={`flex gap-10 group ${index === 1 || index === 2 ? "border-t border-[#EEEEEE] py-5" : ""}`}>
+              <div key={item} className={`flex gap-10 group ${index === 1 || index === 2 ? "border-t border-[#EEEEEE] py-2 2xl:py-5" : ""}`}>
                 <div className="flex-1">
-                  <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-xs">SPORT</Badge>
-                  <h4 className="font-open-sans font-semibold text-lg mb-2 max-w-56 transition-colors">
+                  <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-1 2xl:mb-2 text-xs">SPORT</Badge>
+                  <h4 className="font-open-sans font-semibold text-lg max-w-56 transition-colors">
                     LOREM IPSUM DOLOR SIT YOU SEE CONSETETUR
                   </h4>
                   <p className="text-sm text-gray-600 line-clamp-2">
                     Lorem ipsum dolor sit amet consectetur adipiscing mattis sit ate met you.
                   </p>
                 </div>
-                <div className="relative w-40 h-32 flex-shrink-0">
+                <div className="relative w-40 h-28 2xl:h-32 flex-shrink-0">
                   <Image
                     src={placeholderImages.office}
                     alt={`Article ${item}`}
@@ -160,11 +189,17 @@ export default function Home() {
       </section>
 
       {/* Business Banner - Ad */}
+      {/* O tamanho desse banner depende dos estilos internos do componente AdBanner e do layout, 
+          mas, normalmente, banners horizontais como este costumam ter dimensões como: 
+          Largura: 1140px; Altura: 120px (desktop padrão).
+          Confirme no componente AdBanner para os valores exatos ou defina 'className' aqui se necessário. */}
       <AdBanner
-        imageUrl="/ads/business-banner.jpg"
+        imageUrl="https://www.shutterstock.com/image-photo/sky-blue-clear-no-clouds-600w-2629823399.jpg"
         title="Anúncio"
         backgroundColor="bg-white"
         variant="horizontal"
+      // Exemplo para definir tamanho explícito (ajuste ou remova conforme seu design):
+      // className="w-[1140px] h-[120px]"
       />
 
       {/* PARA REFLEXÃO Section */}
@@ -275,12 +310,12 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Ad Banner */}
+          {/* Ad Banner - Tamanho: 300x600px */}
           <AdBanner
-            imageUrl="/ads/health-ad.jpg"
+            imageUrl="https://images.pexels.com/photos/34551186/pexels-photo-34551186.jpeg"
             title="Anúncio"
             backgroundColor="bg-transparent"
-            className="h-full"
+            className="h-[600px]"
             variant="vertical"
           />
         </div>
@@ -338,7 +373,7 @@ export default function Home() {
 
       {/* Promotional Banner - Ad */}
       <AdBanner
-        imageUrl="/ads/promotional-banner.jpg"
+        imageUrl="https://images.pexels.com/photos/19311997/pexels-photo-19311997.jpeg"
         title="Anúncio"
         backgroundColor="bg-transparent"
         variant="horizontal"
