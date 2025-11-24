@@ -25,43 +25,49 @@ export function Header() {
     <header
       className={cn(
         "fixed top-0 z-50 w-full transition-all duration-300",
-        isScrolled ? "bg-white shadow-md py-3" : "bg-white py-4",
+        isScrolled ? "bg-[#928575] shadow-md py-3" : "bg-[#928575] py-4",
       )}
     >
       <div className="container max-w-7xl mx-auto flex items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center space-x-3">
-          <Image src="/images/logo-olaguia.png" alt="Logo" width={276} height={54} />
+          <Image src="/logo.png" alt="Logo" width={200} height={54} />
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
           <Link
             href="/"
-            className="text-sm font-medium text-gray-900 transition-colors hover:text-green-600"
+            className="text-sm font-medium text-gray-50 transition-colors hover:text-green-600"
           >
             HOME
           </Link>
           <Link
             href="/sobre"
-            className="text-sm font-medium text-gray-900 transition-colors hover:text-green-600"
+            className="text-sm font-medium text-gray-50 transition-colors hover:text-green-600"
           >
             SOBRE NÓS
           </Link>
           <Link
             href="/revista"
-            className="text-sm font-medium text-gray-900 transition-colors hover:text-green-600"
+            className="text-sm font-medium text-gray-50 transition-colors hover:text-green-600"
           >
             REVISTA
           </Link>
           <Link
             href="/portal"
-            className="text-sm font-medium text-gray-900 transition-colors hover:text-green-600"
+            className="text-sm font-medium text-gray-50 transition-colors hover:text-green-600"
           >
             PORTAL
           </Link>
           <Link
+            href="/profissional/exemplo"
+            className="text-sm font-medium text-gray-50 transition-colors hover:text-green-600"
+          >
+            PROFISSIONAL
+          </Link>
+          <Link
             href="/contato"
-            className="text-sm font-medium text-gray-900 transition-colors hover:text-green-600"
+            className="text-sm font-medium text-gray-50 transition-colors hover:text-green-600"
           >
             CONTATO
           </Link>
@@ -104,6 +110,13 @@ export function Header() {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               SOBRE
+            </Link>
+            <Link
+              href="/profissional/exemplo"
+              className="text-gray-900 hover:text-green-600 transition-colors font-medium"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              PROFISSIONAL
             </Link>
             <Link
               href="/contato"

@@ -5,7 +5,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { LayoutDashboard, FileText, Users, Tag, Folder, LogOut, Menu, X } from "lucide-react"
+import { LayoutDashboard, FileText, Users, Tag, Folder, LogOut, Menu, X, Megaphone, Layout } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 
@@ -46,6 +46,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const navItems = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Posts", href: "/admin/posts", icon: FileText },
+    { name: "Configurar Home", href: "/admin/home-config", icon: Layout },
+    { name: "Anúncios", href: "/admin/ads", icon: Megaphone },
     { name: "Usuários", href: "/admin/users", icon: Users },
     { name: "Categorias", href: "/admin/categories", icon: Folder },
     { name: "Tags", href: "/admin/tags", icon: Tag },
@@ -61,7 +63,17 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       >
         <div className="p-4 flex justify-between items-center">
           <Link href="/admin" className="flex items-center">
-            <Image src="/images/logo-white.png" alt="Logo" width={150} height={40} className="h-8 w-auto" />
+            <Image 
+              src="/images/logo-olaguia.png" 
+              alt="Logo" 
+              width={150} 
+              height={40} 
+              className="h-8 w-auto"
+              onError={(e) => {
+                // Fallback se a imagem não existir
+                e.currentTarget.style.display = 'none'
+              }}
+            />
           </Link>
           {isMobile && (
             <button onClick={() => setIsSidebarOpen(false)} className="text-white lg:hidden">

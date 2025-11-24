@@ -17,7 +17,7 @@ interface UpdateProfileUseCaseResponse {
 }
 
 export class UpdateProfileUseCase {
-  constructor(private usersRepository: UsersRepository) {}
+  constructor(private usersRepository: UsersRepository) { }
 
   async execute({
     userId,
@@ -40,7 +40,7 @@ export class UpdateProfileUseCase {
         id: updatedUser.id,
         name: updatedUser.name,
         email: updatedUser.email,
-        avatar: updatedUser.avatar,
+        avatar: updatedUser.avatar || undefined,
         role: updatedUser.role,
       },
     }

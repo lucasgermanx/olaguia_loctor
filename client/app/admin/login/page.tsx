@@ -22,17 +22,18 @@ export default function AdminLoginPage() {
     setIsLoading(true)
     setError("")
 
-    console.log({email, password})
+    console.log({ email, password })
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:1003"}/sessions`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/sessions`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
       })
 
-      console.log({response})
+      console.log({ response })
       const data = await response.json()
       if (!response.ok) {
         throw new Error(data.message || "Falha na autenticação")
@@ -42,11 +43,14 @@ export default function AdminLoginPage() {
       localStorage.setItem("token", data.token)
 
       // Verificar se o usuário é admin
-      const userResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:1003"}/me`, {
+      const userResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/me`, {
+        credentials: "include",
         headers: {
           Authorization: `Bearer ${data.token}`,
         },
       })
+
+      console.log({ userResponse })
 
       const userData = await userResponse.json()
 

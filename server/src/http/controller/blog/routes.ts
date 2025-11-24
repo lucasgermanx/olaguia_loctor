@@ -20,10 +20,19 @@ import { getTagById } from "./tags/get-by-id"
 import { updateTag } from "./tags/update"
 import { deleteTag } from "./tags/delete"
 import { getStats } from "./stats/get-stats"
+import { createAd } from "./ads/create"
+import { listAds } from "./ads/list"
+import { getAdById } from "./ads/get-by-id"
+import { updateAd } from "./ads/update"
+import { deleteAd } from "./ads/delete"
+import { listPostsByTheme } from "./posts/list-by-theme"
+import { listHomeSlots } from "./home-slots/list"
+import { assignPostToSlot } from "./home-slots/assign-post"
 
 export async function blogRoutes(app: FastifyInstance) {
   // Public routes
   app.get("/posts", listPosts)
+  app.get("/posts/by-theme", listPostsByTheme)
   app.get("/posts/slug/:slug", getPostBySlug)
   app.get("/posts/id/:id", getPostByID)
   app.get("/categories", listCategories)
@@ -52,4 +61,19 @@ export async function blogRoutes(app: FastifyInstance) {
   app.post("/tags", { onRequest: [VerifyJWT, verifyUserRole("ADMIN")] }, createTag)
   app.put("/tags/:id", { onRequest: [VerifyJWT, verifyUserRole("ADMIN")] }, updateTag)
   app.delete("/tags/:id", { onRequest: [VerifyJWT, verifyUserRole("ADMIN")] }, deleteTag)
+
+  // Ads - Public routes
+  app.get("/ads", listAds)
+
+  // Ads - Admin routes
+  app.post("/ads", { onRequest: [VerifyJWT, verifyUserRole("ADMIN")] }, createAd)
+  app.get("/ads/:id", { onRequest: [VerifyJWT, verifyUserRole("ADMIN")] }, getAdById)
+  app.put("/ads/:id", { onRequest: [VerifyJWT, verifyUserRole("ADMIN")] }, updateAd)
+  app.delete("/ads/:id", { onRequest: [VerifyJWT, verifyUserRole("ADMIN")] }, deleteAd)
+
+  // Home Slots - Public routes
+  app.get("/home-slots", listHomeSlots)
+
+  // Home Slots - Admin routes
+  app.post("/home-slots/assign", { onRequest: [VerifyJWT, verifyUserRole("ADMIN")] }, assignPostToSlot)
 }

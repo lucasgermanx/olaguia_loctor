@@ -26,23 +26,25 @@ export async function authenticate(request: FastifyRequest, reply: FastifyReply)
             { sign: { sub: user.id, expiresIn: "7d" } }
         );
 
+        console.log({ token, refreshToken })
+
         return reply
             .setCookie("token", token, {
                 path: "/",
                 secure: process.env.NODE_ENV === "production",
-                sameSite: "lax",
+                sameSite: process.env.NODE_ENV === 'production' ? "none" : "lax",
                 httpOnly: true,
                 maxAge: 60 * 60, // 1h
             })
             .setCookie("refreshToken", refreshToken, {
                 path: "/",
                 secure: process.env.NODE_ENV === "production",
-                sameSite: "lax",
+                sameSite: process.env.NODE_ENV === 'production' ? "none" : "lax",
                 httpOnly: true,
                 maxAge: 60 * 60 * 24 * 7, // 7d
             })
             .status(200)
-            .send({ user }); // ou `send(null)` se quiser esconder info
+            .send({ token }); // ou `send(null)` se quiser esconder info
     } catch (err) {
         if (err instanceof InvalidCredentialsError) {
             return reply.status(400).send({ message: err.message });

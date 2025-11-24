@@ -18,6 +18,40 @@ enum Role {
   MEMBER
 }
 
+enum PostTheme {
+  HERO
+  EM_DESTAQUE
+  PARA_REFLEXAO
+  NOSSA_SAUDE
+  SOBRE_RELACIONAMENTOS
+  EMPRESAS_NEGOCIOS
+  ESTETICA_BELEZA
+  RINDO_A_TOA
+  QUEBRA_CUCA
+  GASTRONOMIA
+  SUPER_DICAS
+}
+
+enum PostPosition {
+  LEFT
+  CENTER
+  RIGHT
+  MAIN
+  SIDE
+}
+
+enum AdPosition {
+  HERO_BOTTOM
+  BUSINESS_BANNER_1
+  NOSSA_SAUDE_RIGHT
+  SOBRE_RELACIONAMENTOS_MIDDLE
+  PROMOTIONAL_BANNER_1
+  EMPRESAS_NEGOCIOS_RIGHT
+  RINDO_A_TOA_MIDDLE
+  BUILD_BUSINESS_BANNER
+  GASTRONOMIA_BOTTOM
+}
+
 model User {
   id            String    @id @default(uuid())
   name          String
@@ -48,16 +82,22 @@ model Category {
 }
 
 model Post {
-  id             String    @id @default(uuid())
+  id             String       @id @default(uuid())
   title          String
-  slug           String    @unique
+  slug           String       @unique
   excerpt        String?
   content        String
   featured_image String?
-  published      Boolean   @default(false)
+  published      Boolean      @default(false)
   published_at   DateTime?
-  created_at     DateTime  @default(now())
-  updated_at     DateTime  @updatedAt
+  created_at     DateTime     @default(now())
+  updated_at     DateTime     @updatedAt
+
+  // Tema e posicionamento
+  theme          PostTheme?
+  position       PostPosition?
+  order          Int?         @default(0) // Ordem dentro da seção/posição
+  featured       Boolean      @default(false) // Se deve aparecer em destaque
 
   // Relacionamentos
   author      User          @relation(fields: [author_id], references: [id])
@@ -67,11 +107,13 @@ model Post {
   comments    Comment[]
   tags        TagsOnPosts[]
   views       ViewLog[]
+  homeSlots   HomeSlot[]
 
   @@index([slug])
   @@index([author_id])
   @@index([category_id])
   @@index([published, published_at])
+  @@index([theme, position, order])
   @@map("posts")
 }
 
@@ -182,4 +224,35 @@ model SiteSettings {
   updated_at       DateTime @updatedAt
 
   @@map("site_settings")
+}
+
+model Ad {
+  id          String     @id @default(uuid())
+  title       String
+  image_url   String
+  link_url    String?    @default("#")
+  position    AdPosition
+  active      Boolean    @default(true)
+  order       Int        @default(0)
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+
+  @@index([position, active])
+  @@map("ads")
+}
+
+model HomeSlot {
+  id          String      @id @default(uuid())
+  section     String      // HERO, EM_DESTAQUE, PARA_REFLEXAO, etc
+  position    String      // MAIN, LEFT, CENTER, RIGHT, SIDE, SLOT_1, SLOT_2, etc
+  slot_index  Int?        // Para carousels e grids (0, 1, 2, ...)
+  order       Int         @default(0)
+  post_id     String?     // Post associado a este slot
+  post        Post?       @relation(fields: [post_id], references: [id], onDelete: SetNull)
+  created_at  DateTime    @default(now())
+  updated_at  DateTime    @updatedAt
+
+  @@index([section, position, slot_index])
+  @@index([post_id])
+  @@map("home_slots")
 }

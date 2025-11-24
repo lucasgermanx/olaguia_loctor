@@ -1,218 +1,749 @@
 "use client"
 
-import { Header } from "@/components/header"
-import { BlogSidebar } from "@/components/blog/blog-sidebar"
-import { CommentSection } from "@/components/blog/comment-section"
 import { BlogAuthorCard } from "@/components/blog/blog-author-card"
 import { BlogTagList } from "@/components/blog/blog-tag-list"
+import { BlogSidebar } from "@/components/blog/blog-sidebar"
+import { BlogSearchBar } from "@/components/blog/blog-search-bar"
 import Image from "next/image"
 import Link from "next/link"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
+import { useState, useEffect, useRef } from "react"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
+import { LuCirclePlay } from "react-icons/lu";
+import { Facebook, Twitter, Instagram, Linkedin, MessageCircle, Search, ChevronDown, ChevronUp, Volume2, Plus, Minus } from "lucide-react"
+import { BlogSidebarNew } from "@/components/blog/blog-sidebar-new"
 
 // Definir a URL da API com fallback
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1003';
 
-async function getPost(slug: string) {
-  try {
-    console.log(`Fetching post from: ${API_URL}/posts/slug/${slug}`);
-    const res = await fetch(`${API_URL}/posts/slug/${slug}`, {
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      console.error(`Failed to fetch post: ${res.status} ${res.statusText}`);
-      return { post: null };
-    }
-
-    return res.json();
-  } catch (error) {
-    console.error("Error fetching post:", error);
-    return { post: null };
+interface Post {
+  id: string
+  title: string
+  slug: string
+  content: string
+  excerpt?: string
+  featured_image?: string
+  published_at?: string
+  created_at: string
+  category?: {
+    name: string
+    slug: string
   }
+  author?: {
+    id: string
+    name: string
+    avatar?: string
+  }
+  tags?: Array<{
+    tag: {
+      id: string
+      name: string
+      slug: string
+    }
+  }>
 }
 
-async function getCategories() {
-  try {
-    const res = await fetch(`${API_URL}/categories`, {
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      console.error(`Failed to fetch categories: ${res.status} ${res.statusText}`);
-      return { categories: [] };
-    }
-
-    return res.json();
-  } catch (error) {
-    console.error("Error fetching categories:", error);
-    return { categories: [] };
-  }
+interface RelatedPost {
+  id: string
+  title: string
+  slug: string
+  excerpt?: string
+  featured_image?: string
 }
 
-async function getTags() {
-  try {
-    const res = await fetch(`${API_URL}/tags`, {
-      cache: "no-store",
-    });
+export default function BlogPostPage() {
+  const params = useParams()
+  const router = useRouter()
+  const slug = params?.slug as string
+  const [post, setPost] = useState<Post | null>(null)
+  const [relatedPosts, setRelatedPosts] = useState<RelatedPost[]>([])
+  const [recentPosts, setRecentPosts] = useState<RelatedPost[]>([])
+  const [servicePosts, setServicePosts] = useState<RelatedPost[]>([])
+  const [categories, setCategories] = useState<any[]>([])
+  const [tags, setTags] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [newsletterEmail, setNewsletterEmail] = useState("")
+  const [contactForm, setContactForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: "",
+  })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isRevistaExpanded, setIsRevistaExpanded] = useState(true)
+  const [fontSize, setFontSize] = useState(18) // Tamanho base da fonte em px
+  const [isSpeaking, setIsSpeaking] = useState(false)
+  const [currentTime, setCurrentTime] = useState(0) // Tempo atual em segundos
+  const [totalTime, setTotalTime] = useState(0) // Tempo total em segundos
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
-    if (!res.ok) {
-      console.error(`Failed to fetch tags: ${res.status} ${res.statusText}`);
-      return { tags: [] };
+  useEffect(() => {
+    if (!slug) {
+      setError("Slug não encontrado")
+      setIsLoading(false)
+      return
     }
 
-    return res.json();
-  } catch (error) {
-    console.error("Error fetching tags:", error);
-    return { tags: [] };
-  }
-}
+    const fetchData = async () => {
+      try {
+        setIsLoading(true)
 
-async function getComments(postId: string) {
-  try {
-    const res = await fetch(`${API_URL}/posts/${postId}/comments`, {
-      cache: "no-store",
-    });
+        // Buscar post
+        const postRes = await fetch(`${API_URL}/posts/slug/${slug}`, {
+          cache: "no-store",
+        })
 
-    if (!res.ok) {
-      console.error(`Failed to fetch comments: ${res.status} ${res.statusText}`);
-      return { comments: [] };
+        if (!postRes.ok) {
+          throw new Error(`Failed to fetch post: ${postRes.status}`)
+        }
+
+        const postData = await postRes.json()
+        setPost(postData.post)
+
+        if (postData.post) {
+          // Buscar posts relacionados (mesma categoria)
+          const categorySlug = postData.post.category?.slug
+          if (categorySlug) {
+            const relatedRes = await fetch(`${API_URL}/posts?category=${categorySlug}&per_page=3`)
+            if (relatedRes.ok) {
+              const relatedData = await relatedRes.json()
+              setRelatedPosts(relatedData.posts?.filter((p: any) => p.id !== postData.post.id).slice(0, 3) || [])
+            }
+          }
+
+          // Buscar posts recentes
+          const recentRes = await fetch(`${API_URL}/posts?per_page=2`)
+          if (recentRes.ok) {
+            const recentData = await recentRes.json()
+            setRecentPosts(recentData.posts?.filter((p: any) => p.id !== postData.post.id).slice(0, 2) || [])
+          }
+
+          // Buscar posts para serviços (últimos 3 posts)
+          const servicesRes = await fetch(`${API_URL}/posts?per_page=3`)
+          if (servicesRes.ok) {
+            const servicesData = await servicesRes.json()
+            setServicePosts(servicesData.posts?.filter((p: any) => p.id !== postData.post.id).slice(0, 3) || [])
+          }
+        }
+
+        // Buscar categorias e tags
+        const [categoriesRes, tagsRes] = await Promise.all([
+          fetch(`${API_URL}/categories`),
+          fetch(`${API_URL}/tags`),
+        ])
+
+        if (categoriesRes.ok) {
+          const categoriesData = await categoriesRes.json()
+          setCategories(categoriesData.categories || [])
+        }
+
+        if (tagsRes.ok) {
+          const tagsData = await tagsRes.json()
+          setTags(tagsData.tags || [])
+        }
+      } catch (err) {
+        console.error("Error fetching data:", err)
+        setError("Erro ao carregar o post")
+      } finally {
+        setIsLoading(false)
+      }
     }
 
-    return res.json();
-  } catch (error) {
-    console.error("Error fetching comments:", error);
-    return { comments: [] };
+    fetchData()
+  }, [slug])
+
+  // Função para extrair texto do HTML (remover tags HTML)
+  const extractTextFromHTML = (html: string): string => {
+    if (typeof window === 'undefined') return ''
+    const div = document.createElement('div')
+    div.innerHTML = html
+    return div.textContent || div.innerText || ''
   }
-}
 
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
-  // Em versões recentes do Next.js, params pode ser uma promessa
-  // Vamos garantir que estamos trabalhando com um objeto regular
-  const routeParams = useParams()
-  const { slug } = routeParams;
+  // Função para contar palavras no texto
+  const countWords = (text: string): number => {
+    return text.trim().split(/\s+/).filter(word => word.length > 0).length
+  }
 
-  // Verificar se slug existe
-  if (!slug) {
-    console.error("Slug is undefined");
-    // Você pode redirecionar para uma página de erro ou retornar um componente de erro
+  // Função para calcular tempo total baseado em palavras e velocidade da fala
+  // Speech Synthesis geralmente fala entre 150-180 palavras/minuto com rate 1.0
+  // Usamos uma estimativa conservadora de 150 palavras/minuto para evitar subestimar
+  const calculateTotalTime = (wordCount: number, rate: number = 1.0): number => {
+    // Taxa base mais realista: 150 palavras por minuto com rate 1.0
+    // Speech Synthesis tende a ser mais lento que leitura humana
+    const baseWordsPerMinute = 130
+    const wordsPerSecond = (baseWordsPerMinute * rate) / 60
+    // Adiciona 20% de margem de segurança para garantir que não subestime
+    return Math.ceil((wordCount / wordsPerSecond) * 1.2)
+  }
+
+  // Função para formatar tempo em MM:SS
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60)
+    const secs = Math.floor(seconds % 60)
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+  }
+
+  // Calcula o tempo total quando o post é carregado
+  // Usa a velocidade padrão (rate 1.0) para estimativa inicial
+  useEffect(() => {
+    if (post && post.content) {
+      const text = extractTextFromHTML(post.content)
+      const wordCount = countWords(text)
+      const defaultRate = 1.0 // Velocidade padrão do Speech Synthesis
+      const calculatedTotalTime = calculateTotalTime(wordCount, defaultRate)
+      setTotalTime(calculatedTotalTime)
+    }
+  }, [post])
+
+  if (isLoading) {
     return (
       <div className="flex min-h-screen flex-col bg-white">
         <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-3xl font-bold mb-4">Post não encontrado</h1>
-          <p className="mb-8">O artigo que você está procurando não existe ou foi removido.</p>
-          <Link href="/blog" className="text-gold hover:underline">
-            Voltar para o blog
-          </Link>
+          <div className="animate-spin h-8 w-8 border-4 border-gray-300 border-t-gray-600 rounded-full mx-auto"></div>
+          <p className="mt-4 text-gray-600">Carregando post...</p>
         </div>
       </div>
-    );
+    )
   }
 
-  // Buscar dados do post
-  const { post } = await getPost(slug);
-
-  // Se o post não for encontrado, mostrar uma mensagem de erro
-  if (!post) {
+  if (error || !post) {
     return (
-      <div className="flex min-h-screen flex-col bg-white">
-        <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-3xl font-bold mb-4">Post não encontrado</h1>
-          <p className="mb-8">O artigo que você está procurando não existe ou foi removido.</p>
-          <Link href="/blog" className="text-gold hover:underline">
-            Voltar para o blog
-          </Link>
+      <div className="flex min-h-screen flex-col bg-white pt-20">
+        <div className="container mx-auto px-4 md:px-6 py-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Post não encontrado</h1>
+            <p className="text-gray-600 mb-4">{error || "O post que você está procurando não existe."}</p>
+            <Link href="/blog" className="text-[#126861] hover:underline">
+              Voltar para o blog
+            </Link>
+          </div>
         </div>
       </div>
-    );
+    )
   }
 
-  // Buscar categorias, tags e comentários
-  const [categoriesData, tagsData, commentsData] = await Promise.all([
-    getCategories(),
-    getTags(),
-    getComments(post.id),
-  ]);
-
-  const { categories } = categoriesData;
-  const { tags } = tagsData;
-  const { comments } = commentsData;
-
-  // Processar dados do post
-  const postTags = post.tags?.map((tag: any) => tag.tag) || [];
+  // Processar dados do post (após verificar que post existe)
+  const postTags = post.tags?.map((tag: any) => tag.tag) || []
   const formattedDate = new Date(post.published_at || post.created_at).toLocaleDateString("pt-BR", {
     day: "2-digit",
     month: "long",
     year: "numeric",
-  });
+  })
 
-  return (
-    <div className="flex min-h-screen flex-col bg-white">
-      {/* Blog Post Header */}
-      <section className="bg-navy-950 py-16 md:py-24 text-white">
-        <div className="container mx-auto px-4 md:px-6 text-center">
-          <div className="mb-4">
-            {post.category && (
-              <Link href={`/blog?category=${post.category.slug}`} className="text-gold hover:underline">
-                {post.category.name}
-              </Link>
-            )}
-          </div>
-          <h1 className="font-serif text-3xl md:text-5xl font-bold mb-6">{post.title}</h1>
-          <div className="flex items-center justify-center text-gray-300 text-sm">
-            <span>Por {post.author?.name || "Autor Desconhecido"}</span>
-            <span className="mx-2">•</span>
-            <span>{formattedDate}</span>
+  // URL para compartilhamento
+  const shareUrl = typeof window !== 'undefined' ? window.location.href : ''
+  const shareText = post.title
+
+  // Handlers
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      router.push(`/blog?search=${encodeURIComponent(searchQuery.trim())}`)
+    }
+  }
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    try {
+      // Aqui você pode adicionar a lógica para enviar o email para newsletter
+      // Por enquanto, apenas um alerta
+      alert("Obrigado por se inscrever na nossa newsletter!")
+      setNewsletterEmail("")
+    } catch (error) {
+      console.error("Error subscribing to newsletter:", error)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    try {
+      // Aqui você pode adicionar a lógica para enviar o formulário de contato
+      // Por enquanto, apenas um alerta
+      alert("Mensagem enviada com sucesso!")
+      setContactForm({
+        name: "",
+        email: "",
+        phone: "",
+        subject: "",
+        message: "",
+      })
+    } catch (error) {
+      console.error("Error submitting contact form:", error)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  // Função para ouvir o conteúdo
+  const handleSpeak = () => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      alert('Seu navegador não suporta a funcionalidade de áudio.')
+      return
+    }
+
+    if (!post?.content) {
+      alert('Não há conteúdo para ouvir.')
+      return
+    }
+
+    const text = extractTextFromHTML(post.content)
+    if (!text.trim()) {
+      alert('Não há conteúdo para ouvir.')
+      return
+    }
+
+    const synth = window.speechSynthesis
+
+    if (isSpeaking) {
+      // Se já está falando, para
+      synth.cancel()
+      setIsSpeaking(false)
+      setCurrentTime(0)
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+      }
+    } else {
+      // Calcula o tempo total baseado no número de palavras e velocidade da fala
+      const wordCount = countWords(text)
+      const speechRate = 1.0 // Velocidade da fala (pode ser ajustada)
+      const calculatedTotalTime = calculateTotalTime(wordCount, speechRate)
+      setTotalTime(calculatedTotalTime)
+      setCurrentTime(0)
+
+      // Inicia a fala
+      const utterance = new SpeechSynthesisUtterance(text)
+      utterance.lang = 'pt-BR'
+      utterance.rate = speechRate // Velocidade da fala (1.0 = normal, 0.5 = lento, 2.0 = rápido)
+      utterance.pitch = 1.0 // Tom normal
+      utterance.volume = 1.0 // Volume máximo
+
+      // Atualiza o tempo durante a reprodução baseado no tempo real
+      const startTime = Date.now()
+
+      intervalRef.current = setInterval(() => {
+        const elapsed = (Date.now() - startTime) / 1000
+        // O tempo atual é baseado no tempo real decorrido
+        // Não limitamos ao calculatedTotalTime para permitir que continue além da estimativa
+        setCurrentTime(elapsed)
+        // Se o tempo real exceder a estimativa, atualizamos o totalTime dinamicamente
+        if (elapsed > calculatedTotalTime) {
+          setTotalTime(Math.ceil(elapsed))
+        }
+      }, 100) // Atualiza a cada 100ms
+
+      utterance.onstart = () => {
+        setIsSpeaking(true)
+      }
+
+      utterance.onend = () => {
+        setIsSpeaking(false)
+        // Atualiza o tempo total com o tempo real decorrido
+        const realElapsed = (Date.now() - startTime) / 1000
+        setCurrentTime(realElapsed)
+        setTotalTime(realElapsed) // Atualiza o tempo total com o tempo real
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current)
+          intervalRef.current = null
+        }
+      }
+
+      utterance.onerror = () => {
+        setIsSpeaking(false)
+        setCurrentTime(0)
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current)
+          intervalRef.current = null
+        }
+      }
+
+      synth.cancel() // Para evitar sobreposição
+      synth.speak(utterance)
+    }
+  }
+
+  // Função para aumentar fonte
+  const handleIncreaseFont = () => {
+    setFontSize((prev) => Math.min(prev + 2, 32)) // Máximo de 32px
+  }
+
+  // Função para diminuir fonte
+  const handleDecreaseFont = () => {
+    setFontSize((prev) => Math.max(prev - 2, 12)) // Mínimo de 12px
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen flex-col bg-white pt-20">
+        <div className="container mx-auto px-4 md:px-6 py-8">
+          <div className="flex items-center justify-center h-96">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#126861]"></div>
           </div>
         </div>
-      </section>
+      </div>
+    )
+  }
 
-      <section className="py-12 md:py-16 bg-white">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="flex flex-col md:flex-row gap-8">
-            {/* Main Content */}
-            <div className="w-full md:w-2/3">
-              {/* Featured Image */}
-              {post.featured_image && (
-                <div className="mb-8 relative h-[400px] rounded-lg overflow-hidden">
+  if (error || !post) {
+    return (
+      <div className="flex min-h-screen flex-col bg-white pt-20">
+        <div className="container mx-auto px-4 md:px-6 py-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Post não encontrado</h1>
+            <p className="text-gray-600 mb-4">{error || "O post que você está procurando não existe."}</p>
+            <Link href="/blog" className="text-[#126861] hover:underline">
+              Voltar para o blog
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex min-h-screen flex-col bg-white pt-20">
+      <div className="container mx-auto px-4 md:px-6 py-8">
+        <div className="flex flex-col lg:flex-row lg:items-start gap-8">
+          {/* Main Content - Left Column */}
+          <div className="w-full lg:w-2/3 lg:flex-shrink-0">
+            {/* Author Header */}
+            <div className="flex items-center gap-4 mb-4">
+              <div className="relative w-14 h-14 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
+                {post.author?.avatar ? (
                   <Image
-                    src={post.featured_image || "/placeholder.svg?height=400&width=800"}
-                    alt={post.title}
+                    src={post.author.avatar}
+                    alt={post.author.name}
                     fill
                     className="object-cover"
                   />
-                </div>
-              )}
-
-              {/* Post Content */}
-              <div className="prose prose-lg max-w-none">
-                <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-600 text-lg font-bold">
+                    {post.author?.name?.charAt(0) || "A"}
+                  </div>
+                )}
               </div>
-
-              {/* Tags */}
-              {postTags.length > 0 && (
-                <div className="mt-8">
-                  <BlogTagList tags={postTags} />
-                </div>
+              <div>
+                <h3 className="font-semibold text-base text-gray-900">{post.author?.name || "Autor Desconhecido"}</h3>
+                <p className="text-xs text-gray-500">Escritor e Produtor</p>
+              </div>
+            </div>
+            {/* Post Title with Category Tag */}
+            <div className="mb-3 flex items-center gap-3">
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight uppercase mb-3">
+                {post.title}
+              </h1>
+              {post.category && (
+                <Link
+                  href={`/blog?category=${post.category.slug}`}
+                  className="inline-block"
+                >
+                  <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] text-white px-3 py-1.5 rounded text-xs font-semibold uppercase">
+                    {post.category.name}
+                  </Badge>
+                </Link>
               )}
-
-              {/* Author Bio */}
-              <div className="mt-12 border-t border-gray-200 pt-8">
-                <BlogAuthorCard
-                  name={post.author?.name || "Autor Desconhecido"}
-                  role="Advogado"
-                  bio="Especialista em direito com vasta experiência na área."
+            </div>
+            {/* Subtitle/Excerpt */}
+            {post.excerpt && (
+              <p className="text-base text-gray-600 mb-6 line-clamp-2">
+                {post.excerpt}
+              </p>
+            )}
+            {/* Featured Image */}
+            {post.featured_image && (
+              <div className="mb-8 relative w-full h-[500px] rounded-lg overflow-hidden">
+                <Image
+                  src={post.featured_image}
+                  alt={post.title}
+                  fill
+                  className="object-cover"
                 />
               </div>
-
-              {/* Comments Section */}
-              {/* <div className="mt-12 border-t border-gray-200 pt-8">
-                <CommentSection postId={post.id} comments={comments || []} />
-              </div> */}
+            )}
+            {/* Controles de Áudio e Fonte */}
+            <div className="mb-8 bg-gray-50 rounded-lg p-4">
+              <div className="flex items-center justify-between gap-6 flex-wrap">
+                {/* Audio Player */}
+                <div className="flex items-center gap-4 flex-1 min-w-[300px]">
+                  <button
+                    onClick={handleSpeak}
+                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors flex-shrink-0`}
+                    title={isSpeaking ? 'Parar áudio' : 'Ouvir conteúdo'}
+                  >
+                    <LuCirclePlay className={`w-12 h-12 ${isSpeaking ? 'text-red-600' : 'text-[#6D758F]'}`} />
+                  </button>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-gray-700 mb-1">Ouça agora</p>
+                    <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-[#126861] transition-all"
+                        style={{ width: totalTime > 0 ? `${(currentTime / totalTime) * 100}%` : '0%' }}
+                      ></div>
+                    </div>
+                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                      <span>{formatTime(currentTime)}</span>
+                      <span>{formatTime(totalTime)}</span>
+                    </div>
+                  </div>
+                </div>
+                {/* Font Size Controls */}
+                <div className="flex items-center gap-2 border-l border-gray-300 pl-6 md:hidden">
+                  <button
+                    onClick={handleDecreaseFont}
+                    className="w-10 h-10 rounded bg-white border-2 border-gray-300 flex items-center justify-center hover:bg-gray-50 hover:border-[#126861] transition-colors font-bold text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Fonte Pequena (L)"
+                    disabled={fontSize <= 12}
+                  >
+                    -A
+                  </button>
+                  <button
+                    onClick={() => setFontSize(16)}
+                    className="w-10 h-10 rounded bg-white border-2 border-gray-300 flex items-center justify-center hover:bg-gray-50 hover:border-[#126861] transition-colors font-bold text-gray-700"
+                    title="Fonte Média (A)"
+                  >
+                    A
+                  </button>
+                  <button
+                    onClick={handleIncreaseFont}
+                    className="w-10 h-10 rounded bg-white border-2 border-gray-300 flex items-center justify-center hover:bg-gray-50 hover:border-[#126861] transition-colors font-bold text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Fonte Grande (C)"
+                    disabled={fontSize >= 32}
+                  >
+                    A+
+                  </button>
+                </div>
+              </div>
             </div>
-
+            {/* Post Content */}
+            <div className="prose prose-lg max-w-none mb-8" style={{ fontSize: `${fontSize}px` }}>
+              <div
+                dangerouslySetInnerHTML={{ __html: post.content }}
+                style={{
+                  fontSize: 'inherit',
+                  lineHeight: '1.8'
+                }}
+              />
+            </div>
+            {/* Tags */}
+            {postTags.length > 0 && (
+              <div className="mb-8 flex items-center  gap-2">
+                <h3 className="text-sm font-semibold text-white bg-[#928575]/40 w-fit px-4 py-1 rounded-md">TAGS:</h3>
+                <div className="flex flex-wrap gap-2 items-center">
+                  {postTags.map((tag: any) => (
+                    <Link
+                      key={tag.id}
+                      href={`/blog?tag=${tag.slug}`}
+                      className="flex items-center bg-gray-100 text-gray-700 px-4 py-[6px] rounded-md text-xs font-semibold uppercase hover:bg-gray-200 transition-colors"
+                    >
+                      {tag.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+            {/* Author Name and Share Buttons */}
+            <div className="border-t border-gray-200 pt-6 mb-8">
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="relative w-14 h-14 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
+                    {post.author?.avatar ? (
+                      <Image
+                        src={post.author.avatar}
+                        alt={post.author.name}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-600 text-lg font-bold">
+                        {post.author?.name?.charAt(0) || "A"}
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-base text-gray-900">{post.author?.name || "Autor Desconhecido"}</h3>
+                    <p className="text-xs text-gray-500">Escritor e Produtor</p>
+                  </div>
+                </div>
+                {/* Share Buttons */}
+                <div className="flex items-center gap-3">
+                  <span className="text-base font-bold text-gray-700">Compartilhe:</span>
+                  <div className="flex gap-2">
+                    <a
+                      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-8 h-8 rounded bg-[#126861] text-white flex items-center justify-center hover:bg-[#0f5650] transition-colors"
+                    >
+                      <Facebook className="w-5 h-5" />
+                    </a>
+                    <a
+                      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-8 h-8 rounded bg-[#126861] text-white flex items-center justify-center hover:bg-[#0f5650] transition-colors"
+                    >
+                      <Twitter className="w-5 h-5" />
+                    </a>
+                    <a
+                      href={`https://www.instagram.com/`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-8 h-8 rounded bg-[#126861] text-white flex items-center justify-center hover:bg-[#0f5650] transition-colors"
+                    >
+                      <Instagram className="w-5 h-5" />
+                    </a>
+                    <a
+                      href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-8 h-8 rounded bg-[#126861] text-white flex items-center justify-center hover:bg-[#0f5650] transition-colors"
+                    >
+                      <Linkedin className="w-5 h-5" />
+                    </a>
+                    <a
+                      href={`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(shareUrl)}&description=${encodeURIComponent(shareText)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-8 h-8 rounded bg-[#126861] text-white flex items-center justify-center hover:bg-[#0f5650] transition-colors"
+                    >
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0C5.373 0 0 5.372 0 12s5.373 12 12 12c5.302 0 9.917-3.158 11.827-7.69-.07-.633-.133-1.606.027-2.297.145-.937 1.296-6.434 1.296-6.434s-.33-.658-.33-1.631c0-1.525.889-2.662 1.995-2.662.94 0 1.395.705 1.395 1.55 0 .943-.6 2.356-.91 3.664-.258 1.093.549 1.985 1.632 1.985 1.958 0 3.465-2.064 3.465-5.044 0-2.636-1.893-4.48-4.598-4.48-3.133 0-4.973 2.35-4.973 4.776 0 .928.356 1.925.802 2.516.088.107.1.201.074.31l-.33 1.303c-.053.22-.174.267-.402.161-1.499-.697-2.436-2.888-2.436-4.649 0-3.785 2.75-7.262 7.93-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.214 0-2.357-.629-2.746-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z" />
+                      </svg>
+                    </a>
+                    <a
+                      href={`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-8 h-8 rounded bg-[#126861] text-white flex items-center justify-center hover:bg-[#0f5650] transition-colors"
+                    >
+                      <MessageCircle className="w-5 h-5" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* Artigos Relacionados */}
+            {relatedPosts.length > 0 && (
+              <div className="border-t border-gray-200 pt-8 mb-8">
+                <h2 className="text-2xl font-medium text-center text-gray-900 mb-6 uppercase">Artigos Relacionados</h2>
+                <Carousel opts={{ loop: true }} className="w-full flex flex-col">
+                  <CarouselContent>
+                    {relatedPosts.map((relatedPost) => (
+                      <CarouselItem key={relatedPost.id} className="md:basis-1/2 lg:basis-1/3">
+                        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+                          {relatedPost.featured_image && (
+                            <div className="relative h-48 w-full">
+                              <Image
+                                src={relatedPost.featured_image}
+                                alt={relatedPost.title}
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
+                          )}
+                          <div className="p-4">
+                            <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2">
+                              {relatedPost.title}
+                            </h3>
+                            {relatedPost.excerpt && (
+                              <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                                {relatedPost.excerpt}
+                              </p>
+                            )}
+                            <Link href={`/blog/${relatedPost.slug}`}>
+                              <Button variant="outline" size="sm" className="w-full">
+                                Ler Mais
+                              </Button>
+                            </Link>
+                          </div>
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  {/* <CarouselPrevious />
+                  <CarouselNext /> */}
+                </Carousel>
+              </div>
+            )}
+            {/* Posts Mais Recentes */}
+            {recentPosts.length > 0 && (
+              <div className="border-t border-gray-200 pt-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Posts Mais Recentes</h2>
+                <div className="space-y-6">
+                  {recentPosts.map((recentPost) => (
+                    <div key={recentPost.id} className="flex gap-4">
+                      {recentPost.featured_image && (
+                        <div className="relative w-80 h-44 flex-shrink-0 rounded overflow-hidden">
+                          <Image
+                            src={recentPost.featured_image}
+                            alt={recentPost.title}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2">
+                          {recentPost.title}
+                        </h3>
+                        {recentPost.excerpt && (
+                          <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                            {recentPost.excerpt}
+                          </p>
+                        )}
+                        <Link href={`/blog/${recentPost.slug}`}>
+                          <Button variant="outline" size="sm" className="bg-[#928575] text-white hover:bg-[#928575]/80 hover:text-white">
+                            VER MAIS SOBRE O ARTIGO
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          {/* Sidebar - Right Column */}
+          <div className="w-full lg:w-1/3 mt-20">
+            <BlogSidebarNew categories={categories || []} tags={tags || []} />
           </div>
         </div>
-      </section>
+      </div>
     </div>
   )
 }
+
+
+
+// TODO: Colocar pesquuisar com foto, tag e titulo na parte de config blog
+// Titulo máximo 2 linhas
+// Resumo maximo 2/3 linhas
+
+// Para reflexao, titulo 3 linhas, desc 2linhas
+// SOBRE RELACIONAMENTOS, titulo 2, desc 2linhas
+// EMPRESAS & NEGÓCIOS, titulo 2, desc 2linhas
+
+// Tag sempre em cima
+// ESTÉTICA & BELEZA titulo 3
+
+//GASTRONOMIA titulo 2, desc 2linhas
+
+// Página /blog titulos 3, desc 2linhas
+
+// Tirar verde do sidebar, alterar para o marrom

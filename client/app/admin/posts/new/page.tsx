@@ -48,6 +48,10 @@ export default function NewPostPage() {
     tag_ids: [] as string[],
     featured_image: "",
     published: false,
+    theme: "",
+    position: "",
+    order: 0,
+    featured: false,
   })
 
   useEffect(() => {
@@ -304,6 +308,72 @@ export default function NewPostPage() {
                           </div>
                         ))}
                       </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="pt-6">
+                  <h3 className="text-lg font-medium mb-4">Posicionamento na Home</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="theme">Tema/Seção</Label>
+                      <Select value={formData.theme} onValueChange={(value) => setFormData((prev) => ({ ...prev, theme: value }))}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione o tema" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="HERO">Hero (Carousel Principal)</SelectItem>
+                          <SelectItem value="EM_DESTAQUE">Em Destaque</SelectItem>
+                          <SelectItem value="PARA_REFLEXAO">Para Reflexão</SelectItem>
+                          <SelectItem value="NOSSA_SAUDE">Nossa Saúde</SelectItem>
+                          <SelectItem value="SOBRE_RELACIONAMENTOS">Sobre Relacionamentos</SelectItem>
+                          <SelectItem value="EMPRESAS_NEGOCIOS">Empresas & Negócios</SelectItem>
+                          <SelectItem value="ESTETICA_BELEZA">Estética & Beleza</SelectItem>
+                          <SelectItem value="RINDO_A_TOA">Rindo à Toa</SelectItem>
+                          <SelectItem value="QUEBRA_CUCA">Quebra Cuca</SelectItem>
+                          <SelectItem value="GASTRONOMIA">Gastronomia</SelectItem>
+                          <SelectItem value="SUPER_DICAS">Super Dicas</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="position">Posição</Label>
+                      <Select value={formData.position} onValueChange={(value) => setFormData((prev) => ({ ...prev, position: value }))}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione a posição" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="MAIN">Principal (Grande)</SelectItem>
+                          <SelectItem value="LEFT">Esquerda</SelectItem>
+                          <SelectItem value="CENTER">Centro</SelectItem>
+                          <SelectItem value="RIGHT">Direita</SelectItem>
+                          <SelectItem value="SIDE">Lateral</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="order">Ordem</Label>
+                      <Input
+                        id="order"
+                        type="number"
+                        min="0"
+                        value={formData.order}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Ordem de exibição dentro da seção (menor = primeiro)</p>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="featured">Post em Destaque</Label>
+                      <Switch
+                        id="featured"
+                        checked={formData.featured}
+                        onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, featured: checked }))}
+                      />
                     </div>
                   </div>
                 </CardContent>

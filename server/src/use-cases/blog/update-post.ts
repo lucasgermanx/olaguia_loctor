@@ -15,6 +15,10 @@ interface UpdatePostUseCaseRequest {
   published?: boolean
   category_id?: string
   tags?: string[]
+  theme?: string
+  position?: string
+  order?: number
+  featured?: boolean
 }
 
 interface UpdatePostUseCaseResponse {
@@ -38,6 +42,10 @@ export class UpdatePostUseCase {
     published,
     category_id,
     tags,
+    theme,
+    position,
+    order,
+    featured,
   }: UpdatePostUseCaseRequest): Promise<UpdatePostUseCaseResponse> {
     // Check if post exists
     const postExists = await this.postsRepository.findById(id)
@@ -63,6 +71,10 @@ export class UpdatePostUseCase {
       if (content) updateData.content = content
       if (featured_image !== undefined) updateData.featured_image = featured_image
       if (category_id) updateData.category_id = category_id
+      if (theme !== undefined) updateData.theme = theme as any
+      if (position !== undefined) updateData.position = position as any
+      if (order !== undefined) updateData.order = order
+      if (featured !== undefined) updateData.featured = featured
 
       // Handle published status change
       if (published !== undefined) {

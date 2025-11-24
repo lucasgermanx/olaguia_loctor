@@ -13,33 +13,28 @@ interface BlogPostCardProps {
 
 export function BlogPostCard({ title, excerpt, date, author, category, slug, imageUrl }: BlogPostCardProps) {
   return (
-    <div className="bg-white rounded-lg overflow-hidden shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+    <div className="bg-white overflow-hidden shadow-sm">
       <Link href={`/blog/${slug}`}>
-        <div className="relative h-48 w-full">
+        <div className="relative w-full h-36 aspect-square">
           <Image src={imageUrl || "/placeholder.svg"} alt={title} fill className="object-cover" />
         </div>
       </Link>
-      <div className="p-6">
-        <div className="flex items-center text-sm text-gray-500 mb-2">
-          <span>{date}</span>
-          <span className="mx-2">•</span>
-          <span>{author}</span>
-        </div>
-        <Link href={`/blog/${slug}`}>
-          <h3 className="font-serif text-xl font-bold text-navy-950 mb-2 hover:text-gold transition-colors">{title}</h3>
+      <div className="px-4 pb-4 border border-t-0 pt-4 border-gray-200">
+        <span className="bg-[#C68C0E] text-white px-3 py-1 rounded text-xs font-semibold uppercase">
+          {category || "SAÚDE"}
+        </span>
+        <Link className="" href={`/blog/${slug}`}>
+          <h3 className="text-base font-bold text-gray-900 mb-2 hover:text-[#126861] transition-colors uppercase leading-tight pt-2">
+            {title}
+          </h3>
         </Link>
-        <p className="text-gray-600 mb-4 line-clamp-3">{excerpt}</p>
-        <div className="flex items-center justify-between">
-          <Link href={`/blog/${slug}`} className="text-gold font-medium hover:underline">
-            Ler mais
-          </Link>
-          <Link
-            href={`/blog?category=${category.toLowerCase().replace(/\s+/g, "-")}`}
-            className="text-xs bg-navy-100 text-navy-800 px-2 py-1 rounded-full hover:bg-navy-200 transition-colors"
-          >
-            {category}
-          </Link>
-        </div>
+        <p className="text-sm text-gray-600 mb-3 line-clamp-2">{excerpt}</p>
+        <Link
+          href={`/blog/${slug}`}
+          className="inline-block text-gray-600 font-regular italic text-xs border border-gray-200 px-2 py-1 rounded hover:bg-gray-50 transition-colors uppercase"
+        >
+          LEIA MAIS
+        </Link>
       </div>
     </div>
   )

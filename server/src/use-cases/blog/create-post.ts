@@ -15,6 +15,10 @@ interface CreatePostUseCaseRequest {
   category_id: string
   author_id: string
   tags?: string[]
+  theme?: string
+  position?: string
+  order?: number
+  featured?: boolean
 }
 
 interface CreatePostUseCaseResponse {
@@ -38,6 +42,10 @@ export class CreatePostUseCase {
     category_id,
     author_id,
     tags,
+    theme,
+    position,
+    order,
+    featured,
   }: CreatePostUseCaseRequest): Promise<CreatePostUseCaseResponse> {
     // Check if category exists
     const categoryExists = await this.categoriesRepository.findById(category_id)
@@ -57,6 +65,10 @@ export class CreatePostUseCase {
         published_at: published ? new Date() : null,
         category_id,
         author_id,
+        theme: theme as any,
+        position: position as any,
+        order: order ?? 0,
+        featured: featured ?? false,
       })
 
       // Add tags if provided
