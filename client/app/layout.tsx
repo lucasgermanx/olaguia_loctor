@@ -2,8 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import "./globals.css"
 import { AuthProvider } from "@/hooks/use-auth"
-import { Footer } from "@/components/footer"
-import { Header } from "@/components/header"
+import { ConditionalLayout } from "@/components/conditional-layout"
 import { volkhov, openSans, lato } from "@/lib/fonts"
 
 export const metadata: Metadata = {
@@ -21,9 +20,9 @@ export default function RootLayout({
     <html lang="pt-BR" className={`${volkhov.variable} ${openSans.variable} ${lato.variable}`}>
       <body>
         <AuthProvider>
-          <Header />
-          {children}
-          <Footer />
+          <ConditionalLayout>
+            {children}
+          </ConditionalLayout>
         </AuthProvider>
       </body>
     </html>

@@ -12,6 +12,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  CarouselApi,
 } from "@/components/ui/carousel"
 import { AdBanner } from "@/components/ad-banner"
 import { placeholderImages } from "@/lib/placeholder-images"
@@ -87,6 +88,8 @@ export default function Home() {
   const [slots, setSlots] = useState<HomeSlot[]>([])
   const [ads, setAds] = useState<Ad[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>()
+  const [currentSlide, setCurrentSlide] = useState(0)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -114,6 +117,19 @@ export default function Home() {
 
     fetchData()
   }, [])
+
+  // Atualizar o índice do slide atual quando o carousel muda
+  useEffect(() => {
+    if (!carouselApi) {
+      return
+    }
+
+    setCurrentSlide(carouselApi.selectedScrollSnap())
+
+    carouselApi.on("select", () => {
+      setCurrentSlide(carouselApi.selectedScrollSnap())
+    })
+  }, [carouselApi])
 
   // Função auxiliar para buscar slots por seção e posição
   const getSlot = (section: string, position: string, slotIndex: number | null = null) => {
@@ -147,7 +163,11 @@ export default function Home() {
           </div>
         ) : (
           <>
-            <Carousel className="w-full h-full" opts={{ loop: true }}>
+            <Carousel
+              className="w-full h-full"
+              opts={{ loop: true }}
+              setApi={setCarouselApi}
+            >
               <CarouselContent className="h-[250px] sm:h-[300px] lg:h-[350px]">
                 {getSlots("HERO", "CAROUSEL").map((slot, index) => {
                   const post = slot.post
@@ -199,7 +219,13 @@ export default function Home() {
             {/* Pagination Dots */}
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
               {getSlots("HERO", "CAROUSEL").map((slot, idx) => (
-                <div key={slot.id} className={`w-2 h-2 rounded-full ${idx === 0 ? 'bg-[#6D758F]' : 'bg-gray-300'}`} />
+                <button
+                  key={slot.id}
+                  onClick={() => carouselApi?.scrollTo(idx)}
+                  className={`w-2 h-2 rounded-full transition-all ${idx === currentSlide ? 'bg-[#6D758F] w-6' : 'bg-gray-300 hover:bg-gray-400'
+                    }`}
+                  aria-label={`Ir para slide ${idx + 1}`}
+                />
               ))}
             </div>
           </>
@@ -1228,8 +1254,8 @@ export default function Home() {
             })}
           </div>
         </div>
-         {/* Social Share */}
-         <SocialShare />
+        {/* Social Share */}
+        <SocialShare />
       </section>
     </div>
   )
