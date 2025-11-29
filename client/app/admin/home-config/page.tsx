@@ -7,6 +7,7 @@ import Link from "next/link"
 import { AdminLayout } from "@/components/admin/admin-layout"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
 import {
   Dialog,
   DialogContent,
@@ -21,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Loader2, Edit2, X } from "lucide-react"
+import { Loader2, Edit2, X, Search } from "lucide-react"
 import {
   Carousel,
   CarouselContent,
@@ -38,8 +39,15 @@ interface Post {
   slug: string
   featured_image?: string
   category?: {
+    id: string
     name: string
   }
+}
+
+interface Category {
+  id: string
+  name: string
+  slug: string
 }
 
 interface HomeSlot {
@@ -57,10 +65,13 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"
 export default function HomeConfigPage() {
   const [slots, setSlots] = useState<HomeSlot[]>([])
   const [posts, setPosts] = useState<Post[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [selectedSlot, setSelectedSlot] = useState<HomeSlot | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState<string>("all")
 
   useEffect(() => {
     fetchData()
@@ -72,11 +83,14 @@ export default function HomeConfigPage() {
       const token = localStorage.getItem("token")
       if (!token) return
 
-      const [slotsRes, postsRes] = await Promise.all([
+      const [slotsRes, postsRes, categoriesRes] = await Promise.all([
         fetch(`${API_URL}/home-slots`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
         fetch(`${API_URL}/posts?per_page=100`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch(`${API_URL}/categories`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ])
@@ -96,6 +110,11 @@ export default function HomeConfigPage() {
       if (postsRes.ok) {
         const postsData = await postsRes.json()
         setPosts(postsData.posts || [])
+      }
+
+      if (categoriesRes.ok) {
+        const categoriesData = await categoriesRes.json()
+        setCategories(categoriesData.categories || [])
       }
     } catch (error) {
       console.error("Error fetching data:", error)
@@ -132,6 +151,8 @@ export default function HomeConfigPage() {
       if (response.ok) {
         setIsDialogOpen(false)
         setSelectedSlot(null)
+        setSearchTerm("") // Limpar busca
+        setSelectedCategory("all") // Resetar filtro
         fetchData()
       }
     } catch (error) {
@@ -140,6 +161,13 @@ export default function HomeConfigPage() {
       setIsSaving(false)
     }
   }
+
+  // Filtrar posts com base na busca e categoria
+  const filteredPosts = posts.filter((post) => {
+    const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesCategory = selectedCategory === "all" || post.category?.id === selectedCategory
+    return matchesSearch && matchesCategory
+  })
 
   const getSlotsBySection = (section: string) => {
     return slots.filter((slot) => slot.section === section)
@@ -228,15 +256,15 @@ export default function HomeConfigPage() {
                       )}
                       {slot?.post && (
                         <div className="absolute top-1/2 -translate-y-1/2 w-[calc(100%-2rem)] sm:w-[calc(100%-4rem)] md:w-[calc(100%-8rem)] lg:w-auto lg:max-w-xl">
-                            <div className="bg-white p-4 sm:p-4 md:p-5 shadow-xl border-t-[4px] sm:border-t-[6px] border-black">
-                              <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-3 sm:mb-4 text-xs sm:text-sm">
-                                {slot.post.category?.name || "CATEGORIA"}
-                              </Badge>
-                              <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl 2xl:text-4xl font-open-sans font-semibold mb-3 sm:mb-4 text-gray-900 text-left leading-tight">
-                                {slot.post.title}
-                              </h1>
-                            </div>
+                          <div className="bg-white p-4 sm:p-4 md:p-5 shadow-xl border-t-[4px] sm:border-t-[6px] border-black">
+                            <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-3 sm:mb-4 text-xs sm:text-sm">
+                              {slot.post.category?.name || "CATEGORIA"}
+                            </Badge>
+                            <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl 2xl:text-4xl font-open-sans font-semibold mb-3 sm:mb-4 text-gray-900 text-left leading-tight">
+                              {slot.post.title}
+                            </h1>
                           </div>
+                        </div>
                       )}
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                         <Edit2 className="text-white" size={32} />
@@ -1050,7 +1078,7 @@ export default function HomeConfigPage() {
 
         {/* Dialog para selecionar post */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent>
+          <DialogContent className="max-w-4xl">
             <DialogHeader>
               <DialogTitle>Selecionar Post</DialogTitle>
               <DialogDescription>
@@ -1058,8 +1086,34 @@ export default function HomeConfigPage() {
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
+              {/* Filtros de busca */}
+              <div className="flex gap-3">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Buscar por título..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Categoria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas as categorias</SelectItem>
+                    {categories.map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
               {/* Botão para remover post */}
-              <Button
+              {/* <Button
                 variant="outline"
                 className="w-full justify-start border-red-200 hover:bg-red-50"
                 onClick={() => handleAssignPost(null)}
@@ -1067,62 +1121,67 @@ export default function HomeConfigPage() {
               >
                 <X className="w-4 h-4 mr-2" />
                 Remover post desta posição
-              </Button>
+              </Button> */}
 
               {/* Lista de posts em grid de 2 colunas */}
               <div className="max-h-[500px] overflow-y-auto pr-2">
-                <div className="grid grid-cols-2 gap-3">
-                  {posts.map((post) => (
-                    <button
-                      key={post.id}
-                      onClick={() => handleAssignPost(post.id)}
-                      disabled={isSaving}
-                      className={`group relative overflow-hidden rounded-lg border-2 transition-all hover:border-[#126861] hover:shadow-lg text-left ${
-                        selectedSlot?.post_id === post.id ? 'border-[#126861] ring-2 ring-[#126861]' : 'border-gray-200'
-                      }`}
-                    >
-                      {/* Imagem */}
-                      <div className="relative w-full h-32">
-                        {post.featured_image ? (
-                          <Image
-                            src={post.featured_image}
-                            alt={post.title}
-                            fill
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                            <span className="text-gray-400 text-xs">Sem imagem</span>
+                {filteredPosts.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    Nenhum post encontrado
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-3">
+                    {filteredPosts.map((post) => (
+                      <button
+                        key={post.id}
+                        onClick={() => handleAssignPost(post.id)}
+                        disabled={isSaving}
+                        className={`group relative overflow-hidden rounded-lg border-2 transition-all hover:border-[#126861] hover:shadow-lg text-left ${selectedSlot?.post_id === post.id ? 'border-[#126861] ring-2 ring-[#126861]' : 'border-gray-200'
+                          }`}
+                      >
+                        {/* Imagem */}
+                        <div className="relative w-full h-32">
+                          {post.featured_image ? (
+                            <Image
+                              src={post.featured_image}
+                              alt={post.title}
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                              <span className="text-gray-400 text-xs">Sem imagem</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Conteúdo */}
+                        <div className="p-3 space-y-2">
+                          {/* Tag/Categoria */}
+                          {post.category && (
+                            <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] text-white text-[10px] uppercase">
+                              {post.category.name}
+                            </Badge>
+                          )}
+
+                          {/* Título */}
+                          <h4 className="text-xs font-semibold text-gray-900 line-clamp-2 leading-tight uppercase group-hover:text-[#126861]">
+                            {post.title}
+                          </h4>
+                        </div>
+
+                        {/* Indicador de seleção */}
+                        {selectedSlot?.post_id === post.id && (
+                          <div className="absolute top-2 right-2 w-6 h-6 bg-[#126861] rounded-full flex items-center justify-center">
+                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
                           </div>
                         )}
-                      </div>
-
-                      {/* Conteúdo */}
-                      <div className="p-3 space-y-2">
-                        {/* Tag/Categoria */}
-                        {post.category && (
-                          <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] text-white text-[10px] uppercase">
-                            {post.category.name}
-                          </Badge>
-                        )}
-
-                        {/* Título */}
-                        <h4 className="text-xs font-semibold text-gray-900 line-clamp-2 leading-tight uppercase group-hover:text-[#126861]">
-                          {post.title}
-                        </h4>
-                      </div>
-
-                      {/* Indicador de seleção */}
-                      {selectedSlot?.post_id === post.id && (
-                        <div className="absolute top-2 right-2 w-6 h-6 bg-[#126861] rounded-full flex items-center justify-center">
-                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
-                            <polyline points="20 6 9 17 4 12" />
-                          </svg>
-                        </div>
-                      )}
-                    </button>
-                  ))}
-                </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-end gap-2 pt-2 border-t">
