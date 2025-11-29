@@ -40,6 +40,7 @@ export default function MediaLibraryPage() {
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
     const [isUploading, setIsUploading] = useState(false)
+    const [deletingId, setDeletingId] = useState<string | null>(null)
     const perPage = 24
 
     useEffect(() => {
@@ -119,6 +120,37 @@ export default function MediaLibraryPage() {
         navigator.clipboard.writeText(fullUrl)
         setCopiedId(id)
         setTimeout(() => setCopiedId(null), 2000)
+    }
+
+    const handleDeleteUpload = async (uploadId: string) => {
+        try {
+            setDeletingId(uploadId)
+            const token = localStorage.getItem("token")
+            if (!token) {
+                router.push("/admin/login")
+                return
+            }
+
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/uploads/${uploadId}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            )
+
+            if (response.ok) {
+                fetchUploads() // Recarregar lista
+            } else {
+                console.error("Erro ao deletar mídia")
+            }
+        } catch (error) {
+            console.error("Error deleting upload:", error)
+        } finally {
+            setDeletingId(null)
+        }
     }
 
     const filteredUploads = uploads.filter((upload) =>
@@ -251,6 +283,42 @@ export default function MediaLibraryPage() {
                                                     </>
                                                 )}
                                             </Button>
+                                            <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className="border-red-200 hover:bg-red-50 hover:text-red-700"
+                                                        disabled={deletingId === upload.id}
+                                                    >
+                                                        {deletingId === upload.id ? (
+                                                            <Loader2 className="h-3 w-3 animate-spin" />
+                                                        ) : (
+                                                            <Trash2 className="h-3 w-3" />
+                                                        )}
+                                                    </Button>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            Tem certeza que deseja apagar esta imagem? Esta ação não pode ser desfeita.
+                                                            <br />
+                                                            <br />
+                                                            <span className="font-semibold text-gray-900">{upload.originalName}</span>
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                        <AlertDialogAction
+                                                            onClick={() => handleDeleteUpload(upload.id)}
+                                                            className="bg-red-600 hover:bg-red-700"
+                                                        >
+                                                            Apagar
+                                                        </AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
                                         </div>
                                     </CardContent>
                                 </Card>
