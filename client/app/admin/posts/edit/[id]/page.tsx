@@ -404,7 +404,7 @@ export default function EditPostPage() {
                 </CardContent>
               </Card>
 
-              <Card>
+              {/* <Card>
                 <CardContent className="pt-6">
                   <h3 className="text-lg font-medium mb-4">Posicionamento na Home</h3>
                   <div className="space-y-4">
@@ -468,7 +468,7 @@ export default function EditPostPage() {
                     </div>
                   </div>
                 </CardContent>
-              </Card>
+              </Card> */}
             </div>
           </div>
         </form>
