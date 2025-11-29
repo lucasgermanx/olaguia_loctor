@@ -1058,24 +1058,74 @@ export default function HomeConfigPage() {
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
-              <Select
-                value={selectedSlot?.post_id || ""}
-                onValueChange={(value) => handleAssignPost(value === "none" ? null : value)}
+              {/* Botão para remover post */}
+              <Button
+                variant="outline"
+                className="w-full justify-start border-red-200 hover:bg-red-50"
+                onClick={() => handleAssignPost(null)}
                 disabled={isSaving}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione um post ou deixe vazio" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">Nenhum (remover post)</SelectItem>
+                <X className="w-4 h-4 mr-2" />
+                Remover post desta posição
+              </Button>
+
+              {/* Lista de posts em grid de 2 colunas */}
+              <div className="max-h-[500px] overflow-y-auto pr-2">
+                <div className="grid grid-cols-2 gap-3">
                   {posts.map((post) => (
-                    <SelectItem key={post.id} value={post.id}>
-                      {post.title}
-                    </SelectItem>
+                    <button
+                      key={post.id}
+                      onClick={() => handleAssignPost(post.id)}
+                      disabled={isSaving}
+                      className={`group relative overflow-hidden rounded-lg border-2 transition-all hover:border-[#126861] hover:shadow-lg text-left ${
+                        selectedSlot?.post_id === post.id ? 'border-[#126861] ring-2 ring-[#126861]' : 'border-gray-200'
+                      }`}
+                    >
+                      {/* Imagem */}
+                      <div className="relative w-full h-32">
+                        {post.featured_image ? (
+                          <Image
+                            src={post.featured_image}
+                            alt={post.title}
+                            fill
+                            className="object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                            <span className="text-gray-400 text-xs">Sem imagem</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Conteúdo */}
+                      <div className="p-3 space-y-2">
+                        {/* Tag/Categoria */}
+                        {post.category && (
+                          <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] text-white text-[10px] uppercase">
+                            {post.category.name}
+                          </Badge>
+                        )}
+
+                        {/* Título */}
+                        <h4 className="text-xs font-semibold text-gray-900 line-clamp-2 leading-tight uppercase group-hover:text-[#126861]">
+                          {post.title}
+                        </h4>
+                      </div>
+
+                      {/* Indicador de seleção */}
+                      {selectedSlot?.post_id === post.id && (
+                        <div className="absolute top-2 right-2 w-6 h-6 bg-[#126861] rounded-full flex items-center justify-center">
+                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
+                        </div>
+                      )}
+                    </button>
                   ))}
-                </SelectContent>
-              </Select>
-              <div className="flex justify-end gap-2">
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t">
                 <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                   Cancelar
                 </Button>

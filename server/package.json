@@ -22,7 +22,7 @@
   "author": "",
   "license": "ISC",
   "prisma": {
-    "seed": "node prisma/seed.js"
+    "seed": "tsx prisma/seed.ts"
   },
   "devDependencies": {
     "@types/bcryptjs": "2.4.6",

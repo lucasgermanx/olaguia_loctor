@@ -256,3 +256,41 @@ model HomeSlot {
   @@index([post_id])
   @@map("home_slots")
 }
+
+model Professional {
+  id                String   @id @default(uuid())
+  name              String
+  slug              String   @unique
+  title             String   // Ex: "Dentista", "Médico", etc
+  specialty         String   // Especialidade principal
+  bio               String   @db.Text
+  avatar            String?
+  cover_image       String?
+  email             String
+  phone             String
+  address           String
+  city              String?
+  state             String?
+  working_hours     String?
+  specialties       Json?    // Array de especialidades
+  services          Json?    // Array de serviços
+  testimonials      Json?    // Array de depoimentos
+  faqs              Json?    // Array de perguntas frequentes
+  gallery_images    Json?    // Array de URLs de imagens da galeria
+  social_facebook   String?
+  social_instagram  String?
+  social_linkedin   String?
+  social_twitter    String?
+  social_youtube    String?
+  social_whatsapp   String?
+  active            Boolean  @default(true)
+  featured          Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  @@index([slug])
+  @@index([active])
+  @@index([featured])
+  @@index([city, state])
+  @@map("professionals")
+}

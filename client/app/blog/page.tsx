@@ -3,7 +3,6 @@ import { BlogSidebarNew } from "@/components/blog/blog-sidebar-new"
 import { Pagination } from "@/components/blog/pagination"
 import { MainSearchBar } from "@/components/blog/main-search-bar"
 import { SocialShare } from "@/components/blog/social-share"
-import { NewsletterSection } from "@/components/blog/newsletter-section"
 import Link from "next/link"
 
 // Definir a URL da API com fallback
@@ -105,11 +104,11 @@ async function getTags() {
 export default async function BlogPage({
   searchParams,
 }: {
-  searchParams: { page?: string; category?: string; tag?: string; search?: string }
+  searchParams: Promise<{ page?: string; category?: string; tag?: string; search?: string }>
 }) {
-  // Em versões recentes do Next.js, searchParams pode ser uma promessa
-  // Vamos garantir que estamos trabalhando com um objeto regular
-  const params = searchParams ? { ...searchParams } : {};
+  // Em versões recentes do Next.js, searchParams é uma Promise
+  const resolvedSearchParams = await searchParams
+  const params = resolvedSearchParams ? { ...resolvedSearchParams } : {}
 
   const page = params.page ? Number.parseInt(params.page) : 1;
   const { category, tag, search } = params;
@@ -256,9 +255,6 @@ export default async function BlogPage({
           </div>
         </div>
       </section>
-
-      {/* Newsletter Section */}
-      <NewsletterSection />
     </div>
   )
 }

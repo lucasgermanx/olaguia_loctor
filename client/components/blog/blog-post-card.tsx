@@ -24,7 +24,7 @@ export function BlogPostCard({ title, excerpt, date, author, category, slug, ima
           {category || "SAÚDE"}
         </span>
         <Link className="" href={`/blog/${slug}`}>
-          <h3 className="text-base font-bold text-gray-900 mb-2 hover:text-[#126861] transition-colors uppercase leading-tight pt-2">
+          <h3 className="text-base font-bold text-gray-900 mb-2 hover:text-[#126861] transition-colors uppercase leading-tight pt-2 line-clamp-2">
             {title}
           </h3>
         </Link>

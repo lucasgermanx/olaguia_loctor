@@ -13,14 +13,30 @@ export async function listPosts(request: FastifyRequest, reply: FastifyReply) {
 
   const { page, per_page, category, tag, search } = listPostsQuerySchema.parse(request.query)
 
+  // Normalize slugs: replace spaces with hyphens, convert to lowercase, and remove accents
+  const normalizeSlug = (slug: string | undefined) => {
+    if (!slug) return undefined
+    
+    return slug
+      .toLowerCase()
+      .trim()
+      .normalize('NFD') // Decompose accented characters
+      .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/[^\w-]/g, '') // Remove special characters
+  }
+
+  const normalizedCategory = normalizeSlug(category)
+  const normalizedTag = normalizeSlug(tag)
+
   try {
     const listPostsUseCase = makeListPostsUseCase()
 
     const { posts, total } = await listPostsUseCase.execute({
       page,
       per_page,
-      category_slug: category,
-      tag_slug: tag,
+      category_slug: normalizedCategory,
+      tag_slug: normalizedTag,
       search,
     })
 

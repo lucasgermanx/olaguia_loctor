@@ -15,6 +15,10 @@ import {
 } from "@/components/ui/carousel"
 import { AdBanner } from "@/components/ad-banner"
 import { placeholderImages } from "@/lib/placeholder-images"
+import { FaFacebookF, FaLinkedin, FaLinkedinIn, FaTwitter, FaYoutube } from "react-icons/fa"
+import { AiFillInstagram } from "react-icons/ai"
+import { IoLogoWhatsapp, IoMdArrowForward } from "react-icons/io"
+import { SocialShare } from "@/components/blog/social-share"
 
 const cn = (...classes: (string | false | null | undefined)[]) =>
   classes.filter(Boolean).join(" ")
@@ -164,10 +168,10 @@ export default function Home() {
                           <div className="flex max-w-7xl mx-auto w-full">
                             <div className="absolute top-1/2 -translate-y-1/2 max-sm:left-1/2 max-sm:-translate-x-1/2 w-[calc(100%-2rem)] sm:w-[calc(100%-4rem)] md:w-[calc(100%-8rem)] lg:w-auto lg:max-w-xl">
                               <div className="bg-white p-4 sm:p-4 md:p-5 shadow-xl border-t-[4px] sm:border-t-[6px] border-black">
-                                <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-3 sm:mb-4 text-xs sm:text-sm">
+                                <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-3 sm:mb-4 text-xs sm:text-sm uppercase">
                                   {post.category?.name || "CATEGORIA"}
                                 </Badge>
-                                <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl 2xl:text-4xl font-open-sans font-semibold mb-3 sm:mb-4 text-gray-900 text-left leading-tight line-clamp-2">
+                                <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl 2xl:text-4xl font-open-sans font-semibold mb-3 sm:mb-4 text-gray-900 text-left leading-tight line-clamp-2 uppercase">
                                   {post.title}
                                 </h1>
                                 {post.excerpt && (
@@ -232,7 +236,7 @@ export default function Home() {
                   <>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                     <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 text-white">
-                      <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 sm:mb-3 text-xs">
+                      <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 sm:mb-3 text-xs uppercase">
                         {post.category?.name || "CATEGORIA"}
                       </Badge>
                       <h3 className="text-lg sm:text-xl lg:text-2xl 2xl:text-3xl font-open-sans font-semibold mb-2 sm:mb-3 uppercase line-clamp-2">
@@ -258,7 +262,7 @@ export default function Home() {
                   className={`flex gap-4 sm:gap-6 lg:gap-10 group ${index === 1 || index === 2 ? "border-t border-[#EEEEEE] pt-4 sm:py-2 2xl:py-5" : ""}`}
                 >
                   <div className="flex-1">
-                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-1 2xl:mb-2 text-xs">
+                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-1 2xl:mb-2 text-xs uppercase">
                       {post.category?.name || "CATEGORIA"}
                     </Badge>
                     <h4 className="font-open-sans font-semibold text-base sm:text-lg max-w-full sm:max-w-56 transition-colors uppercase line-clamp-2">
@@ -298,7 +302,7 @@ export default function Home() {
                   className={`flex gap-4 sm:gap-6 lg:gap-10 group ${index === 1 || index === 2 ? "border-t border-[#EEEEEE] pt-4 sm:py-2 2xl:py-5" : ""}`}
                 >
                   <div className="flex-1">
-                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-1 2xl:mb-2 text-xs">
+                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-1 2xl:mb-2 text-xs uppercase">
                       {post.category?.name || "CATEGORIA"}
                     </Badge>
                     <h4 className="font-open-sans font-semibold text-base sm:text-lg max-w-full sm:max-w-56 transition-colors uppercase line-clamp-2">
@@ -341,7 +345,7 @@ export default function Home() {
                   <>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                     <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 text-white">
-                      <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 sm:mb-3 text-xs">
+                      <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 sm:mb-3 text-xs uppercase">
                         {post.category?.name || "CATEGORIA"}
                       </Badge>
                       <h3 className="text-lg sm:text-xl lg:text-2xl 2xl:text-3xl font-open-sans font-semibold mb-2 sm:mb-3 uppercase line-clamp-2">
@@ -365,7 +369,7 @@ export default function Home() {
                   className={`flex gap-4 sm:gap-6 lg:gap-10 group ${index === 1 || index === 2 ? "border-t border-[#EEEEEE] pt-4 sm:py-2 2xl:py-5" : ""}`}
                 >
                   <div className="flex-1">
-                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-1 2xl:mb-2 text-xs">
+                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-1 2xl:mb-2 text-xs uppercase">
                       {post.category?.name || "CATEGORIA"}
                     </Badge>
                     <h4 className="font-open-sans font-semibold text-base sm:text-lg max-w-full sm:max-w-56 transition-colors uppercase line-clamp-2">
@@ -468,7 +472,7 @@ export default function Home() {
           <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov text-nowrap mx-4 sm:mx-8 lg:mx-12 font-bold text-[#126861]"><span className="text-[#928575]">NOSSA</span> SAÚDE</h2>
           <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
         </div>
-        <p className="text-center font-lato text-sm sm:text-base lg:text-xl text-gray-500 mb-6 sm:mb-8">Place for the subtitle</p>
+        <p className="text-center font-lato text-sm sm:text-base lg:text-xl text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-4 sm:px-6 lg:px-0">
           {/* Main Article */}
@@ -498,7 +502,7 @@ export default function Home() {
                         {post.excerpt}
                       </p>
                     )}
-                    <Button className="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 font-lato text-xs sm:text-sm uppercase rounded-sm">
+                    <Button className="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 -py-2 px-1 font-lato text-xs italic uppercase rounded-sm">
                       LEIA MAIS
                     </Button>
                   </div>
@@ -527,7 +531,7 @@ export default function Home() {
                     <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-1 text-xs uppercase">
                       {post.category?.name || "CATEGORIA"}
                     </Badge>
-                    <h4 className="font-open-sans font-semibold text-sm sm:text-base lg:text-lg mb-1 sm:mb-2 transition-colors uppercase line-clamp-2">
+                    <h4 className="font-open-sans font-semibold text-sm sm:text-base lg:text-lg mb-1 transition-colors uppercase line-clamp-2">
                       {post.title}
                     </h4>
                     {post.excerpt && (
@@ -535,7 +539,7 @@ export default function Home() {
                         {post.excerpt}
                       </p>
                     )}
-                    <Button className="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 px-2 py-1 h-fit font-lato text-xs sm:text-sm uppercase rounded-sm">
+                    <Button className="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 -py-2 px-1 font-lato text-xs italic uppercase rounded-sm">
                       LEIA MAIS
                     </Button>
                   </div>
@@ -682,7 +686,7 @@ export default function Home() {
                         {post.excerpt}
                       </p>
                     )}
-                    <Button className="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 font-lato text-xs px-3 py-1 h-auto uppercase">
+                    <Button className="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 rounded font-lato text-xs italic px-3 py-1 h-auto uppercase">
                       LEIA MAIS
                     </Button>
                   </div>
@@ -733,7 +737,7 @@ export default function Home() {
                         {post.excerpt}
                       </p>
                     )}
-                    <Button className="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 font-lato text-xs px-2 py-1 h-auto uppercase">
+                    <Button className="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 rounded font-lato text-xs italic px-3 py-1 h-auto uppercase">
                       LEIA MAIS
                     </Button>
                   </div>
@@ -771,7 +775,7 @@ export default function Home() {
                       {post.excerpt}
                     </p>
                   )}
-                  <Button className="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 font-lato text-xs px-2 py-1 h-auto uppercase">
+                  <Button className="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 rounded font-lato text-xs italic px-3 py-1 h-auto uppercase">
                     LEIA MAIS
                   </Button>
                 </div>
@@ -809,6 +813,9 @@ export default function Home() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                 <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 text-white">
+                  <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-xs uppercase">
+                    {post.category?.name || "ESTÉTICA & BELEZA"}
+                  </Badge>
                   <p className="font-open-sans font-semibold text-sm sm:text-base lg:text-lg uppercase line-clamp-2">
                     {post.title}
                   </p>
@@ -874,7 +881,7 @@ export default function Home() {
           <div className="flex items-center justify-center w-full">
             <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
             <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov md:text-nowrap mx-2 sm:mx-8 lg:mx-12 font-bold text-[#126861]">
-              <span className="text-[#928575] text-nowrap">RINDO à TOA & &</span> QUEBRA CUCA
+              <span className="text-[#928575] text-nowrap">RINDO à TOA &</span> QUEBRA CUCA
             </h2>
             <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
           </div>
@@ -889,7 +896,7 @@ export default function Home() {
 
                 return (
                   <Link key={slot.id} href={`/blog/${post.slug}`} className="grid grid-cols-2 gap-3 sm:gap-4 group">
-                    <div className="flex-1 text-start">
+                    <div className="flex-1 text-end">
                       <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-1 sm:mb-2 text-xs uppercase">
                         {post.category?.name || "RINDO À TOA"}
                       </Badge>
@@ -902,7 +909,7 @@ export default function Home() {
                         </p>
                       )}
                     </div>
-                    <div className="relative flex-shrink-0 w-32 sm:w-40 h-32 sm:h-40">
+                    <div className="relative flex-shrink-0 w-auto sm:w-auto h-32 sm:h-40">
                       <Image
                         src={post.featured_image || placeholderImages.cartoon}
                         alt={post.title}
@@ -943,7 +950,7 @@ export default function Home() {
 
                 return (
                   <Link key={slot.id} href={`/blog/${post.slug}`} className="grid grid-cols-2 gap-3 sm:gap-4 group">
-                    <div className="relative flex-shrink-0 w-32 sm:w-40 h-32 sm:h-40 text-start">
+                    <div className="relative flex-shrink-0 w-auto sm:w-auto h-32 sm:h-40 text-start">
                       <Image
                         src={post.featured_image || placeholderImages.cartoon}
                         alt={post.title}
@@ -1053,7 +1060,7 @@ export default function Home() {
             const slot = getSlot("SUPER_DICAS", "MAIN", null)
             const post = slot?.post
             return (
-              <Link href={post ? `/blog/${post.slug}` : "#"} className="relative w-full md:w-[60%] lg:w-[774.77px] h-[300px] sm:h-[400px] lg:h-[500px] group block">
+              <Link href={post ? `/blog/${post.slug}` : "#"} className="relative w-full md:w-[60%] lg:w-[774.77px] h-auto group block">
                 {post?.featured_image ? (
                   <Image
                     src={post.featured_image}
@@ -1221,6 +1228,8 @@ export default function Home() {
             })}
           </div>
         </div>
+         {/* Social Share */}
+         <SocialShare />
       </section>
     </div>
   )

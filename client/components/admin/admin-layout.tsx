@@ -5,7 +5,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { LayoutDashboard, FileText, Users, Tag, Folder, LogOut, Menu, X, Megaphone, Layout } from "lucide-react"
+import { LayoutDashboard, FileText, Users, Tag, Folder, LogOut, Menu, X, Megaphone, Layout, UserCheck } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 
@@ -46,6 +46,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const navItems = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Posts", href: "/admin/posts", icon: FileText },
+    { name: "Profissionais", href: "/admin/professionals", icon: UserCheck },
     { name: "Configurar Home", href: "/admin/home-config", icon: Layout },
     { name: "Anúncios", href: "/admin/ads", icon: Megaphone },
     { name: "Usuários", href: "/admin/users", icon: Users },

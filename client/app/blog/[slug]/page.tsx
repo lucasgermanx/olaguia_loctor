@@ -20,6 +20,7 @@ import {
 import { LuCirclePlay } from "react-icons/lu";
 import { Facebook, Twitter, Instagram, Linkedin, MessageCircle, Search, ChevronDown, ChevronUp, Volume2, Plus, Minus } from "lucide-react"
 import { BlogSidebarNew } from "@/components/blog/blog-sidebar-new"
+import { SocialShare } from "@/components/blog/social-share"
 
 // Definir a URL da API com fallback
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1003';
@@ -421,7 +422,9 @@ export default function BlogPostPage() {
       <div className="container mx-auto px-4 md:px-6 py-8">
         <div className="flex flex-col lg:flex-row lg:items-start gap-8">
           {/* Main Content - Left Column */}
-          <div className="w-full lg:w-2/3 lg:flex-shrink-0">
+          <div className="w-full lg:w-2/3 lg:flex-shrink-0 pt-20">
+            {/* Post Title with Category Tag */}
+
             {/* Author Header */}
             <div className="flex items-center gap-4 mb-4">
               <div className="relative w-14 h-14 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
@@ -443,7 +446,6 @@ export default function BlogPostPage() {
                 <p className="text-xs text-gray-500">Escritor e Produtor</p>
               </div>
             </div>
-            {/* Post Title with Category Tag */}
             <div className="mb-3 flex items-center gap-3">
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight uppercase mb-3">
                 {post.title}
@@ -453,7 +455,7 @@ export default function BlogPostPage() {
                   href={`/blog?category=${post.category.slug}`}
                   className="inline-block"
                 >
-                  <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] text-white px-3 py-1.5 rounded text-xs font-semibold uppercase">
+                  <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] text-white px-3 py-1.5 rounded text-xs font-semibold uppercase hidden md:block">
                     {post.category.name}
                   </Badge>
                 </Link>
@@ -465,6 +467,7 @@ export default function BlogPostPage() {
                 {post.excerpt}
               </p>
             )}
+
             {/* Featured Image */}
             {post.featured_image && (
               <div className="mb-8 relative w-full h-[500px] rounded-lg overflow-hidden">
@@ -580,62 +583,8 @@ export default function BlogPostPage() {
                     <p className="text-xs text-gray-500">Escritor e Produtor</p>
                   </div>
                 </div>
-                {/* Share Buttons */}
-                <div className="flex items-center gap-3">
-                  <span className="text-base font-bold text-gray-700">Compartilhe:</span>
-                  <div className="flex gap-2">
-                    <a
-                      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-8 h-8 rounded bg-[#126861] text-white flex items-center justify-center hover:bg-[#0f5650] transition-colors"
-                    >
-                      <Facebook className="w-5 h-5" />
-                    </a>
-                    <a
-                      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-8 h-8 rounded bg-[#126861] text-white flex items-center justify-center hover:bg-[#0f5650] transition-colors"
-                    >
-                      <Twitter className="w-5 h-5" />
-                    </a>
-                    <a
-                      href={`https://www.instagram.com/`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-8 h-8 rounded bg-[#126861] text-white flex items-center justify-center hover:bg-[#0f5650] transition-colors"
-                    >
-                      <Instagram className="w-5 h-5" />
-                    </a>
-                    <a
-                      href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-8 h-8 rounded bg-[#126861] text-white flex items-center justify-center hover:bg-[#0f5650] transition-colors"
-                    >
-                      <Linkedin className="w-5 h-5" />
-                    </a>
-                    <a
-                      href={`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(shareUrl)}&description=${encodeURIComponent(shareText)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-8 h-8 rounded bg-[#126861] text-white flex items-center justify-center hover:bg-[#0f5650] transition-colors"
-                    >
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 0C5.373 0 0 5.372 0 12s5.373 12 12 12c5.302 0 9.917-3.158 11.827-7.69-.07-.633-.133-1.606.027-2.297.145-.937 1.296-6.434 1.296-6.434s-.33-.658-.33-1.631c0-1.525.889-2.662 1.995-2.662.94 0 1.395.705 1.395 1.55 0 .943-.6 2.356-.91 3.664-.258 1.093.549 1.985 1.632 1.985 1.958 0 3.465-2.064 3.465-5.044 0-2.636-1.893-4.48-4.598-4.48-3.133 0-4.973 2.35-4.973 4.776 0 .928.356 1.925.802 2.516.088.107.1.201.074.31l-.33 1.303c-.053.22-.174.267-.402.161-1.499-.697-2.436-2.888-2.436-4.649 0-3.785 2.75-7.262 7.93-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.214 0-2.357-.629-2.746-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z" />
-                      </svg>
-                    </a>
-                    <a
-                      href={`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-8 h-8 rounded bg-[#126861] text-white flex items-center justify-center hover:bg-[#0f5650] transition-colors"
-                    >
-                      <MessageCircle className="w-5 h-5" />
-                    </a>
-                  </div>
-                </div>
+                {/* Social Share */}
+                <SocialShare />
               </div>
             </div>
             {/* Artigos Relacionados */}
@@ -687,7 +636,7 @@ export default function BlogPostPage() {
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Posts Mais Recentes</h2>
                 <div className="space-y-6">
                   {recentPosts.map((recentPost) => (
-                    <div key={recentPost.id} className="flex gap-4">
+                    <div key={recentPost.id} className="flex md:flex-row flex-col gap-4">
                       {recentPost.featured_image && (
                         <div className="relative w-80 h-44 flex-shrink-0 rounded overflow-hidden">
                           <Image
@@ -720,7 +669,7 @@ export default function BlogPostPage() {
             )}
           </div>
           {/* Sidebar - Right Column */}
-          <div className="w-full lg:w-1/3 mt-20">
+          <div className="w-full lg:w-1/3 mt-20 hidden lg:block">
             <BlogSidebarNew categories={categories || []} tags={tags || []} />
           </div>
         </div>
