@@ -31,6 +31,12 @@ interface Tag {
   name: string
 }
 
+interface Professional {
+  id: string
+  name: string
+  title: string
+}
+
 export default function NewPostPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
@@ -38,6 +44,7 @@ export default function NewPostPage() {
   const [error, setError] = useState("")
   const [categories, setCategories] = useState<Category[]>([])
   const [tags, setTags] = useState<Tag[]>([])
+  const [professionals, setProfessionals] = useState<Professional[]>([])
 
   const [formData, setFormData] = useState({
     title: "",
@@ -46,6 +53,7 @@ export default function NewPostPage() {
     content: "",
     category_id: "",
     tag_ids: [] as string[],
+    professional_id: "",
     featured_image: "",
     published: false,
     theme: "",
@@ -64,14 +72,15 @@ export default function NewPostPage() {
           return
         }
 
-        // Buscar categorias e tags
-        const [categoriesRes, tagsRes] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:1003"}/categories`, {
+        // Buscar categorias, tags e profissionais
+        const [categoriesRes, tagsRes, professionalsRes] = await Promise.all([
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/categories`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:1003"}/tags`, {
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/tags`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/professionals?per_page=100`),
         ])
 
         if (categoriesRes.ok && tagsRes.ok) {
@@ -80,6 +89,11 @@ export default function NewPostPage() {
 
           setCategories(categoriesData.categories)
           setTags(tagsData.tags)
+        }
+
+        if (professionalsRes.ok) {
+          const professionalsData = await professionalsRes.json()
+          setProfessionals(professionalsData.professionals || [])
         }
       } catch (error) {
         console.error("Error fetching data:", error)
@@ -103,6 +117,10 @@ export default function NewPostPage() {
 
   const handleCategoryChange = (value: string) => {
     setFormData((prev) => ({ ...prev, category_id: value }))
+  }
+
+  const handleProfessionalChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, professional_id: value === "none" ? "" : value }))
   }
 
   const handleTagChange = (tagId: string) => {
@@ -140,13 +158,21 @@ export default function NewPostPage() {
         return
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:1003"}/posts`, {
+      // Preparar dados para enviar - converter tag_ids para tags
+      const submitData = {
+        ...formData,
+        tags: formData.tag_ids,
+        tag_ids: undefined, // Remover tag_ids
+        professional_id: formData.professional_id || undefined, // Converter string vazia para undefined
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/posts`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submitData),
       })
 
       const data = await response.json()
@@ -290,6 +316,26 @@ export default function NewPostPage() {
                           ))}
                         </SelectContent>
                       </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="professional">Profissional / Empresa (Opcional)</Label>
+                      <Select value={formData.professional_id || "none"} onValueChange={handleProfessionalChange}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione um profissional" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">Nenhum</SelectItem>
+                          {professionals.map((professional) => (
+                            <SelectItem key={professional.id} value={professional.id}>
+                              {professional.name} {professional.title && `- ${professional.title}`}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Vincule este post a um profissional ou empresa específica
+                      </p>
                     </div>
 
                     <div>

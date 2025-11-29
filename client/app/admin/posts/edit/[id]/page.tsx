@@ -31,6 +31,12 @@ interface Tag {
   name: string
 }
 
+interface Professional {
+  id: string
+  name: string
+  title: string
+}
+
 interface Post {
   id: string
   title: string
@@ -38,6 +44,7 @@ interface Post {
   excerpt: string
   content: string
   category_id: string
+  professional_id?: string
   featured_image: string
   published: boolean
   theme?: string
@@ -57,6 +64,7 @@ export default function EditPostPage() {
   const [error, setError] = useState("")
   const [categories, setCategories] = useState<Category[]>([])
   const [tags, setTags] = useState<Tag[]>([])
+  const [professionals, setProfessionals] = useState<Professional[]>([])
 
   const [formData, setFormData] = useState({
     title: "",
@@ -65,6 +73,7 @@ export default function EditPostPage() {
     content: "",
     category_id: "",
     tag_ids: [] as string[],
+    professional_id: "",
     featured_image: "",
     published: false,
     theme: "",
@@ -83,17 +92,18 @@ export default function EditPostPage() {
           return
         }
 
-        // Buscar post, categorias e tags
-        const [postRes, categoriesRes, tagsRes] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:1003"}/posts/id/${id}`, {
+        // Buscar post, categorias, tags e profissionais
+        const [postRes, categoriesRes, tagsRes, professionalsRes] = await Promise.all([
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/posts/id/${id}`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:1003"}/categories`, {
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/categories`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:1003"}/tags`, {
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/tags`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/professionals?per_page=100`),
         ])
 
         if (!postRes.ok) {
@@ -107,6 +117,11 @@ export default function EditPostPage() {
         setCategories(categoriesData.categories)
         setTags(tagsData.tags)
 
+        if (professionalsRes.ok) {
+          const professionalsData = await professionalsRes.json()
+          setProfessionals(professionalsData.professionals || [])
+        }
+
         // Extrair IDs das tags do post
         const tagIds = postData.post.tags.map((t: { tag_id: string }) => t.tag_id)
 
@@ -117,6 +132,7 @@ export default function EditPostPage() {
           content: postData.post.content,
           category_id: postData.post.category_id,
           tag_ids: tagIds,
+          professional_id: postData.post.professional_id || "",
           featured_image: postData.post.featured_image || "",
           published: postData.post.published,
           theme: postData.post.theme || "",
@@ -146,6 +162,10 @@ export default function EditPostPage() {
 
   const handleCategoryChange = (value: string) => {
     setFormData((prev) => ({ ...prev, category_id: value }))
+  }
+
+  const handleProfessionalChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, professional_id: value === "none" ? "" : value }))
   }
 
   const handleTagChange = (tagId: string) => {
@@ -183,15 +203,23 @@ export default function EditPostPage() {
         return
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL||"http://localhost:1003"}/posts/${id}`, {
+      // Preparar dados para enviar - converter tag_ids para tags
+      const submitData = {
+        ...formData,
+        tags: formData.tag_ids,
+        tag_ids: undefined, // Remover tag_ids
+        professional_id: formData.professional_id || undefined, // Converter string vazia para undefined
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/posts/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submitData),
       })
-      
+
       const data = await response.json()
 
       if (!response.ok) {
@@ -333,6 +361,26 @@ export default function EditPostPage() {
                           ))}
                         </SelectContent>
                       </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="professional">Profissional / Empresa (Opcional)</Label>
+                      <Select value={formData.professional_id || "none"} onValueChange={handleProfessionalChange}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione um profissional" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">Nenhum</SelectItem>
+                          {professionals.map((professional) => (
+                            <SelectItem key={professional.id} value={professional.id}>
+                              {professional.name} {professional.title && `- ${professional.title}`}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Vincule este post a um profissional ou empresa específica
+                      </p>
                     </div>
 
                     <div>

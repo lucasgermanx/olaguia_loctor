@@ -13,6 +13,7 @@ interface CreatePostUseCaseRequest {
   featured_image?: string
   published: boolean
   category_id: string
+  professional_id?: string
   author_id: string
   tags?: string[]
   theme?: string
@@ -40,6 +41,7 @@ export class CreatePostUseCase {
     featured_image,
     published,
     category_id,
+    professional_id,
     author_id,
     tags,
     theme,
@@ -64,6 +66,7 @@ export class CreatePostUseCase {
         published,
         published_at: published ? new Date() : null,
         category_id,
+        professional_id,
         author_id,
         theme: theme as any,
         position: position as any,

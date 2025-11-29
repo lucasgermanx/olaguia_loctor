@@ -31,6 +31,12 @@ interface Post {
   author?: {
     name: string
   }
+  professional?: {
+    name: string
+    title: string
+    avatar?: string
+    slug: string
+  }
   category?: {
     name: string
     slug: string
@@ -183,7 +189,7 @@ export default async function BlogPage({
                       title={post.title}
                       excerpt={post.excerpt || ""}
                       date={new Date(post.published_at || post.created_at).toLocaleDateString("pt-BR")}
-                      author={post.author?.name || "Autor Desconhecido"}
+                      author={post.professional?.name || post.author?.name || "Autor Desconhecido"}
                       category={post.category?.name || "SAÚDE"}
                       slug={post.slug}
                       imageUrl={post.featured_image || "/placeholder.svg?height=200&width=400"}

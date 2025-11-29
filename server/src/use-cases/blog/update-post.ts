@@ -14,6 +14,7 @@ interface UpdatePostUseCaseRequest {
   featured_image?: string
   published?: boolean
   category_id?: string
+  professional_id?: string
   tags?: string[]
   theme?: string
   position?: string
@@ -30,7 +31,7 @@ export class UpdatePostUseCase {
     private postsRepository: PostsRepository,
     private categoriesRepository: CategoriesRepository,
     private tagsRepository: TagsRepository,
-  ) {}
+  ) { }
 
   async execute({
     id,
@@ -41,6 +42,7 @@ export class UpdatePostUseCase {
     featured_image,
     published,
     category_id,
+    professional_id,
     tags,
     theme,
     position,
@@ -71,6 +73,7 @@ export class UpdatePostUseCase {
       if (content) updateData.content = content
       if (featured_image !== undefined) updateData.featured_image = featured_image
       if (category_id) updateData.category_id = category_id
+      if (professional_id !== undefined) updateData.professional_id = professional_id || null
       if (theme !== undefined) updateData.theme = theme as any
       if (position !== undefined) updateData.position = position as any
       if (order !== undefined) updateData.order = order

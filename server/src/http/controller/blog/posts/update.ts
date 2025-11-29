@@ -16,13 +16,14 @@ export async function updatePost(request: FastifyRequest, reply: FastifyReply) {
     featured_image: z.string().optional(),
     published: z.boolean().optional(),
     category_id: z.string().optional(),
+    professional_id: z.string().optional(),
     tags: z.array(z.string()).optional(),
     theme: z.string().optional(),
     position: z.string().optional(),
     order: z.number().optional(),
     featured: z.boolean().optional(),
   })
-console.log(request.body)
+  console.log(request.body)
   const { id } = updatePostParamsSchema.parse(request.params)
   const data = updatePostBodySchema.parse(request.body)
 

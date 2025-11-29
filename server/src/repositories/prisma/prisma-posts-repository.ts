@@ -13,6 +13,15 @@ export class PrismaPostsRepository implements PostsRepository {
             name: true,
           },
         },
+        professional: {
+          select: {
+            id: true,
+            name: true,
+            title: true,
+            avatar: true,
+            slug: true,
+          },
+        },
         category: true,
         tags: {
           include: {
@@ -33,6 +42,15 @@ export class PrismaPostsRepository implements PostsRepository {
           select: {
             id: true,
             name: true,
+          },
+        },
+        professional: {
+          select: {
+            id: true,
+            name: true,
+            title: true,
+            avatar: true,
+            slug: true,
           },
         },
         category: true,
@@ -84,6 +102,15 @@ export class PrismaPostsRepository implements PostsRepository {
               name: true,
             },
           },
+          professional: {
+            select: {
+              id: true,
+              name: true,
+              title: true,
+              avatar: true,
+              slug: true,
+            },
+          },
           category: true,
           tags: {
             include: {
@@ -113,6 +140,15 @@ export class PrismaPostsRepository implements PostsRepository {
             name: true,
           },
         },
+        professional: {
+          select: {
+            id: true,
+            name: true,
+            title: true,
+            avatar: true,
+            slug: true,
+          },
+        },
         category: true,
       },
     })
@@ -129,6 +165,15 @@ export class PrismaPostsRepository implements PostsRepository {
           select: {
             id: true,
             name: true,
+          },
+        },
+        professional: {
+          select: {
+            id: true,
+            name: true,
+            title: true,
+            avatar: true,
+            slug: true,
           },
         },
         category: true,

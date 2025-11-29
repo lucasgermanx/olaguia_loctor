@@ -36,7 +36,7 @@ export function MainSearchBar() {
         console.log("API_URL:", API_URL)
 
         // Buscar todos os profissionais ativos (limite máximo: 100)
-        const professionalsUrl = `${API_URL}/professionals?per_page=100&active=true`
+        const professionalsUrl = `${API_URL}/professionals?per_page=100`
         const categoriesUrl = `${API_URL}/categories`
 
         console.log("📡 Buscando profissionais de:", professionalsUrl)

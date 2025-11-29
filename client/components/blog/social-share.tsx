@@ -4,7 +4,7 @@ import { FaTwitter, FaLinkedinIn, FaYoutube } from "react-icons/fa";
 import { AiFillInstagram } from "react-icons/ai";
 import { IoLogoWhatsapp } from "react-icons/io";
 
-export function SocialShare() {
+export function SocialShare({ className = "" }: { className?: string }) {
   const socialLinks = [
     { icon: FaFacebookF, href: "#", label: "Facebook" },
     { icon: FaTwitter, href: "#", label: "Twitter" },
@@ -15,7 +15,7 @@ export function SocialShare() {
   ]
 
   return (
-    <div className="mt-8 pt-8 border-t border-gray-200">
+    <div className={`mt-8 pt-8 border-t border-gray-200 ${className}`}>
       <div className="flex items-center justify-between flex-wrap gap-4">
         <button className="bg-[#126861] hover:bg-[#0f5650] text-base text-white px-4 py-2 rounded-3xl font-semibold flex items-center gap-1 transition-colors">
           COMPARTILHE

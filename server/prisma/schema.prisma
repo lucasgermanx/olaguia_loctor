@@ -82,36 +82,39 @@ model Category {
 }
 
 model Post {
-  id             String       @id @default(uuid())
+  id             String    @id @default(uuid())
   title          String
-  slug           String       @unique
+  slug           String    @unique
   excerpt        String?
   content        String
   featured_image String?
-  published      Boolean      @default(false)
+  published      Boolean   @default(false)
   published_at   DateTime?
-  created_at     DateTime     @default(now())
-  updated_at     DateTime     @updatedAt
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
 
   // Tema e posicionamento
-  theme          PostTheme?
-  position       PostPosition?
-  order          Int?         @default(0) // Ordem dentro da seção/posição
-  featured       Boolean      @default(false) // Se deve aparecer em destaque
+  theme    PostTheme?
+  position PostPosition?
+  order    Int?          @default(0) // Ordem dentro da seção/posição
+  featured Boolean       @default(false) // Se deve aparecer em destaque
 
   // Relacionamentos
-  author      User          @relation(fields: [author_id], references: [id])
-  author_id   String
-  category    Category      @relation(fields: [category_id], references: [id])
-  category_id String
-  comments    Comment[]
-  tags        TagsOnPosts[]
-  views       ViewLog[]
-  homeSlots   HomeSlot[]
+  author          User          @relation(fields: [author_id], references: [id])
+  author_id       String
+  category        Category      @relation(fields: [category_id], references: [id])
+  category_id     String
+  professional    Professional? @relation(fields: [professional_id], references: [id])
+  professional_id String?
+  comments        Comment[]
+  tags            TagsOnPosts[]
+  views           ViewLog[]
+  homeSlots       HomeSlot[]
 
   @@index([slug])
   @@index([author_id])
   @@index([category_id])
+  @@index([professional_id])
   @@index([published, published_at])
   @@index([theme, position, order])
   @@map("posts")
@@ -227,30 +230,30 @@ model SiteSettings {
 }
 
 model Ad {
-  id          String     @id @default(uuid())
-  title       String
-  image_url   String
-  link_url    String?    @default("#")
-  position    AdPosition
-  active      Boolean    @default(true)
-  order       Int        @default(0)
-  created_at  DateTime   @default(now())
-  updated_at  DateTime   @updatedAt
+  id         String     @id @default(uuid())
+  title      String
+  image_url  String
+  link_url   String?    @default("#")
+  position   AdPosition
+  active     Boolean    @default(true)
+  order      Int        @default(0)
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
 
   @@index([position, active])
   @@map("ads")
 }
 
 model HomeSlot {
-  id          String      @id @default(uuid())
-  section     String      // HERO, EM_DESTAQUE, PARA_REFLEXAO, etc
-  position    String      // MAIN, LEFT, CENTER, RIGHT, SIDE, SLOT_1, SLOT_2, etc
-  slot_index  Int?        // Para carousels e grids (0, 1, 2, ...)
-  order       Int         @default(0)
-  post_id     String?     // Post associado a este slot
-  post        Post?       @relation(fields: [post_id], references: [id], onDelete: SetNull)
-  created_at  DateTime    @default(now())
-  updated_at  DateTime    @updatedAt
+  id         String   @id @default(uuid())
+  section    String // HERO, EM_DESTAQUE, PARA_REFLEXAO, etc
+  position   String // MAIN, LEFT, CENTER, RIGHT, SIDE, SLOT_1, SLOT_2, etc
+  slot_index Int? // Para carousels e grids (0, 1, 2, ...)
+  order      Int      @default(0)
+  post_id    String? // Post associado a este slot
+  post       Post?    @relation(fields: [post_id], references: [id], onDelete: SetNull)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@index([section, position, slot_index])
   @@index([post_id])
@@ -258,35 +261,38 @@ model HomeSlot {
 }
 
 model Professional {
-  id                String   @id @default(uuid())
-  name              String
-  slug              String   @unique
-  title             String   // Ex: "Dentista", "Médico", etc
-  specialty         String   // Especialidade principal
-  bio               String   @db.Text
-  avatar            String?
-  cover_image       String?
-  email             String
-  phone             String
-  address           String
-  city              String?
-  state             String?
-  working_hours     String?
-  specialties       Json?    // Array de especialidades
-  services          Json?    // Array de serviços
-  testimonials      Json?    // Array de depoimentos
-  faqs              Json?    // Array de perguntas frequentes
-  gallery_images    Json?    // Array de URLs de imagens da galeria
-  social_facebook   String?
-  social_instagram  String?
-  social_linkedin   String?
-  social_twitter    String?
-  social_youtube    String?
-  social_whatsapp   String?
-  active            Boolean  @default(true)
-  featured          Boolean  @default(false)
-  created_at        DateTime @default(now())
-  updated_at        DateTime @updatedAt
+  id               String   @id @default(uuid())
+  name             String
+  slug             String   @unique
+  title            String // Ex: "Dentista", "Médico", etc
+  specialty        String // Especialidade principal
+  bio              String   @db.Text
+  avatar           String?
+  cover_image      String?
+  email            String
+  phone            String
+  address          String
+  city             String?
+  state            String?
+  working_hours    String?
+  specialties      Json? // Array de especialidades
+  services         Json? // Array de serviços
+  testimonials     Json? // Array de depoimentos
+  faqs             Json? // Array de perguntas frequentes
+  gallery_images   Json? // Array de URLs de imagens da galeria
+  social_facebook  String?
+  social_instagram String?
+  social_linkedin  String?
+  social_twitter   String?
+  social_youtube   String?
+  social_whatsapp  String?
+  active           Boolean  @default(true)
+  featured         Boolean  @default(false)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  // Relacionamentos
+  posts Post[]
 
   @@index([slug])
   @@index([active])

@@ -43,6 +43,13 @@ interface Post {
     name: string
     avatar?: string
   }
+  professional?: {
+    id: string
+    name: string
+    title: string
+    avatar?: string
+    slug: string
+  }
   tags?: Array<{
     tag: {
       id: string
@@ -235,18 +242,6 @@ export default function BlogPostPage() {
     )
   }
 
-  // Processar dados do post (após verificar que post existe)
-  const postTags = post.tags?.map((tag: any) => tag.tag) || []
-  const formattedDate = new Date(post.published_at || post.created_at).toLocaleDateString("pt-BR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  })
-
-  // URL para compartilhamento
-  const shareUrl = typeof window !== 'undefined' ? window.location.href : ''
-  const shareText = post.title
-
   // Handlers
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -417,6 +412,33 @@ export default function BlogPostPage() {
     )
   }
 
+  // Determinar qual autor exibir (profissional ou autor original)
+  const displayAuthor = post.professional
+    ? {
+      name: post.professional.name,
+      avatar: post.professional.avatar,
+      title: post.professional.title,
+      slug: post.professional.slug,
+    }
+    : {
+      name: post.author?.name || "Autor Desconhecido",
+      avatar: post.author?.avatar,
+      title: "Escritor e Produtor",
+      slug: null,
+    }
+
+  // Processar dados do post (após verificar que post existe)
+  const postTags = post.tags?.map((tag: any) => tag.tag) || []
+  const formattedDate = new Date(post.published_at || post.created_at).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  })
+
+  // URL para compartilhamento
+  const shareUrl = typeof window !== 'undefined' ? window.location.href : ''
+  const shareText = post.title
+
   return (
     <div className="flex min-h-screen flex-col bg-white pt-20">
       <div className="container mx-auto px-4 md:px-6 py-8">
@@ -428,22 +450,28 @@ export default function BlogPostPage() {
             {/* Author Header */}
             <div className="flex items-center gap-4 mb-4">
               <div className="relative w-14 h-14 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
-                {post.author?.avatar ? (
+                {displayAuthor.avatar ? (
                   <Image
-                    src={post.author.avatar}
-                    alt={post.author.name}
+                    src={displayAuthor.avatar}
+                    alt={displayAuthor.name}
                     fill
                     className="object-cover"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-600 text-lg font-bold">
-                    {post.author?.name?.charAt(0) || "A"}
+                    {displayAuthor.name.charAt(0)}
                   </div>
                 )}
               </div>
               <div>
-                <h3 className="font-semibold text-base text-gray-900">{post.author?.name || "Autor Desconhecido"}</h3>
-                <p className="text-xs text-gray-500">Escritor e Produtor</p>
+                {displayAuthor.slug ? (
+                  <Link href={`/profissional/${displayAuthor.slug}`}>
+                    <h3 className="font-semibold text-base text-gray-900 hover:text-[#126861]">{displayAuthor.name}</h3>
+                  </Link>
+                ) : (
+                  <h3 className="font-semibold text-base text-gray-900">{displayAuthor.name}</h3>
+                )}
+                <p className="text-xs text-gray-500">{displayAuthor.title}</p>
               </div>
             </div>
             <div className="mb-3 flex items-center gap-3">
@@ -565,26 +593,32 @@ export default function BlogPostPage() {
               <div className="flex items-center justify-between flex-wrap gap-4">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="relative w-14 h-14 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
-                    {post.author?.avatar ? (
+                    {displayAuthor.avatar ? (
                       <Image
-                        src={post.author.avatar}
-                        alt={post.author.name}
+                        src={displayAuthor.avatar}
+                        alt={displayAuthor.name}
                         fill
                         className="object-cover"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-600 text-lg font-bold">
-                        {post.author?.name?.charAt(0) || "A"}
+                        {displayAuthor.name.charAt(0)}
                       </div>
                     )}
                   </div>
                   <div>
-                    <h3 className="font-semibold text-base text-gray-900">{post.author?.name || "Autor Desconhecido"}</h3>
-                    <p className="text-xs text-gray-500">Escritor e Produtor</p>
+                    {displayAuthor.slug ? (
+                      <Link href={`/profissional/${displayAuthor.slug}`}>
+                        <h3 className="font-semibold text-base text-gray-900 hover:text-[#126861]">{displayAuthor.name}</h3>
+                      </Link>
+                    ) : (
+                      <h3 className="font-semibold text-base text-gray-900">{displayAuthor.name}</h3>
+                    )}
+                    <p className="text-xs text-gray-500">{displayAuthor.title}</p>
                   </div>
                 </div>
                 {/* Social Share */}
-                <SocialShare />
+                <SocialShare className="border-none" />
               </div>
             </div>
             {/* Artigos Relacionados */}
