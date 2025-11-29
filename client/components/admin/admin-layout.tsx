@@ -5,7 +5,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { LayoutDashboard, FileText, Users, Tag, Folder, LogOut, Menu, X, Megaphone, Layout, UserCheck } from "lucide-react"
+import { LayoutDashboard, FileText, Users, Tag, Folder, LogOut, Menu, X, Megaphone, Layout, UserCheck, Image as ImageIcon } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 
@@ -47,6 +47,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Posts", href: "/admin/posts", icon: FileText },
     { name: "Profissionais", href: "/admin/professionals", icon: UserCheck },
+    { name: "Mídia", href: "/admin/media", icon: ImageIcon },
     { name: "Configurar Home", href: "/admin/home-config", icon: Layout },
     { name: "Anúncios", href: "/admin/ads", icon: Megaphone },
     { name: "Usuários", href: "/admin/users", icon: Users },
@@ -58,17 +59,16 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <aside
-        className={`bg-navy-950 text-white w-64 fixed inset-y-0 z-50 transition-transform duration-300 ease-in-out ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 lg:static`}
+        className={`bg-navy-950 text-white w-64 fixed inset-y-0 z-50 transition-transform duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } lg:translate-x-0 lg:static`}
       >
         <div className="p-4 flex justify-between items-center">
           <Link href="/admin" className="flex items-center">
-            <Image 
-              src="/images/logo-olaguia.png" 
-              alt="Logo" 
-              width={150} 
-              height={40} 
+            <Image
+              src="/images/logo-olaguia.png"
+              alt="Logo"
+              width={150}
+              height={40}
               className="h-8 w-auto"
               onError={(e) => {
                 // Fallback se a imagem não existir
@@ -89,9 +89,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               <li key={item.name}>
                 <Link
                   href={item.href}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-md transition-colors ${
-                    pathname === item.href ? "bg-navy-900 text-gold" : "hover:bg-navy-900"
-                  }`}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-md transition-colors ${pathname === item.href ? "bg-navy-900 text-gold" : "hover:bg-navy-900"
+                    }`}
                 >
                   <item.icon size={20} />
                   <span>{item.name}</span>

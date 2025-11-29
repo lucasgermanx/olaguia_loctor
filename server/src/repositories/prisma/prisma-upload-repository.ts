@@ -73,6 +73,34 @@ export class PrismaUploadRepository implements UploadRepository {
     }
   }
 
+  async findMany(page: number, per_page: number): Promise<{ uploads: Upload[], total: number }> {
+    const [uploads, total] = await Promise.all([
+      prisma.upload.findMany({
+        orderBy: {
+          created_at: 'desc',
+        },
+        skip: (page - 1) * per_page,
+        take: per_page,
+      }),
+      prisma.upload.count(),
+    ])
+
+    return {
+      uploads: uploads.map((upload) => ({
+        id: upload.id,
+        filename: upload.filename,
+        originalName: upload.originalName,
+        mimetype: upload.mimetype,
+        size: upload.size,
+        url: upload.url,
+        type: upload.type as "user" | "post",
+        entityId: upload.entityId,
+        created_at: upload.created_at,
+      })),
+      total,
+    }
+  }
+
   async delete(id: string): Promise<void> {
     await prisma.upload.delete({
       where: { id },

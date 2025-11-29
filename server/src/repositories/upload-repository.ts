@@ -14,5 +14,6 @@ export interface UploadRepository {
   create(data: Omit<Upload, "created_at">): Promise<Upload>
   findById(id: string): Promise<Upload | null>
   findByEntityId(entityId: string): Promise<Upload | null>
+  findMany(page: number, per_page: number): Promise<{ uploads: Upload[], total: number }>
   delete(id: string): Promise<void>
 } 
