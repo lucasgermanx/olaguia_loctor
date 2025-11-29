@@ -46,10 +46,10 @@ export class UploadUseCase {
     }
     const buffer = Buffer.concat(chunks)
 
-    // Validar tamanho (máximo 5MB)
-    const maxSize = 5 * 1024 * 1024 // 5MB
+    // Validar tamanho (máximo 15MB)
+    const maxSize = 15 * 1024 * 1024 // 15MB
     if (buffer.length > maxSize) {
-      throw new Error("Arquivo muito grande. Máximo 5MB")
+      throw new Error("Arquivo muito grande. Máximo 15MB")
     }
 
     await writeFile(filePath, buffer)

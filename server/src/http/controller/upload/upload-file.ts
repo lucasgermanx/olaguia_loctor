@@ -27,8 +27,8 @@ export async function uploadFile(request: FastifyRequest, reply: FastifyReply) {
       })
     }
 
-    // Validar tamanho (máximo 5MB)
-    const maxSize = 5 * 1024 * 1024 // 5MB
+    // Validar tamanho (máximo 15MB)
+    const maxSize = 15 * 1024 * 1024 // 15MB
     // O Fastify multipart não expõe bytesRead diretamente, vamos validar no use case
 
     // Pegar dados do formulário
