@@ -22,7 +22,6 @@ export default function AdminLoginPage() {
     setIsLoading(true)
     setError("")
 
-    console.log({ email, password })
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/sessions`, {
         method: "POST",
@@ -33,7 +32,6 @@ export default function AdminLoginPage() {
         body: JSON.stringify({ email, password }),
       })
 
-      console.log({ response })
       const data = await response.json()
       if (!response.ok) {
         throw new Error(data.message || "Falha na autenticação")
@@ -50,7 +48,10 @@ export default function AdminLoginPage() {
         },
       })
 
-      console.log({ userResponse })
+      if (!userResponse.ok) {
+        localStorage.removeItem("token")
+        throw new Error("Erro ao verificar usuário")
+      }
 
       const userData = await userResponse.json()
 
@@ -59,8 +60,8 @@ export default function AdminLoginPage() {
         throw new Error("Acesso restrito a administradores")
       }
 
-      // Redirecionar para o painel de administração
-      router.push("/admin")
+      // Forçar recarregamento da página admin para garantir que o AuthGuard funcione
+      window.location.href = "/admin"
     } catch (err: any) {
       setError(err.message || "Ocorreu um erro durante o login")
     } finally {
@@ -69,10 +70,10 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-950">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Image src="/images/logo.png" alt="Logo" width={200} height={80} className="mx-auto" />
+          <Image src="/logo.png" alt="Logo" width={200} height={80} className="mx-auto" />
         </div>
 
         <Card>
