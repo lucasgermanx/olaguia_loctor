@@ -19,7 +19,7 @@ export async function updatePost(request: FastifyRequest, reply: FastifyReply) {
     professional_id: z.string().optional(),
     tags: z.array(z.string()).optional(),
     theme: z.string().optional(),
-    position: z.string().optional(),
+    position: z.string().default("MAIN").optional(),
     order: z.number().optional(),
     featured: z.boolean().optional(),
   })
