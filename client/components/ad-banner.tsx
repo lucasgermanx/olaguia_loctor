@@ -12,6 +12,7 @@ interface AdBannerProps {
   buttonLink?: string
   backgroundColor?: string
   className?: string
+  imageClassName?: string
   variant?: "horizontal" | "vertical"
 }
 
@@ -23,6 +24,7 @@ export function AdBanner({
   buttonLink = "#",
   backgroundColor = "bg-gray-100",
   className = "",
+  imageClassName = "",
   variant = "horizontal",
 }: AdBannerProps) {
   const [imageError, setImageError] = useState(false)
@@ -31,13 +33,13 @@ export function AdBanner({
   return (
     <div className={`${backgroundColor} ${className} ${isVertical ? "flex items-center justify-center" : "py-6"}`}>
       <Link href={buttonLink} className="block group w-full h-full">
-        <div className={`relative ${isVertical ? "h-full w-full" : "h-48 md:h-64"} rounded-lg overflow-hidden border-2 border-gray-200`}>
+        <div className={`relative ${isVertical ? "h-full w-full" : "h-40 md:h-60"} rounded-lg overflow-hidden`}>
           {imageUrl && !imageError ? (
             <Image
               src={imageUrl}
               alt={title || "Banner de anúncio"}
               fill
-              className="object-cover transition-transform duration-300"
+              className={`object-contain transition-transform duration-300 ${imageClassName}`}
               onError={() => setImageError(true)}
             />
           ) : (

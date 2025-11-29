@@ -524,13 +524,13 @@ export default function Home() {
                       {post.title}
                     </h3>
                     {post.excerpt && (
-                      <p className="text-sm sm:text-base font-lato text-gray-600 mb-4 sm:mb-5 max-w-full lg:max-w-72 line-clamp-2">
+                      <p className="text-sm sm:text-base font-lato text-gray-600 mb-4 sm:mb-5 max-w-full lg:max-w-72">
                         {post.excerpt}
                       </p>
                     )}
-                    <Button className="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 -py-2 px-1 font-lato text-xs italic uppercase rounded-sm">
+                    {/* <Button className="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 -py-2 px-1 font-lato text-xs italic uppercase rounded-sm">
                       LEIA MAIS
-                    </Button>
+                    </Button> */}
                   </div>
                 )}
               </Link>
@@ -565,9 +565,9 @@ export default function Home() {
                         {post.excerpt}
                       </p>
                     )}
-                    <Button className="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 -py-2 px-1 font-lato text-xs italic uppercase rounded-sm">
+                    {/* <Button className="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 -py-2 px-1 font-lato text-xs italic uppercase rounded-sm">
                       LEIA MAIS
-                    </Button>
+                    </Button> */}
                   </div>
                 </Link>
               )
@@ -585,7 +585,8 @@ export default function Home() {
                   title={ad.title}
                   buttonLink={ad.link_url}
                   backgroundColor="bg-transparent"
-                  className="h-[600px]"
+                  className="h-[600px] object-contain"
+                  imageClassName="object-contain"
                   variant="vertical"
                 />
               </div>
@@ -733,7 +734,8 @@ export default function Home() {
                   title={ad.title}
                   buttonLink={ad.link_url}
                   backgroundColor="bg-transparent"
-                  className="h-48 sm:h-56 border-none"
+                  className="h-64 border-none"
+                  imageClassName="object-cover"
                   variant="vertical"
                 />
               )
@@ -961,6 +963,7 @@ export default function Home() {
                   buttonLink={ad.link_url}
                   backgroundColor="bg-transparent"
                   className="h-full min-h-[400px]"
+                  imageClassName=""
                   variant="vertical"
                 />
               </div>
