@@ -7,11 +7,28 @@ export async function listPosts(request: FastifyRequest, reply: FastifyReply) {
     page: z.coerce.number().min(1).default(1),
     per_page: z.coerce.number().min(1).max(100).default(10),
     category: z.string().optional(),
+    category_id: z.string().optional(),
     tag: z.string().optional(),
     search: z.string().optional(),
+    author: z.string().optional(),
+    professional: z.string().optional(),
+    published: z.string().optional(), // Recebe como string e converte manualmente
   })
 
-  const { page, per_page, category, tag, search } = listPostsQuerySchema.parse(request.query)
+  const query = listPostsQuerySchema.parse(request.query)
+  
+  // Converter published string para boolean
+  let publishedFilter: boolean | undefined = undefined
+  if (query.published === "true") {
+    publishedFilter = true
+  } else if (query.published === "false") {
+    publishedFilter = false
+  }
+
+  const { page, per_page, category, category_id, tag, search, author, professional } = query
+
+  console.log("📊 Parâmetros recebidos:", { page, per_page, category, category_id, tag, search, author, professional, published: publishedFilter })
+  console.log("📊 Tipo de published:", typeof publishedFilter, "Valor:", publishedFilter)
 
   // Normalize slugs: replace spaces with hyphens, convert to lowercase, and remove accents
   const normalizeSlug = (slug: string | undefined) => {
@@ -36,8 +53,12 @@ export async function listPosts(request: FastifyRequest, reply: FastifyReply) {
       page,
       per_page,
       category_slug: normalizedCategory,
+      category_id: category_id,
       tag_slug: normalizedTag,
       search,
+      author_id: author,
+      professional_id: professional,
+      published: publishedFilter,
     })
 
     return reply.status(200).send({

@@ -65,13 +65,18 @@ export class PrismaPostsRepository implements PostsRepository {
     return post
   }
 
-  async findMany({ page, per_page, category_slug, tag_slug, search }: FindManyParams) {
+  async findMany({ page, per_page, category_slug, category_id, tag_slug, search, author_id, professional_id, published }: FindManyParams) {
     const where: Prisma.PostWhereInput = {}
 
     if (category_slug) {
       where.category = {
         slug: category_slug,
       }
+    }
+
+    // Suporte para filtro por ID de categoria também
+    if (category_id) {
+      where.category_id = category_id
     }
 
     if (tag_slug) {
@@ -91,6 +96,21 @@ export class PrismaPostsRepository implements PostsRepository {
         { content: { contains: search, mode: "insensitive" } },
       ]
     }
+
+    if (author_id) {
+      where.author_id = author_id
+    }
+
+    if (professional_id) {
+      where.professional_id = professional_id
+    }
+
+    if (published !== undefined) {
+      console.log("🔍 Filtro por published:", published, "Tipo:", typeof published)
+      where.published = published
+    }
+
+    console.log("🔍 Where clause final:", JSON.stringify(where, null, 2))
 
     const [posts, total] = await Promise.all([
       prisma.post.findMany({

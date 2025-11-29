@@ -4,8 +4,12 @@ export interface FindManyParams {
   page: number
   per_page: number
   category_slug?: string
+  category_id?: string
   tag_slug?: string
   search?: string
+  author_id?: string
+  professional_id?: string
+  published?: boolean
 }
 
 export interface PostsRepository {
