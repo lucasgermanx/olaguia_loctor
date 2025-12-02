@@ -41,7 +41,7 @@ const SectionWrapper = ({
   >
     <div
       className={cn(
-        "w-full max-w-7xl mx-auto flex-1 flex flex-col justify-center gap-8",
+        "w-full max-w-[1080px] 2xl:max-w-7xl mx-auto flex-1 flex flex-col justify-center gap-8",
         contentClassName,
       )}
     >
@@ -185,7 +185,7 @@ export default function Home() {
                               className="object-cover"
                             />
                           </div>
-                          <div className="flex max-w-7xl mx-auto w-full">
+                          <div className="flex w-full max-w-[1080px] 2xl:max-w-7xl mx-auto">
                             <div className="absolute top-1/2 -translate-y-1/2 max-sm:left-1/2 max-sm:-translate-x-1/2 w-[calc(100%-2rem)] sm:w-[calc(100%-4rem)] md:w-[calc(100%-8rem)] lg:w-auto lg:max-w-xl">
                               <div className="bg-white p-4 sm:p-4 md:p-5 shadow-xl border-t-[4px] sm:border-t-[6px] border-black">
                                 <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-3 sm:mb-4 text-xs sm:text-sm uppercase">
@@ -233,7 +233,7 @@ export default function Home() {
       </section>
 
       {/* EM DESTAQUE Section */}
-      <section className="max-w-7xl mx-auto py-8 sm:py-12 bg-white">
+      <section className="w-full max-w-[1080px] 2xl:max-w-7xl mx-auto py-8 sm:py-12 bg-white">
         <div className="flex items-center justify-center">
           <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
           <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl font-volkhov text-nowrap mx-4 sm:mx-8 lg:mx-12 font-bold text-[#126861]"><span className="text-[#928575]">EM</span> DESTAQUE</h2>
@@ -438,7 +438,7 @@ export default function Home() {
       })()}
 
       {/* PARA REFLEXÃO Section */}
-      <section className="w-full md:max-w-7xl mx-auto py-8 sm:py-12 bg-white">
+      <section className="w-full max-w-[1080px] 2xl:max-w-7xl mx-auto py-8 sm:py-12 bg-white">
         <div className="flex items-center w-full">
           <div className="h-2 sm:h-3 w-full bg-gray-300" />
           <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov text-nowrap mx-2 sm:mx-8 lg:mx-12 font-bold text-[#126861]">
@@ -448,7 +448,7 @@ export default function Home() {
         </div>
         <p className="text-center font-lato text-sm sm:text-base lg:text-xl text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
 
-        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-0">
+        <div className="w-full max-w-[1080px] 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-0">
           <Carousel className="w-full" opts={{ loop: false }}>
             <CarouselContent>
               {getSlots("PARA_REFLEXAO", "CAROUSEL").map((slot) => {
@@ -492,7 +492,7 @@ export default function Home() {
       </section>
 
       {/* NOSSA SAÚDE Section */}
-      <section className="max-w-max md:max-w-7xl mx-auto py-8 sm:py-12 bg-white">
+      <section className="w-full max-w-[1080px] 2xl:max-w-7xl mx-auto py-8 sm:py-12 bg-white">
         <div className="flex items-center justify-center">
           <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
           <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov text-nowrap mx-4 sm:mx-8 lg:mx-12 font-bold text-[#126861]"><span className="text-[#928575]">NOSSA</span> SAÚDE</h2>
@@ -596,7 +596,7 @@ export default function Home() {
       </section>
 
       {/* SOBRE RELACIONAMENTOS Section (Carousel) */}
-      <section className="w-full md:max-w-7xl mx-auto py-8 sm:py-12 bg-white">
+      <section className="w-full max-w-[1080px] 2xl:max-w-7xl mx-auto py-8 sm:py-12 bg-white">
         <div className="flex items-center w-full">
           <div className="h-2 sm:h-3 w-full bg-gray-300" />
           <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov md:text-nowrap mx-2 sm:mx-8 lg:mx-12 font-bold text-[#126861]">
@@ -670,7 +670,7 @@ export default function Home() {
       })()}
 
       {/* EMPRESAS & NEGÓCIOS Section */}
-      <section className="max-w-7xl mx-auto py-8 sm:py-12 bg-white">
+      <section className="w-full max-w-[1080px] 2xl:max-w-7xl mx-auto py-8 sm:py-12 bg-white">
         <div className="flex items-center w-full">
           <div className="h-2 sm:h-3 w-full bg-gray-300" />
           <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov md:text-nowrap mx-2 sm:mx-8 lg:mx-12 font-bold text-[#126861]">
@@ -814,7 +814,7 @@ export default function Home() {
       </section>
 
       {/* ESTÉTICA & BELEZA Section */}
-      <section className="max-w-7xl w-full mx-auto py-8 sm:py-12 bg-white">
+      <section className="w-full max-w-[1080px] 2xl:max-w-7xl mx-auto py-8 sm:py-12 bg-white">
         <div className="flex items-center justify-center">
           <div className="flex items-center justify-center w-full">
             <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
@@ -852,7 +852,7 @@ export default function Home() {
             )
           })}
         </div>
-        <div className="md:hidden max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-0">
+        <div className="md:hidden w-full max-w-[1080px] 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-0">
           <Carousel className="w-full" opts={{ loop: false }}>
             <CarouselContent>
               {getSlots("ESTETICA_BELEZA", "GRID").map((slot) => {
@@ -897,7 +897,7 @@ export default function Home() {
       </section>
 
       {/* RINDO À TOA & QUEBRA CUCA Section */}
-      <section className="max-w-7xl mx-auto py-8 sm:py-12 bg-white">
+      <section className="w-full max-w-[1080px] 2xl:max-w-7xl mx-auto py-8 sm:py-12 bg-white">
         <div className="hidden md:flex items-center justify-center mb-6 sm:mb-10">
           <div className="flex items-center justify-center w-full">
             <h2 className="text-base sm:text-xl md:text-2xl lg:text-3xl 2xl:text-5xl font-volkhov text-nowrap mx-2 sm:mx-6 lg:mx-12 font-bold text-[#928575]">RINDO À TOA</h2>
@@ -1024,7 +1024,7 @@ export default function Home() {
       })()}
 
       {/* GASTRONOMIA Section (Carousel) */}
-      <section className="max-w-7xl w-full mx-auto py-8 sm:py-12 bg-white">
+      <section className="w-full max-w-[1080px] 2xl:max-w-7xl mx-auto py-8 sm:py-12 bg-white">
         <div className="flex items-center w-full justify-center">
           <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
           <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov md:text-nowrap mx-4 sm:mx-8 lg:mx-12 font-bold text-[#126861]">GASTRONOMIA</h2>
@@ -1075,7 +1075,7 @@ export default function Home() {
       </section>
 
       {/* SUPER DICAS Section */}
-      <section className="max-w-7xl mx-auto py-8 sm:py-12 bg-white">
+      <section className="w-full max-w-[1080px] 2xl:max-w-7xl mx-auto py-8 sm:py-12 bg-white">
         <div className="flex items-center justify-center">
           <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
           <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov text-nowrap mx-4 sm:mx-8 lg:mx-12 font-bold text-[#126861]"><span className="text-[#928575]">SUPER</span> DICAS</h2>

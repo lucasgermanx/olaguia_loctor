@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useEffect, Suspense } from "react"
+import { useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Loader2, MapPin, Phone, Mail } from "lucide-react"
+import { Loader2, MapPin, Phone } from "lucide-react"
 import { MainSearchBar } from "@/components/blog/main-search-bar"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"
@@ -30,7 +30,7 @@ interface Professional {
   featured: boolean
 }
 
-function ProfessionalsPageContent() {
+export function ProfessionalsPageClient() {
   const searchParams = useSearchParams()
   const [professionals, setProfessionals] = useState<Professional[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -45,13 +45,11 @@ function ProfessionalsPageContent() {
     const fetchProfessionals = async () => {
       setIsLoading(true)
       try {
-        // Construir query params da URL
         const params = new URLSearchParams()
         params.append("page", "1")
         params.append("per_page", "12")
         params.append("active", "true")
 
-        // Adicionar filtros da busca
         const search = searchParams.get("search")
         const city = searchParams.get("city")
         const name = searchParams.get("name")
@@ -59,7 +57,7 @@ function ProfessionalsPageContent() {
 
         if (search) params.append("search", search)
         if (city) params.append("city", city)
-        if (name) params.append("search", name) // Buscar por nome usando o campo search
+        if (name) params.append("search", name)
         if (specialty) params.append("specialty", specialty)
 
         const response = await fetch(`${API_URL}/professionals?${params.toString()}`)
@@ -141,7 +139,6 @@ function ProfessionalsPageContent() {
 
                 {/* Conteúdo */}
                 <div className="p-4 space-y-3">
-                  {/* Nome e título */}
                   <div>
                     <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#126861] transition-colors mb-1">
                       {professional.name}
@@ -151,17 +148,14 @@ function ProfessionalsPageContent() {
                     </p>
                   </div>
 
-                  {/* Especialidade */}
                   <Badge className="bg-[#928575] hover:bg-[#0f5650] text-white">
                     {professional.specialty}
                   </Badge>
 
-                  {/* Bio (preview) */}
                   <p className="text-sm text-gray-600 line-clamp-2">
                     {professional.bio}
                   </p>
 
-                  {/* Informações de contato */}
                   <div className="space-y-1 text-xs text-gray-500 border-t pt-3">
                     {professional.city && professional.state && (
                       <div className="flex items-center gap-2">
@@ -175,7 +169,6 @@ function ProfessionalsPageContent() {
                     </div>
                   </div>
 
-                  {/* Botão */}
                   <Button
                     className="w-full bg-[#126861] hover:bg-[#0f5650] text-white mt-4"
                     size="sm"
@@ -213,7 +206,7 @@ function ProfessionalsPageContent() {
               Tente ajustar seus filtros de busca para encontrar mais resultados.
             </p>
             <Button
-              onClick={() => window.location.href = "/profissionais"}
+              onClick={() => (window.location.href = "/profissionais")}
               variant="outline"
             >
               Limpar Filtros
@@ -221,7 +214,7 @@ function ProfessionalsPageContent() {
           </div>
         )}
 
-        {/* Paginação (se necessário) */}
+        {/* Paginação (placeholder) */}
         {!isLoading && meta.total_pages > 1 && (
           <div className="flex justify-center mt-12">
             <div className="flex gap-2">
@@ -232,7 +225,6 @@ function ProfessionalsPageContent() {
                   size="sm"
                   className={page === meta.page ? "bg-[#126861]" : ""}
                   onClick={() => {
-                    // Implementar mudança de página
                     console.log("Página:", page)
                   }}
                 >
@@ -247,10 +239,5 @@ function ProfessionalsPageContent() {
   )
 }
 
-export default function ProfessionalsPage() {
-  return (
-    <Suspense fallback={<div className="flex justify-center items-center pt-24">Carregando...</div>}>
-      <ProfessionalsPageContent />
-    </Suspense>
-  )
-}
+
+

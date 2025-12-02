@@ -519,11 +519,11 @@ export default function BlogPostPage() {
                   >
                     <LuCirclePlay className={`w-12 h-12 ${isSpeaking ? 'text-red-600' : 'text-[#6D758F]'}`} />
                   </button>
-                  <div className="flex-1">
+                  <div className="flex-1 overflow-hidden">
                     <p className="text-sm font-semibold text-gray-700 mb-1">Ouça agora</p>
-                    <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div className="h-2 w-auto bg-gray-200 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-[#126861] transition-all"
+                        className="h-full bg-[#126861] transition-all w-auto"
                         style={{ width: totalTime > 0 ? `${(currentTime / totalTime) * 100}%` : '0%' }}
                       ></div>
                     </div>
@@ -668,11 +668,11 @@ export default function BlogPostPage() {
             {recentPosts.length > 0 && (
               <div className="border-t border-gray-200 pt-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Posts Mais Recentes</h2>
-                <div className="space-y-6">
+                <div className="space-y-6 mx-4">
                   {recentPosts.map((recentPost) => (
                     <div key={recentPost.id} className="flex md:flex-row flex-col gap-4">
                       {recentPost.featured_image && (
-                        <div className="relative w-80 h-44 flex-shrink-0 rounded overflow-hidden">
+                        <div className="relative w-auto lg:w-80 h-44 flex-shrink-0 rounded overflow-hidden">
                           <Image
                             src={recentPost.featured_image}
                             alt={recentPost.title}

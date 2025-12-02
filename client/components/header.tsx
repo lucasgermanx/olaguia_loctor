@@ -11,6 +11,30 @@ import { cn } from "@/lib/utils"
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false)
+  const [contactName, setContactName] = useState("")
+  const [contactArea, setContactArea] = useState("")
+
+  const handleOpenContactModal = () => {
+    setIsContactModalOpen(true)
+  }
+
+  const handleCloseContactModal = () => {
+    setIsContactModalOpen(false)
+  }
+
+  const handleSendWhatsApp = () => {
+    if (!contactName || !contactArea) return
+
+    const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "5581999999999"
+    const message = encodeURIComponent(
+      `Olá, meu nome é ${contactName} e atuo na área de ${contactArea}. Gostaria de entrar em contato pelo portal Olá Guia.`,
+    )
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`
+
+    window.open(url, "_blank")
+    setIsContactModalOpen(false)
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,40 +61,35 @@ export function Header() {
         <nav className="hidden md:flex items-center space-x-8">
           <Link
             href="/"
-            className="text-sm font-medium text-gray-50 transition-colors hover:text-green-600"
+            className="text-sm font-medium text-gray-50 transition-colors hover:text-gray-100"
           >
             HOME
           </Link>
           <Link
-            href="/sobre"
-            className="text-sm font-medium text-gray-50 transition-colors hover:text-green-600"
+            href="http://localhost:3000/blog?tag=sobre-nos"
+            className="text-sm font-medium text-gray-50 transition-colors hover:text-gray-100"
           >
             SOBRE NÓS
           </Link>
           <Link
-            href="/revista"
-            className="text-sm font-medium text-gray-50 transition-colors hover:text-green-600"
+            href="http://localhost:3000/blog?tag=revista"
+            className="text-sm font-medium text-gray-50 transition-colors hover:text-gray-100"
           >
             REVISTA
           </Link>
           <Link
-            href="/portal"
-            className="text-sm font-medium text-gray-50 transition-colors hover:text-green-600"
+            href="http://localhost:3000/blog?tag=portal"
+            className="text-sm font-medium text-gray-50 transition-colors hover:text-gray-100"
           >
             PORTAL
           </Link>
-          <Link
-            href="/profissional/exemplo"
-            className="text-sm font-medium text-gray-50 transition-colors hover:text-green-600"
-          >
-            PROFISSIONAL
-          </Link>
-          <Link
-            href="/contato"
+          <button
+            type="button"
+            onClick={handleOpenContactModal}
             className="text-sm font-medium text-gray-50 transition-colors hover:text-green-600"
           >
             CONTATO
-          </Link>
+          </button>
         </nav>
 
         {/* Right Side Icons and Login */}
@@ -83,74 +102,61 @@ export function Header() {
           </button>
         </div>
 
-        {/* Mobile Menu Button */}
-        <button className="md:hidden" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} aria-label="Toggle menu">
-          {isMobileMenuOpen ? (
-            <X className="text-gray-900" />
-          ) : (
-            <Menu className="text-gray-900" />
-          )}
-        </button>
+        {/* Mobile Menu Button (não usado mais, menu mobile foi movido para o bottom nav) */}
+        <div className="md:hidden" />
       </div>
+      {/* Mobile Navigation removida em favor do menu fixo inferior */}
+      {isContactModalOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50">
+          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">Fale conosco pelo WhatsApp</h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Informe seus dados para iniciarmos a conversa pelo WhatsApp.
+            </p>
 
-      {/* Mobile Navigation */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-md py-6">
-          <nav className="container mx-auto px-4 flex flex-col space-y-5">
-            <Link
-              href="/"
-              className="text-gray-900 hover:text-green-600 transition-colors font-medium"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              HOME
-            </Link>
-            <Link
-              href="/sobre"
-              className="text-gray-900 hover:text-green-600 transition-colors font-medium"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              SOBRE
-            </Link>
-            <Link
-              href="/profissional/exemplo"
-              className="text-gray-900 hover:text-green-600 transition-colors font-medium"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              PROFISSIONAL
-            </Link>
-            <Link
-              href="/contato"
-              className="text-gray-900 hover:text-green-600 transition-colors font-medium"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              CONTATO
-            </Link>
-            <Link
-              href="/blog"
-              className="text-gray-900 hover:text-green-600 transition-colors font-medium"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              BLOG
-            </Link>
-            <Link
-              href="/loja"
-              className="text-gray-900 hover:text-green-600 transition-colors font-medium"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              LOJA
-            </Link>
-            <div className="flex items-center space-x-4 pt-4 border-t border-gray-100">
-              <button className="p-2">
-                <Search className="h-5 w-5 text-gray-900" />
-              </button>
-              <button className="p-2">
-                <User className="h-5 w-5 text-gray-900" />
-              </button>
-              <Button className="bg-orange-400 hover:bg-orange-500 text-white rounded-md px-6">
-                LOGIN
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="contact-name">
+                  Nome
+                </label>
+                <input
+                  id="contact-name"
+                  type="text"
+                  value={contactName}
+                  onChange={(e) => setContactName(e.target.value)}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#126861]"
+                  placeholder="Seu nome completo"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="contact-area">
+                  Área de atuação
+                </label>
+                <input
+                  id="contact-area"
+                  type="text"
+                  value={contactArea}
+                  onChange={(e) => setContactArea(e.target.value)}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#126861]"
+                  placeholder="Ex: Psicologia, Nutrição, Fisioterapia..."
+                />
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <Button variant="outline" onClick={handleCloseContactModal}>
+                Cancelar
+              </Button>
+              <Button
+                className="bg-[#126861] hover:bg-[#0f5650] text-white"
+                onClick={handleSendWhatsApp}
+                disabled={!contactName || !contactArea}
+              >
+                Enviar para WhatsApp
               </Button>
             </div>
-          </nav>
+          </div>
         </div>
       )}
     </header>
