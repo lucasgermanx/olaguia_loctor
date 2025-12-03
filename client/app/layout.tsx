@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import "./globals.css"
 import { AuthProvider } from "@/hooks/use-auth"
 import { ConditionalLayout } from "@/components/conditional-layout"
-import { volkhov, openSans, lato } from "@/lib/fonts"
+import { volkhov, openSans, lato, claridgeCG } from "@/lib/fonts"
 
 export const metadata: Metadata = {
   title: "OLÁGUIA - Blog",
@@ -17,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="pt-BR" className={`${volkhov.variable} ${openSans.variable} ${lato.variable}`}>
+    <html lang="pt-BR" className={`${volkhov.variable} ${openSans.variable} ${lato.variable} ${claridgeCG.variable}`}>
       <body>
         <AuthProvider>
           <ConditionalLayout>

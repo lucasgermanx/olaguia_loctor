@@ -131,7 +131,7 @@ export default async function BlogPage({
 
   return (
     <div className="flex min-h-screen flex-col mx-auto">
-      <div className="pt-14">
+      <div className="pt-14 hidden md:block">
         {/* Main Search Bar */}
         <MainSearchBar />
       </div>
@@ -255,7 +255,7 @@ export default async function BlogPage({
             </div>
 
             {/* Sidebar - Right Side */}
-            <div className="w-full lg:w-1/3">
+            <div className="w-full lg:w-1/3 hidden md:block">
               <BlogSidebarNew categories={categories || []} tags={tags || []} />
             </div>
           </div>

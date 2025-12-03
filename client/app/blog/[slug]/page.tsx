@@ -440,11 +440,11 @@ export default function BlogPostPage() {
   const shareText = post.title
 
   return (
-    <div className="flex min-h-screen flex-col bg-white pt-20">
+    <div className="flex min-h-screen flex-col bg-white md:pt-10">
       <div className="container mx-auto px-4 md:px-6 py-8">
         <div className="flex flex-col lg:flex-row lg:items-start gap-8">
           {/* Main Content - Left Column */}
-          <div className="w-full lg:w-2/3 lg:flex-shrink-0 pt-20">
+          <div className="w-full lg:w-2/3 lg:flex-shrink-0">
             {/* Post Title with Category Tag */}
 
             {/* Author Header */}
@@ -511,7 +511,7 @@ export default function BlogPostPage() {
             <div className="mb-8 bg-gray-50 rounded-lg p-4">
               <div className="flex items-center justify-between gap-6 flex-wrap">
                 {/* Audio Player */}
-                <div className="flex items-center gap-4 flex-1 min-w-[300px]">
+                <div className="flex items-center gap-4 flex-1">
                   <button
                     onClick={handleSpeak}
                     className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors flex-shrink-0`}
@@ -521,9 +521,9 @@ export default function BlogPostPage() {
                   </button>
                   <div className="flex-1 overflow-hidden">
                     <p className="text-sm font-semibold text-gray-700 mb-1">Ouça agora</p>
-                    <div className="h-2 w-auto bg-gray-200 rounded-full overflow-hidden">
+                    <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-[#126861] transition-all w-auto"
+                        className="h-full bg-[#126861] transition-all"
                         style={{ width: totalTime > 0 ? `${(currentTime / totalTime) * 100}%` : '0%' }}
                       ></div>
                     </div>

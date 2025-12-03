@@ -119,6 +119,7 @@ const config = {
         volkhov: ["var(--font-volkhov)", "serif"],
         "open-sans": ["var(--font-open-sans)", "sans-serif"],
         lato: ["var(--font-lato)", "sans-serif"],
+        claridge: ["var(--font-claridge)", "serif"],
       },
     },
   },

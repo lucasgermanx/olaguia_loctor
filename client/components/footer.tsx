@@ -10,7 +10,7 @@ export function Footer() {
       {/* Top Band */}
       <div className="max-w-7xl mx-auto px-4 pb-14">
         {/* TOP Side - Logo and Privacy */}
-        <div className="flex flex-col lg:flex-row gap-40 pb-14">
+        <div className="flex flex-col lg:flex-row gap-x-40 pb-14">
           <div className="flex items-center space-x-3 mb-4">
             <Image src="/logo.png" alt="Logo" width={256} height={100} />
           </div>

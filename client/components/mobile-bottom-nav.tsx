@@ -207,13 +207,12 @@ export function MobileBottomNav() {
 
       {/* Painel deslizante */}
       <div
-        className={`fixed inset-x-0 bottom-[72px] z-50 bg-[#f5f5f0] rounded-t-3xl shadow-2xl transition-transform duration-300 ease-out md:hidden ${
-          activeSection ? "translate-y-0" : "translate-y-full"
-        }`}
-        style={{ maxHeight: "70vh", overflowY: "auto" }}
+        className={`fixed left-12 right-12 bottom-[100px] z-50 bg-[#f5f5f0] rounded-3xl shadow-2xl transition-transform duration-300 ease-out md:hidden ${activeSection ? "translate-y-0" : "translate-y-full"
+          }`}
+        style={{ maxHeight: "60vh", overflowY: "auto" }}
       >
         {/* Botão fechar */}
-        <div className="sticky top-0 bg-[#f5f5f0] px-4 py-3 flex justify-end border-b border-gray-200">
+        <div className="sticky top-0 bg-[#f5f5f0] px-4 py-3 flex justify-end border-b border-gray-200 rounded-t-3xl">
           <button
             onClick={() => setActiveSection(null)}
             className="p-2 rounded-full hover:bg-gray-200 transition-colors"
@@ -386,9 +385,12 @@ export function MobileBottomNav() {
         </div>
       </div>
 
-      {/* Barra de navegação fixa */}
-      <nav className="fixed bottom-0 inset-x-0 z-50 border-t border-gray-200 bg-white shadow-[0_-4px_10px_rgba(0,0,0,0.04)] md:hidden">
-        <div className="mx-auto flex max-w-7xl items-center justify-around px-4 py-3">
+      {/* Barra de navegação flutuante com transparência e blur */}
+      <nav className="fixed bottom-4 left-12 right-12 z-50 bg-white/60 backdrop-blur-xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] rounded-2xl overflow-hidden md:hidden">
+        {/* Barra verde no topo */}
+        <div className="h-[1px] bg-[#126861] w-full" />
+
+        <div className="flex items-center justify-around px-2 py-3">
           {navItems.map((item) => {
             const Icon = item.icon
             const isActive = activeSection === item.key
@@ -400,16 +402,14 @@ export function MobileBottomNav() {
                 className="flex flex-col items-center gap-1 text-xs"
               >
                 <div
-                  className={`flex h-11 w-11 items-center justify-center rounded-2xl transition-colors ${
-                    isActive ? "bg-[#126861]" : "bg-[#0f5650]"
-                  } text-white`}
+                  className={`flex h-11 w-11 items-center justify-center rounded-2xl transition-colors ${isActive ? "bg-[#7a6b5a]" : "bg-[#928575]"
+                    } text-white`}
                 >
                   <Icon className="h-5 w-5" />
                 </div>
                 <span
-                  className={`font-medium transition-colors ${
-                    isActive ? "text-[#126861]" : "text-[#0f5650]"
-                  }`}
+                  className={`font-medium transition-colors ${isActive ? "text-[#7a6b5a]" : "text-[#928575]"
+                    }`}
                 >
                   {item.label}
                 </span>

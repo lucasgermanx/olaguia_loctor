@@ -119,3 +119,16 @@ export const lato = localFont({
   display: "swap",
 })
 
+// Claridge CG Font
+export const claridgeCG = localFont({
+  src: [
+    {
+      path: "../fonts/claridgeCG/claridge-cg-black.otf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-claridge",
+  display: "swap",
+})
+

@@ -8,7 +8,11 @@ import { Menu, X, Search, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
-export function Header() {
+interface HeaderProps {
+  isHomePage?: boolean
+}
+
+export function Header({ isHomePage = false }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isContactModalOpen, setIsContactModalOpen] = useState(false)
@@ -49,7 +53,7 @@ export function Header() {
     <header
       className={cn(
         "fixed top-0 z-50 w-full transition-all duration-300",
-        isScrolled ? "bg-[#928575] shadow-md py-3" : "bg-[#928575] py-4",
+        isScrolled ? "bg-white shadow-md py-3" : "bg-white py-4",
       )}
     >
       <div className="container max-w-7xl mx-auto flex items-center justify-between px-4 md:px-6">
@@ -61,32 +65,32 @@ export function Header() {
         <nav className="hidden md:flex items-center space-x-8">
           <Link
             href="/"
-            className="text-sm font-medium text-gray-50 transition-colors hover:text-gray-100"
+            className="text-sm font-medium text-[#928575] transition-colors hover:text-[#7a6b5a]"
           >
             HOME
           </Link>
           <Link
-            href="http://localhost:3000/blog?tag=sobre-nos"
-            className="text-sm font-medium text-gray-50 transition-colors hover:text-gray-100"
+            href="/blog?tag=sobre-nos"
+            className="text-sm font-medium text-[#928575] transition-colors hover:text-[#7a6b5a]"
           >
             SOBRE NÓS
           </Link>
           <Link
-            href="http://localhost:3000/blog?tag=revista"
-            className="text-sm font-medium text-gray-50 transition-colors hover:text-gray-100"
+            href="/blog?tag=revista"
+            className="text-sm font-medium text-[#928575] transition-colors hover:text-[#7a6b5a]"
           >
             REVISTA
           </Link>
           <Link
-            href="http://localhost:3000/blog?tag=portal"
-            className="text-sm font-medium text-gray-50 transition-colors hover:text-gray-100"
+            href="/blog?tag=portal"
+            className="text-sm font-medium text-[#928575] transition-colors hover:text-[#7a6b5a]"
           >
             PORTAL
           </Link>
           <button
             type="button"
             onClick={handleOpenContactModal}
-            className="text-sm font-medium text-gray-50 transition-colors hover:text-green-600"
+            className="text-sm font-medium text-[#928575] transition-colors hover:text-[#126861]"
           >
             CONTATO
           </button>
@@ -94,17 +98,77 @@ export function Header() {
 
         {/* Right Side Icons and Login */}
         <div className="hidden md:flex items-center space-x-4">
-          <Button className="bg-[#928575] hover:bg-[#928575d0] text-white rounded-full px-6 text-sm">
+          <Button className="bg-[#928575] hover:bg-[#7a6b5a] text-white rounded-full px-6 text-sm">
             ANÚNCIE
           </Button>
           <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-            <Search className="h-5 w-5 text-[#126861]" />
+            <Search className="h-5 w-5 text-[#928575]" />
           </button>
         </div>
 
-        {/* Mobile Menu Button (não usado mais, menu mobile foi movido para o bottom nav) */}
-        <div className="md:hidden" />
+        {/* Mobile: Logo à esquerda e Hamburger à direita na Home */}
+        {isHomePage && (
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            {isMobileMenuOpen ? (
+              <X className="h-6 w-6 text-[#928575]" />
+            ) : (
+              <Menu className="h-6 w-6 text-[#928575]" />
+            )}
+          </button>
+        )}
       </div>
+
+      {/* Mobile Menu Dropdown (apenas na Home) */}
+      {isHomePage && isMobileMenuOpen && (
+        <div className="md:hidden bg-white border-t border-gray-100 shadow-lg">
+          <nav className="container max-w-7xl mx-auto px-4 py-4 flex flex-col space-y-3">
+            <Link
+              href="/"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="text-sm font-medium text-[#928575] py-2 hover:text-[#7a6b5a] transition-colors"
+            >
+              HOME
+            </Link>
+            <Link
+              href="/blog?tag=sobre-nos"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="text-sm font-medium text-[#928575] py-2 hover:text-[#7a6b5a] transition-colors"
+            >
+              SOBRE NÓS
+            </Link>
+            <Link
+              href="/blog?tag=revista"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="text-sm font-medium text-[#928575] py-2 hover:text-[#7a6b5a] transition-colors"
+            >
+              REVISTA
+            </Link>
+            <Link
+              href="/blog?tag=portal"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="text-sm font-medium text-[#928575] py-2 hover:text-[#7a6b5a] transition-colors"
+            >
+              PORTAL
+            </Link>
+            <button
+              type="button"
+              onClick={() => {
+                setIsMobileMenuOpen(false)
+                handleOpenContactModal()
+              }}
+              className="text-sm font-medium text-[#928575] py-2 text-left hover:text-[#126861] transition-colors"
+            >
+              CONTATO
+            </button>
+            <Button className="bg-[#928575] hover:bg-[#7a6b5a] text-white rounded-full px-6 text-sm w-fit">
+              ANÚNCIE
+            </Button>
+          </nav>
+        </div>
+      )}
       {/* Mobile Navigation removida em favor do menu fixo inferior */}
       {isContactModalOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50">
