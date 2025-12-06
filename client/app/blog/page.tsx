@@ -131,17 +131,17 @@ export default async function BlogPage({
 
   return (
     <div className="flex min-h-screen flex-col mx-auto">
-      <div className="pt-14 hidden md:block">
+      <div className="hidden md:block">
         {/* Main Search Bar */}
         <MainSearchBar />
       </div>
 
       {/* Main Content Section */}
-      <section className="py-8 md:py-12 max-w-7xl mx-auto">
-        <div className="container mx-auto px-4 md:px-6">
+      <section className="py-8 md:py-12 w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto">
+        <div className="mx-auto">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Main Content - Left Side */}
-            <div className="w-full lg:w-2/3">
+            <div className="w-full lg:w-3/4">
               {/* Filter Messages */}
               {category && (
                 <div className="mb-6">
@@ -221,7 +221,9 @@ export default async function BlogPage({
               )}
 
               {/* Social Share */}
-              <SocialShare />
+              <div className="flex justify-end">
+                <SocialShare />
+              </div>
 
               {/* Featured Article Section */}
               <div className="mt-8">
@@ -255,7 +257,7 @@ export default async function BlogPage({
             </div>
 
             {/* Sidebar - Right Side */}
-            <div className="w-full lg:w-1/3 hidden md:block">
+            <div className="w-full lg:w-1/4 hidden md:block">
               <BlogSidebarNew categories={categories || []} tags={tags || []} />
             </div>
           </div>

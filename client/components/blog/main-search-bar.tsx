@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Search, ChevronDown } from "lucide-react"
+import { Search } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"
@@ -9,10 +9,34 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"
 interface Professional {
   id: string
   name: string
+  slug: string
   title: string
   specialty: string
   city: string
   state: string
+}
+
+// Extrair nome base do slug (removendo o último segmento após o último hífen)
+const getBaseSlug = (slug: string): string => {
+  let baseSlug = slug.toLowerCase().trim()
+  const lastHyphenIndex = baseSlug.lastIndexOf('-')
+  if (lastHyphenIndex > 0) {
+    baseSlug = baseSlug.substring(0, lastHyphenIndex)
+  }
+  return baseSlug.trim()
+}
+
+// Extrair nome base do nome (removendo sufixos como " - SP", " - RJ")
+const getBaseName = (name: string): string => {
+  const patterns = [
+    /\s*-\s*[A-Z]{2}$/i, // " - SP", " - RJ"
+    /\s*\([^)]*\)$/,     // "(São Paulo)", "(Rio de Janeiro)"
+  ]
+  let baseName = name.trim()
+  patterns.forEach(pattern => {
+    baseName = baseName.replace(pattern, '')
+  })
+  return baseName.trim()
 }
 
 export function MainSearchBar() {
@@ -21,6 +45,12 @@ export function MainSearchBar() {
   const [profissional, setProfissional] = useState("")
   const [especialidade, setEspecialidade] = useState("")
   const [tema, setTema] = useState("")
+
+  // Estados para controlar a exibição das sugestões
+  const [showCidadeSuggestions, setShowCidadeSuggestions] = useState(false)
+  const [showProfissionalSuggestions, setShowProfissionalSuggestions] = useState(false)
+  const [showEspecialidadeSuggestions, setShowEspecialidadeSuggestions] = useState(false)
+  const [showTemaSuggestions, setShowTemaSuggestions] = useState(false)
 
   // Dados dinâmicos da API
   const [cidades, setCidades] = useState<string[]>([])
@@ -32,32 +62,31 @@ export function MainSearchBar() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log("🔍 Iniciando busca de dados para filtros...")
-        console.log("API_URL:", API_URL)
-
         // Buscar todos os profissionais ativos (limite máximo: 100)
         const professionalsUrl = `${API_URL}/professionals?per_page=100`
-        const categoriesUrl = `${API_URL}/categories`
+        const tagsUrl = `${API_URL}/tags`
 
-        console.log("📡 Buscando profissionais de:", professionalsUrl)
-        console.log("📡 Buscando categorias de:", categoriesUrl)
-
-        const [professionalsRes, categoriesRes] = await Promise.all([
+        const [professionalsRes, tagsRes] = await Promise.all([
           fetch(professionalsUrl),
-          fetch(categoriesUrl)
+          fetch(tagsUrl)
         ])
-
-        console.log("📊 Status profissionais:", professionalsRes.status)
-        console.log("📊 Status categorias:", categoriesRes.status)
 
         if (professionalsRes.ok) {
           const data = await professionalsRes.json()
           const professionals = data.professionals || []
 
-          console.log("✅ Profissionais encontrados:", professionals.length)
-          console.log("📋 Amostra de profissionais:", professionals.slice(0, 3))
+          // Filtrar profissionais únicos pelo nome base (mesmo nome = aparece uma vez)
+          const uniqueProfessionalsMap = new Map<string, Professional>()
+          professionals.forEach((p: Professional) => {
+            const baseName = getBaseName(p.name)
+            // Mantém apenas o primeiro profissional com cada nome base
+            if (!uniqueProfessionalsMap.has(baseName)) {
+              uniqueProfessionalsMap.set(baseName, { ...p, name: baseName })
+            }
+          })
+          const uniqueProfessionals = Array.from(uniqueProfessionalsMap.values())
 
-          setProfissionais(professionals)
+          setProfissionais(uniqueProfessionals)
 
           // Extrair cidades únicas
           const cidadesUnicas = [...new Set(
@@ -66,41 +95,31 @@ export function MainSearchBar() {
               .map((p: Professional) => p.city)
           )].sort() as string[]
 
-          console.log("🏙️ Cidades encontradas:", cidadesUnicas)
           setCidades(cidadesUnicas)
 
           // Extrair especialidades únicas
           const especialidadesUnicas = [...new Set(
             professionals
-              .filter((p: Professional) => p.specialty)
-              .map((p: Professional) => p.specialty)
+              .filter((p: Professional) => p.title)
+              .map((p: Professional) => p.title)
           )].sort() as string[]
 
-          console.log("💼 Especialidades encontradas:", especialidadesUnicas)
           setEspecialidades(especialidadesUnicas)
-        } else {
-          console.error("❌ Erro ao buscar profissionais:", professionalsRes.status, professionalsRes.statusText)
-          const errorText = await professionalsRes.text()
-          console.error("❌ Resposta do servidor:", errorText)
         }
 
-        // Buscar categorias (temas)
-        if (categoriesRes.ok) {
-          const categoriesData = await categoriesRes.json()
-          const categoryNames = (categoriesData.categories || [])
-            .map((cat: any) => cat.name)
+        // Buscar tags (temas)
+        if (tagsRes.ok) {
+          const tagsData = await tagsRes.json()
+          const tagNames = (tagsData.tags || [])
+            .map((tag: any) => tag.name)
             .sort()
 
-          console.log("🏷️ Categorias encontradas:", categoryNames)
-          setTemas(categoryNames)
-        } else {
-          console.error("❌ Erro ao buscar categorias:", categoriesRes.status, categoriesRes.statusText)
+          setTemas(tagNames)
         }
       } catch (error) {
-        console.error("🚨 Erro ao buscar dados:", error)
+        console.error("Erro ao buscar dados:", error)
       } finally {
         setIsLoading(false)
-        console.log("✅ Carregamento finalizado")
       }
     }
 
@@ -116,19 +135,33 @@ export function MainSearchBar() {
     if (cidade) params.append("city", cidade)
     if (profissional) params.append("name", profissional)
     if (especialidade) params.append("specialty", especialidade)
-    if (tema) params.append("category", tema)
+    if (tema) params.append("tag", tema)
 
     // Redirecionar para página de listagem de profissionais com filtros
     router.push(`/profissionais?${params.toString()}`)
   }
 
+  // Filtrar sugestões
+  const filteredCidades = cidades.filter(c =>
+    c.toLowerCase().includes(cidade.toLowerCase())
+  )
+  const filteredProfissionais = profissionais.filter(p =>
+    p.name.toLowerCase().includes(profissional.toLowerCase())
+  )
+  const filteredEspecialidades = especialidades.filter(e =>
+    e.toLowerCase().includes(especialidade.toLowerCase())
+  )
+  const filteredTemas = temas.filter(t =>
+    t.toLowerCase().includes(tema.toLowerCase())
+  )
+
   return (
-    <section className="bg-[#f5f5f0] py-8 md:py-12">
-      <div className="max-w-7xl mx-auto px-4 md:px-0">
+    <section className="bg-[#F3F0E8] py-8 md:py-10">
+      <div className="w-full mx-auto max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0">
         <div className="max-w-7xl mx-auto">
-          <div className="flex my-auto gap-10">
-            <h2 className="text-2xl md:text-3xl font-bold text-[#353E5C] mb-2">Pesquisar</h2>
-            <p className="text-gray-600 mb-6 text-sm">
+          <div className="flex text-start items-center justify-start gap-4">
+            {/* <h2 className="text-2xl md:text-3xl font-bold text-[#353E5C] mb-4">Pesquisar</h2> */}
+            <p className="text-gray-600 text-sm mb-4">
               Encontre profissionais e empresas por localização, especialidade ou categoria
             </p>
           </div>
@@ -136,74 +169,122 @@ export function MainSearchBar() {
           <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-3 uppercase">
             {/* Cidade */}
             <div className="flex-1 relative">
-              <select
+              <input
+                type="text"
                 value={cidade}
                 onChange={(e) => setCidade(e.target.value)}
+                onFocus={() => setShowCidadeSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowCidadeSuggestions(false), 200)}
                 disabled={isLoading}
+                placeholder="Cidade"
                 className="w-full px-4 py-3 border border-gray-300 rounded-3xl uppercase appearance-none bg-white text-[#928575] outline-none ring-2 ring-[#928575] border-transparent text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <option value="" className="uppercase border-2">Cidade</option>
-                {cidades.map((c) => (
-                  <option key={c} value={c} className="uppercase border-2">
-                    {c}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-6 w-6 text-[#928575] pointer-events-none" />
+              />
+              {showCidadeSuggestions && cidade && filteredCidades.length > 0 && (
+                <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  {filteredCidades.map((c) => (
+                    <div
+                      key={c}
+                      onClick={() => {
+                        setCidade(c)
+                        setShowCidadeSuggestions(false)
+                      }}
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm text-[#928575] uppercase"
+                    >
+                      {c}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Profissional / Empresa */}
             <div className="flex-1 relative">
-              <select
+              <input
+                type="text"
                 value={profissional}
                 onChange={(e) => setProfissional(e.target.value)}
+                onFocus={() => setShowProfissionalSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowProfissionalSuggestions(false), 200)}
                 disabled={isLoading}
+                placeholder="Profissional / Empresa"
                 className="w-full px-4 py-3 border border-gray-300 rounded-3xl uppercase appearance-none bg-white text-[#928575] outline-none ring-2 ring-[#928575] border-transparent text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <option value="">Profissional / Empresa</option>
-                {profissionais.map((p) => (
-                  <option key={p.id} value={p.name}>
-                    {p.name} {p.title && `- ${p.title}`}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-6 w-6 text-[#928575] pointer-events-none" />
+              />
+              {showProfissionalSuggestions && profissional && filteredProfissionais.length > 0 && (
+                <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  {filteredProfissionais.map((p) => (
+                    <div
+                      key={p.id}
+                      onClick={() => {
+                        setProfissional(p.name)
+                        setShowProfissionalSuggestions(false)
+                      }}
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm text-[#928575] uppercase"
+                    >
+                      {p.name}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {/* Especialidade */}
+            {/* Profissão */}
             <div className="flex-1 relative">
-              <select
+              <input
+                type="text"
                 value={especialidade}
                 onChange={(e) => setEspecialidade(e.target.value)}
+                onFocus={() => setShowEspecialidadeSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowEspecialidadeSuggestions(false), 200)}
                 disabled={isLoading}
+                placeholder="Área de Atuação"
                 className="w-full px-4 py-3 border border-gray-300 rounded-3xl uppercase appearance-none bg-white text-[#928575] outline-none ring-2 ring-[#928575] border-transparent text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <option value="">Especialidade</option>
-                {especialidades.map((e) => (
-                  <option key={e} value={e}>
-                    {e}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-6 w-6 text-[#928575] pointer-events-none" />
+              />
+              {showEspecialidadeSuggestions && especialidade && filteredEspecialidades.length > 0 && (
+                <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  {filteredEspecialidades.map((e) => (
+                    <div
+                      key={e}
+                      onClick={() => {
+                        setEspecialidade(e)
+                        setShowEspecialidadeSuggestions(false)
+                      }}
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm text-[#928575] uppercase"
+                    >
+                      {e}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Tema */}
             <div className="flex-1 relative">
-              <select
+              <input
+                type="text"
                 value={tema}
                 onChange={(e) => setTema(e.target.value)}
+                onFocus={() => setShowTemaSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowTemaSuggestions(false), 200)}
                 disabled={isLoading}
+                placeholder="Tema"
                 className="w-full px-4 py-3 border border-gray-300 rounded-3xl uppercase appearance-none bg-white text-[#928575] outline-none ring-2 ring-[#928575] border-transparent text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <option value="">Tema</option>
-                {temas.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-6 w-6 text-[#928575] pointer-events-none" />
+              />
+              {showTemaSuggestions && tema && filteredTemas.length > 0 && (
+                <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  {filteredTemas.map((t) => (
+                    <div
+                      key={t}
+                      onClick={() => {
+                        setTema(t)
+                        setShowTemaSuggestions(false)
+                      }}
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm text-[#928575] capitalize"
+                    >
+                      {t}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Botão de busca */}

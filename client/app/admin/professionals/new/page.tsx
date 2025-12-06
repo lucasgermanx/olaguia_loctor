@@ -43,6 +43,7 @@ export default function NewProfessionalPage() {
     name: "",
     slug: "",
     title: "",
+    register: "",
     specialty: "",
     bio: "",
     avatar: "",
@@ -294,6 +295,14 @@ export default function NewProfessionalPage() {
                         onChange={handleInputChange}
                         required
                         className="font-bold"
+                      />
+                      <Textarea
+                        placeholder="Registro (Opcional)"
+                        name="register"
+                        value={formData.register}
+                        onChange={handleInputChange}
+                        rows={2}
+                        className="text-sm"
                       />
                       <Input
                         placeholder="Especialidade *"
@@ -630,21 +639,20 @@ export default function NewProfessionalPage() {
                       <FaPhoneAlt className="h-4 w-4 text-[#126861]" />
                       <span>Contatos</span>
                     </div>
-                    <Input
+                    <Textarea
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
                       placeholder="Telefone *"
                       required
+                      rows={5}
                       className="text-xs mb-2"
                     />
                     <Input
-                      name="email"
-                      type="email"
-                      value={formData.email}
+                      name="social_whatsapp"
+                      value={formData.social_whatsapp}
                       onChange={handleInputChange}
-                      placeholder="Email *"
-                      required
+                      placeholder="WhatsApp (com DDD)"
                       className="text-xs"
                     />
                   </div>
@@ -676,10 +684,12 @@ export default function NewProfessionalPage() {
                       className="text-xs"
                     />
                     <Input
-                      name="social_whatsapp"
-                      value={formData.social_whatsapp}
+                      name="email"
+                      type="email"
+                      value={formData.email}
                       onChange={handleInputChange}
-                      placeholder="WhatsApp (com DDD)"
+                      placeholder="Email *"
+                      required
                       className="text-xs"
                     />
                   </div>

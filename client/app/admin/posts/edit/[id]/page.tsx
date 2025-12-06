@@ -136,7 +136,7 @@ export default function EditPostPage() {
           featured_image: postData.post.featured_image || "",
           published: postData.post.published,
           theme: postData.post.theme || "",
-          position: postData.post.position || "",
+          position: postData.post.position || "MAIN",
           order: postData.post.order || 0,
           featured: postData.post.featured || false,
         })

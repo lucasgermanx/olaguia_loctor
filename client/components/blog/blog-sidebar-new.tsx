@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Search, Plus, ChevronDown } from "lucide-react"
+import { Search, Plus, ChevronDown, BookOpen, Library, Grid2X2 } from "lucide-react"
 import Image from "next/image"
 
 interface Category {
@@ -23,20 +23,106 @@ interface PostSuggestion {
   slug: string
 }
 
+interface Professional {
+  id: string
+  name: string
+  slug: string
+  title: string
+  city?: string
+  state?: string
+}
+
 interface BlogSidebarNewProps {
   categories: Category[]
   tags: Tag[]
 }
 
+interface HomeSlot {
+  id: string
+  section: string
+  position: string
+  slot_index: number | null
+  order: number
+  post_id: string | null
+  post: any | null
+}
+
 export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [suggestions, setSuggestions] = useState<PostSuggestion[]>([])
+  const [professionalSuggestions, setProfessionalSuggestions] = useState<Professional[]>([])
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false)
   const [expandedCategories, setExpandedCategories] = useState<string[]>([])
   const [isRevistaExpanded, setIsRevistaExpanded] = useState(true)
+  const [slots, setSlots] = useState<HomeSlot[]>([])
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"
 
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [slotsRes, adsRes] = await Promise.all([
+          fetch(`${API_URL}/home-slots`),
+          fetch(`${API_URL}/ads?active_only=true`),
+        ])
+
+        if (slotsRes.ok) {
+          const slotsData = await slotsRes.json()
+          setSlots(slotsData.slots || [])
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error)
+      } finally {
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  // Buscar sugestões de posts e profissionais
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (searchTerm.trim().length < 2) {
+        setSuggestions([])
+        setProfessionalSuggestions([])
+        return
+      }
+
+      setIsLoadingSuggestions(true)
+      try {
+        const [postsRes, professionalsRes] = await Promise.all([
+          fetch(`${API_URL}/posts?search=${encodeURIComponent(searchTerm)}&per_page=5&published=true`),
+          fetch(`${API_URL}/professionals?search=${encodeURIComponent(searchTerm)}&per_page=5&active=true`)
+        ])
+
+        if (postsRes.ok) {
+          const data = await postsRes.json()
+          setSuggestions(data.posts || [])
+        }
+
+        if (professionalsRes.ok) {
+          const data = await professionalsRes.json()
+          setProfessionalSuggestions(data.professionals || [])
+        }
+      } catch (error) {
+        console.error("Erro ao buscar sugestões:", error)
+      } finally {
+        setIsLoadingSuggestions(false)
+      }
+    }
+
+    const debounce = setTimeout(fetchSuggestions, 300)
+    return () => clearTimeout(debounce)
+  }, [searchTerm, API_URL])
+
+
+
+  const getSlots = (section: string, position: string) => {
+    return slots
+      .filter((slot) => slot.section === section && slot.position === position)
+      .sort((a, b) => (a.slot_index ?? 0) - (b.slot_index ?? 0))
+  }
   // Buscar sugestões de posts conforme o usuário digita (com debounce)
   useEffect(() => {
     const term = searchTerm.trim()
@@ -191,28 +277,59 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
             </svg>
           </button>
 
-          {/* Sugestões de posts */}
+          {/* Sugestões de posts e profissionais */}
           {searchTerm.trim().length > 1 && (
-            <div className="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-y-auto">
-              {isLoadingSuggestions && suggestions.length === 0 && (
+            <div className="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto">
+              {isLoadingSuggestions && suggestions.length === 0 && professionalSuggestions.length === 0 && (
                 <div className="px-4 py-3 text-sm text-gray-500">Buscando sugestões...</div>
               )}
 
-              {!isLoadingSuggestions && suggestions.length === 0 && (
-                <div className="px-4 py-3 text-sm text-gray-500">Nenhum post encontrado.</div>
+              {!isLoadingSuggestions && suggestions.length === 0 && professionalSuggestions.length === 0 && (
+                <div className="px-4 py-3 text-sm text-gray-500">Nenhum resultado encontrado.</div>
               )}
 
-              {suggestions.map((post) => (
-                <Link
-                  key={post.id}
-                  href={`/blog/${post.slug}`}
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  {post.title}
-                </Link>
-              ))}
+              {/* Profissionais */}
+              {professionalSuggestions.length > 0 && (
+                <div>
+                  <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase bg-gray-50">
+                    Profissionais
+                  </div>
+                  {professionalSuggestions.map((professional) => (
+                    <Link
+                      key={professional.id}
+                      href={`/profissional/${professional.slug}`}
+                      className="block px-4 py-3 text-sm hover:bg-gray-100 border-b border-gray-100"
+                    >
+                      <div className="font-medium text-gray-900">{professional.name}</div>
+                      <div className="text-xs text-gray-500 mt-0.5">
+                        {professional.title}
+                        {professional.city && ` • ${professional.city}`}
+                        {professional.state && ` - ${professional.state}`}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
 
+              {/* Posts */}
               {suggestions.length > 0 && (
+                <div>
+                  <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase bg-gray-50">
+                    Artigos
+                  </div>
+                  {suggestions.map((post) => (
+                    <Link
+                      key={post.id}
+                      href={`/blog/${post.slug}`}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b border-gray-100"
+                    >
+                      {post.title}
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              {(suggestions.length > 0 || professionalSuggestions.length > 0) && (
                 <button
                   type="button"
                   onClick={() => {
@@ -235,7 +352,7 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-2xl font-bold text-gray-900 uppercase tracking-wide">Revista</h3>
-          <button
+          {/* <button
             onClick={() => setIsRevistaExpanded(prev => !prev)}
             className="w-8 h-8 rounded-full bg-[#928575] flex items-center justify-center hover:bg-[#928575] transition-colors"
             aria-label="Expandir/collapse revista"
@@ -252,7 +369,7 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
                 <polyline points="6 9 12 15 18 9" />
               </svg>
             )}
-          </button>
+          </button> */}
         </div>
         {isRevistaExpanded && (
           <>
@@ -268,9 +385,9 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
                   <Link
                     key={category}
                     href={`/blog?tag=${tagSlug}`}
-                    className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg hover:bg-gray-200 transition-colors group"
+                    className="flex items-center gap-2 group"
                   >
-                    <Image src="/logoicon.png" alt={category} width={20} height={20} />
+                    <BookOpen width={20} height={20} className="text-[#928575]" />
                     <span className="text-sm text-gray-700 group-hover:text-[#126861] transition-colors">
                       {category}
                     </span>
@@ -304,10 +421,12 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
               <Link
                 key={cat}
                 href={`/blog?tag=${tagSlug}`}
-                className="flex items-center gap-2 text-sm text-gray-700 hover:text-[#126861] transition-colors"
+                className="flex items-center gap-2 group"
               >
-                <Image src="/logoicon.png" alt={cat} width={20} height={20} />
-                <span>{cat}</span>
+                <Grid2X2 width={20} height={20} className="text-[#928575]" />
+                <span className="text-sm text-gray-700 group-hover:text-[#126861] transition-colors">
+                  <span>{cat}</span>
+                </span>
               </Link>
             )
           })}
@@ -321,7 +440,7 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
         <p className="text-sm text-gray-600 mb-4">
           Consectetuer nascetur orci et taciti maecerus ultricies varius quisque molestie etiam semper parturient nisl tempus
         </p>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 gap-2">
           {[
             "EMPREENDEDORISMO",
             "FINANÇAS",
@@ -337,9 +456,12 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
               <Link
                 key={item}
                 href={`/blog?tag=${tagSlug}`}
-                className="px-3 py-2 bg-gray-100 text-gray-700 text-xs font-medium rounded hover:bg-gray-200 transition-colors text-start block"
+                className="flex items-center gap-2 group"
               >
-                {item}
+                <Library width={20} height={20} className="text-[#928575]" />
+                <span className="text-sm text-gray-700 group-hover:text-[#126861] transition-colors">
+                  {item}
+                </span>
               </Link>
             )
           })}
@@ -353,8 +475,37 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
         <p className="text-sm text-gray-600 mb-4">
           Consectetuer nascetur orci et taciti maecenas ultricies varius quisque molestie
         </p>
-        <div className="space-y-4">
-          <p className="text-sm text-gray-500">Nenhum serviço disponível no momento.</p>
+        <div className="space-y-4 border-r border-white/20">
+          {getSlots("EMPRESAS_NEGOCIOS", "SIDE").slice(0, 3).map((slot, index) => {
+            const post = slot.post
+            if (!post) return null
+
+            return (
+              <Link key={slot.id} href={`/blog/${post.slug}`} className={`flex gap-3 sm:gap-2 group ${index == 1 ? "border-y border-[#EEEEEE] py-4" : ""}`}>
+                <div className="relative w-16 h-auto flex-shrink-0">
+                  <Image
+                    src={post.featured_image || "/placeholder.jpg"}
+                    alt={post.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-open-sans font-semibold text-xs sm:text-xs text-gray-700 uppercase line-clamp-2">
+                    {post.title}
+                  </h4>
+                  {post.excerpt && (
+                    <p className="text-[10px] font-lato text-gray-600 line-clamp-2 mb-1">
+                      {post.excerpt}
+                    </p>
+                  )}
+                  <span className="font-lato text-[8px] italic text-gray-600 border border-gray-300 px-2 py-1 uppercase">
+                    LEIA MAIS
+                  </span>
+                </div>
+              </Link>
+            )
+          })}
         </div>
       </div>
       <div className="border-t border-gray-300"></div>

@@ -29,9 +29,6 @@ export class PrismaTagsRepository implements TagsRepository {
 
   async findMany() {
     const tags = await prisma.tag.findMany({
-      orderBy: {
-        name: "asc",
-      },
       include: {
         _count: {
           select: {
@@ -41,7 +38,10 @@ export class PrismaTagsRepository implements TagsRepository {
       },
     })
 
-    return tags
+    // Ordenar alfabeticamente respeitando acentos do português
+    return tags.sort((a, b) =>
+      a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' })
+    )
   }
 
   async create(data: Prisma.TagCreateInput) {

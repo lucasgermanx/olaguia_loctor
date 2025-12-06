@@ -1,10 +1,55 @@
+"use client"
+
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { BsFillMegaphoneFill } from "react-icons/bs";
 import { placeholderImages } from "@/lib/placeholder-images";
+import { useEffect, useState } from "react";
+
+interface HomeSlot {
+  id: string
+  section: string
+  position: string
+  slot_index: number | null
+  order: number
+  post_id: string | null
+  post: any | null
+}
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"
 
 export function Footer() {
+  const [slots, setSlots] = useState<HomeSlot[]>([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [slotsRes, adsRes] = await Promise.all([
+          fetch(`${API_URL}/home-slots`),
+          fetch(`${API_URL}/ads?active_only=true`),
+        ])
+
+        if (slotsRes.ok) {
+          const slotsData = await slotsRes.json()
+          setSlots(slotsData.slots || [])
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error)
+      } finally {
+      }
+    }
+
+    fetchData()
+  }, [])
+
+
+
+  const getSlots = (section: string, position: string) => {
+    return slots
+      .filter((slot) => slot.section === section && slot.position === position)
+      .sort((a, b) => (a.slot_index ?? 0) - (b.slot_index ?? 0))
+  }
   return (
     <footer className="bg-[#126861] text-white pt-10">
       {/* Top Band */}
@@ -65,7 +110,7 @@ export function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/sobre" className="text-gray-200 hover:text-white transition-colors text-sm">
+                  <Link href="blog?tag=sobre-nos" className="text-gray-200 hover:text-white transition-colors text-sm">
                     Sobre nós
                   </Link>
                 </li>
@@ -85,29 +130,36 @@ export function Footer() {
 
           {/* Middle Section - Article Cards */}
           <div className="space-y-4 border-r border-white/20 pr-10">
-            {[1, 2, 3].map((item) => (
-              <div key={item} className="flex gap-4">
-                <div className="relative w-20 h-20 flex-shrink-0">
-                  <Image
-                    src={placeholderImages.office}
-                    alt={`Post ${item}`}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="flex-1">
-                  <h4 className="font-open-sans font-semibold text-sm mb-1 uppercase">
-                    LOREM IPSUM SIT AMET CONSECT
-                  </h4>
-                  <p className="text-xs text-gray-200 mb-2 line-clamp-2">
-                    Lorem ipsum dolor sit amet consectetur adipiscing amet se you.
-                  </p>
-                  <Button className="bg-transparent hover:bg-transparent border border-white text-white text-xs px-3 font-normal py-1 h-auto uppercase">
-                    LEIA MAIS
-                  </Button>
-                </div>
-              </div>
-            ))}
+            {getSlots("EMPRESAS_NEGOCIOS", "SIDE").slice(0, 3).map((slot, index) => {
+              const post = slot.post
+              if (!post) return null
+
+              return (
+                <Link key={slot.id} href={`/blog/${post.slug}`} className={`flex gap-3 sm:gap-4 group ${index == 1 ? "border-y border-[#EEEEEE] py-4" : ""}`}>
+                  <div className="relative w-24 h-auto flex-shrink-0">
+                    <Image
+                      src={post.featured_image || placeholderImages.office}
+                      alt={post.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-open-sans font-semibold text-xs sm:text-xs text-gray-100 uppercase line-clamp-2">
+                      {post.title}
+                    </h4>
+                    {post.excerpt && (
+                      <p className="text-[10px] font-lato text-gray-200 line-clamp-2 mb-1">
+                        {post.excerpt}
+                      </p>
+                    )}
+                    <span className="font-lato text-[8px] italic text-gray-100 border border-gray-300 px-2 py-1 uppercase">
+                      LEIA MAIS
+                    </span>
+                  </div>
+                </Link>
+              )
+            })}
           </div>
 
           {/* Right Side - COMO ANUNCIAR and Social */}

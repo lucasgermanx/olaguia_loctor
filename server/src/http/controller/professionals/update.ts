@@ -11,6 +11,7 @@ export async function updateProfessional(request: FastifyRequest, reply: Fastify
   const updateProfessionalBodySchema = z.object({
     name: z.string().optional(),
     slug: z.string().optional(),
+    register: z.string().optional(),
     title: z.string().optional(),
     specialty: z.string().optional(),
     bio: z.string().optional(),

@@ -266,6 +266,7 @@ model Professional {
   slug             String   @unique
   title            String // Ex: "Dentista", "Médico", etc
   specialty        String // Especialidade principal
+  register         String?
   bio              String   @db.Text
   avatar           String?
   cover_image      String?

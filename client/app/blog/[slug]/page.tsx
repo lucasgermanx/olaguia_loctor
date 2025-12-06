@@ -21,6 +21,7 @@ import { LuCirclePlay } from "react-icons/lu";
 import { Facebook, Twitter, Instagram, Linkedin, MessageCircle, Search, ChevronDown, ChevronUp, Volume2, Plus, Minus } from "lucide-react"
 import { BlogSidebarNew } from "@/components/blog/blog-sidebar-new"
 import { SocialShare } from "@/components/blog/social-share"
+import { MainSearchBar } from "@/components/blog/main-search-bar"
 
 // Definir a URL da API com fallback
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1003';
@@ -440,11 +441,16 @@ export default function BlogPostPage() {
   const shareText = post.title
 
   return (
-    <div className="flex min-h-screen flex-col bg-white md:pt-10">
-      <div className="container mx-auto px-4 md:px-6 py-8">
+    <div className="flex min-h-screen flex-col bg-white">
+
+      <div className="hidden md:block ">
+        <MainSearchBar />
+      </div>
+
+      <div className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto py-8">
         <div className="flex flex-col lg:flex-row lg:items-start gap-8">
           {/* Main Content - Left Column */}
-          <div className="w-full lg:w-2/3 lg:flex-shrink-0">
+          <div className="w-full lg:w-3/4 lg:flex-shrink-0">
             {/* Post Title with Category Tag */}
 
             {/* Author Header */}
@@ -703,7 +709,7 @@ export default function BlogPostPage() {
             )}
           </div>
           {/* Sidebar - Right Column */}
-          <div className="w-full lg:w-1/3 mt-20 hidden lg:block">
+          <div className="w-full lg:w-1/4 mt-20 hidden lg:block">
             <BlogSidebarNew categories={categories || []} tags={tags || []} />
           </div>
         </div>

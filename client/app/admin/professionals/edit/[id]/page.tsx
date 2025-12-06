@@ -42,6 +42,7 @@ export default function EditProfessionalPage() {
 
   const [formData, setFormData] = useState({
     name: "",
+    register: "",
     slug: "",
     title: "",
     specialty: "",
@@ -97,6 +98,7 @@ export default function EditProfessionalPage() {
           setFormData({
             name: prof.name || "",
             slug: prof.slug || "",
+            register: prof.register || "",
             title: prof.title || "",
             specialty: prof.specialty || "",
             bio: prof.bio || "",
@@ -377,7 +379,15 @@ export default function EditProfessionalPage() {
                         required
                         className="font-bold"
                       />
-                      <Input
+                      <Textarea
+                        placeholder="Registro (Opcional)"
+                        name="register"
+                        value={formData.register}
+                        onChange={handleInputChange}
+                        rows={2}
+                        className="text-sm"
+                      />
+                      <Textarea
                         placeholder="Especialidade *"
                         name="specialty"
                         value={formData.specialty}
@@ -427,7 +437,7 @@ export default function EditProfessionalPage() {
                       name="bio"
                       value={formData.bio}
                       onChange={handleInputChange}
-                      rows={8}
+                      rows={19}
                       required
                       className="text-base leading-relaxed"
                     />
@@ -712,21 +722,21 @@ export default function EditProfessionalPage() {
                       <FaPhoneAlt className="h-4 w-4 text-[#126861]" />
                       <span>Contatos</span>
                     </div>
-                    <Input
+                    <Textarea
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
                       placeholder="Telefone *"
                       required
+                      rows={2}
                       className="text-xs mb-2"
                     />
+
                     <Input
-                      name="email"
-                      type="email"
-                      value={formData.email}
+                      name="social_whatsapp"
+                      value={formData.social_whatsapp}
                       onChange={handleInputChange}
-                      placeholder="Email *"
-                      required
+                      placeholder="WhatsApp (com DDD)"
                       className="text-xs"
                     />
                   </div>
@@ -758,10 +768,12 @@ export default function EditProfessionalPage() {
                       className="text-xs"
                     />
                     <Input
-                      name="social_whatsapp"
-                      value={formData.social_whatsapp}
+                      name="email"
+                      type="email"
+                      value={formData.email}
                       onChange={handleInputChange}
-                      placeholder="WhatsApp (com DDD)"
+                      placeholder="Email *"
+                      required
                       className="text-xs"
                     />
                   </div>

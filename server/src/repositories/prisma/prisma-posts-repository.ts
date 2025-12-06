@@ -139,7 +139,7 @@ export class PrismaPostsRepository implements PostsRepository {
           },
         },
         orderBy: {
-          published_at: "desc",
+          updated_at: "desc",
         },
         skip: (page - 1) * per_page,
         take: per_page,

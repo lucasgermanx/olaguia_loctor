@@ -207,9 +207,9 @@ export function MobileBottomNav() {
 
       {/* Painel deslizante */}
       <div
-        className={`fixed left-12 right-12 bottom-[100px] z-50 bg-[#f5f5f0] rounded-3xl shadow-2xl transition-transform duration-300 ease-out md:hidden ${activeSection ? "translate-y-0" : "translate-y-full"
+        className={`fixed left-0 bottom-[100px] z-50 bg-[#f5f5f0] rounded-3xl shadow-2xl transition-transform duration-300 ease-out md:hidden ${activeSection ? "translate-y-0" : "translate-y-full hidden"
           }`}
-        style={{ maxHeight: "60vh", overflowY: "auto" }}
+        style={{ maxHeight: "100vh", overflowY: "auto" }}
       >
         {/* Botão fechar */}
         <div className="sticky top-0 bg-[#f5f5f0] px-4 py-3 flex justify-end border-b border-gray-200 rounded-t-3xl">
@@ -386,9 +386,7 @@ export function MobileBottomNav() {
       </div>
 
       {/* Barra de navegação flutuante com transparência e blur */}
-      <nav className="fixed bottom-4 left-12 right-12 z-50 bg-white/60 backdrop-blur-xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] rounded-2xl overflow-hidden md:hidden">
-        {/* Barra verde no topo */}
-        <div className="h-[1px] bg-[#126861] w-full" />
+      <nav className="fixed w-full bottom-0 z-50 bg-white shadow-md overflow-hidden md:hidden">
 
         <div className="flex items-center justify-around px-2 py-3">
           {navItems.map((item) => {

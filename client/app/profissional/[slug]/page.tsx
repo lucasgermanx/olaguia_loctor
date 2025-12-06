@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useParams } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -24,7 +24,8 @@ import {
   Twitter,
   Youtube,
   MessageCircle,
-  ArrowRight
+  ArrowRight,
+  Mail
 } from "lucide-react"
 import { FaClock, FaFacebookF, FaLinkedinIn, FaPhoneAlt, FaTwitter, FaYoutube } from "react-icons/fa"
 import { RiMapPin2Fill } from "react-icons/ri";
@@ -38,6 +39,7 @@ interface Professional {
   id: string
   name: string
   title: string
+  register: string
   specialty: string
   bio: string
   avatar: string
@@ -69,6 +71,7 @@ interface Professional {
     instagram?: string
     linkedin?: string
     twitter?: string
+    whatsapp?: string
   }
 }
 
@@ -100,6 +103,62 @@ export default function ProfessionalPage() {
     message: ""
   })
 
+  const asideRef = useRef<HTMLElement | null>(null);
+  const topMeasureRef = useRef<HTMLElement | null>(null); // elemento que mede a área acima do aside
+  const [topOffset, setTopOffset] = useState<number>(16); // valor em px para top do sticky
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const calc = () => {
+      // distância do topo da viewport até o topo do elemento que medimos
+      const measureEl = topMeasureRef.current;
+      const asideEl = asideRef.current;
+      if (!measureEl || !asideEl) return;
+
+      // altura do conteúdo acima do aside (pode ser header, breadcrumb, etc)
+      const rect = measureEl.getBoundingClientRect();
+      const distanceFromViewportTopToMeasureBottom = rect.bottom; // px
+
+      // queremos que o aside só "cole" depois desse espaço. 
+      // Podemos adicionar um padding extra se quiser (ex: 16)
+      const padding = 16;
+
+      // Garantir um mínimo e máximo se desejar
+      const computedTop = Math.max(8, distanceFromViewportTopToMeasureBottom + padding);
+
+      // Mas top de sticky precisa ser em relação à viewport.
+      // Se for muito grande (menu curto), limitar a, por exemplo, 120
+      const maxTop = 200;
+      setTopOffset(Math.min(computedTop, maxTop));
+    };
+
+    // recalcula em resize e em load
+    calc();
+    const onResize = () => calc();
+    window.addEventListener("resize", onResize);
+
+    // Observe mudanças no conteúdo (útil quando imagens carregam)
+    let ro: ResizeObserver | null = null;
+    try {
+      ro = new ResizeObserver(() => calc());
+      if (topMeasureRef.current) ro.observe(topMeasureRef.current);
+      if (document.body) ro.observe(document.body);
+    } catch (e) {
+      // ResizeObserver pode não existir em ambiente muito antigo — fallback ao resize/window
+    }
+
+    return () => {
+      window.removeEventListener("resize", onResize);
+      if (ro) {
+        try {
+          if (topMeasureRef.current) ro.unobserve(topMeasureRef.current);
+          ro.disconnect();
+        } catch { }
+      }
+    };
+  }, [professional]);
+
   // Fetch professional data from API
   useEffect(() => {
     const fetchData = async () => {
@@ -117,6 +176,7 @@ export default function ProfessionalPage() {
             id: prof.id,
             name: prof.name,
             title: prof.title,
+            register: prof.register || "",
             specialty: prof.specialty,
             bio: prof.bio,
             avatar: prof.avatar || "/placeholder.svg?height=300&width=300",
@@ -135,15 +195,16 @@ export default function ProfessionalPage() {
               instagram: prof.social_instagram,
               linkedin: prof.social_linkedin,
               twitter: prof.social_twitter,
+              whatsapp: prof.social_whatsapp,
             }
           })
-        }
 
-        // Fetch recent blog posts
-        const postsRes = await fetch(`${API_URL}/posts?per_page=3`)
-        if (postsRes.ok) {
-          const postsData = await postsRes.json()
-          setPosts(postsData.posts || [])
+          // Fetch posts do profissional
+          const postsRes = await fetch(`${API_URL}/posts?per_page=6&professional=${prof.id}&published=true`)
+          if (postsRes.ok) {
+            const postsData = await postsRes.json()
+            setPosts(postsData.posts || [])
+          }
         }
       } catch (error) {
         console.error("Error fetching data:", error)
@@ -189,17 +250,19 @@ export default function ProfessionalPage() {
   }
 
   return (
-    <div className="flex flex-col bg-white pt-24">
+    <div className="flex flex-col bg-white">
       {/* Barra de busca / filtros (topo da página) */}
-      <MainSearchBar />
+      <div className="hidden md:block ">
+        <MainSearchBar />
+      </div>
 
       {/* Conteúdo principal */}
-      <div className="w-full py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto mb-20">
+      <div className=" py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto mb-10">
           {/* Coluna esquerda - conteúdo principal */}
           <div className="lg:col-span-2 space-y-10">
             {/* SOBRE - foto + texto, como no layout */}
-            <section id="sobre" className="mb-10">
+            <section id="sobre" className="">
               <div className="grid grid-cols-1 md:grid-cols-[260px,1fr] gap-8">
                 <div className="border border-gray-200">
                   <div className="relative w-full aspect-[3/4] mb-4 overflow-hidden">
@@ -211,69 +274,74 @@ export default function ProfessionalPage() {
                     />
                   </div>
                   <div className="px-4 pb-4">
-                    <h3 className="text-lg font-bold text-gray-900">{professional.name}</h3>
-                    <p className="text-sm text-gray-600">{professional.specialty}</p>
+                    <h3 className="text-2xl font-semibold text-gray-900">{professional.name}</h3>
+                    {professional.register && (
+                      <p className="text-sm text-gray-600 font-semibold line-clamp-4 mb-1">{professional.register}</p>
+                    )}
+                    <p className="text-sm text-gray-700 line-clamp-4 mb-2 whitespace-pre-line">{professional.specialty}</p>
+                    <p className="text-sm font-semibold text-gray-600 border-t border-gray-200 pt-2">@{professional.socialLinks.instagram?.split("/").pop()}</p>
                   </div>
                 </div>
                 <div>
-                  <h2 className="text-4xl font-semibold uppercase mb-3">
+                  <h2 className="text-[32px] text-neutral-700 font-normal font-sans uppercase mb-3">
                     Sobre
                   </h2>
-                  <div className="space-y-3 text-base leading-relaxed text-gray-700">
-                    {professional.bio.split("\n").map((paragraph, index) => (
-                      <p key={index}>{paragraph}</p>
-                    ))}
+                  <div className="text-base leading-relaxed text-gray-600 line-clamp-[19] whitespace-pre-line">
+                    {professional.bio}
                   </div>
                 </div>
               </div>
             </section>
 
+            <div className="h-[1px] w-full bg-gray-300 px-4" />
             {/* Seção de Serviços com imagem e lista */}
             <section className="bg-white overflow-hidden">
-              {/* Imagem do consultório */}
-              {professional.coverImage && (
-                <div className="relative w-full h-48 md:h-64">
-                  <Image
-                    src={professional.coverImage}
-                    alt={professional.name}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              )}
-
               {/* Conteúdo */}
-              <div className="pt-6">
-                <h2 className="text-xl md:text-2xl font-semibold text-gray-900 uppercase mb-4">
+              <div className="">
+                <h2 className="font-sans text-[32px]/10 line-clamp-2 font-normal text-neutral-700 uppercase mb-4">
                   {professional.specialty || "LOREM IPSUM DOLOR SIT AMET SEE CONSECTETUR ADIPINSIG"}
                 </h2>
-                <p className="text-sm md:text-base text-gray-600 mb-6 leading-relaxed ">
+                <p className="font-sans text-base md:text-lg text-neutral-600 mb-6 leading-relaxed line-clamp-2">
                   {professional.bio.split('\n')[0] || "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam"}
                 </p>
 
+                {/* Imagem do consultório */}
+                {professional.coverImage && (
+                  <div className="relative w-full h-48 md:h-64">
+                    <Image
+                      src={professional.coverImage}
+                      alt={professional.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                )}
+
                 {/* Lista de serviços numerada */}
-                <div className="space-y-3">
+                <div className="space-y-4 mt-8">
                   {professional.services.slice(0, 6).map((service, index) => (
                     <div
                       key={service.id}
-                      className="flex items-start gap-4"
+                      className="flex-1 items-center gap-4"
                     >
-                      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#126861] flex items-center justify-center text-white font-semibold">
-                        <ArrowRight className="w-4 h-4" />
+                      <div className="flex items-center gap-2">
+                        <div className="flex-shrink-0 w-6 h-6 rounded-lg bg-[#7a6b5a] flex items-center justify-center text-white font-semibold">
+                          <ArrowRight className="w-4 h-4" />
+                        </div>
+                        <h3 className="font-sans font-normal text-[28px] mb-1 text-neutral-700 line-clamp-1">{service.title}</h3>
                       </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 mb-1">{service.title}</h3>
-                        <p className="text-sm text-gray-600">{service.description}</p>
-                      </div>
+                      <p className="font-sans text-[17px] text-neutral-600 line-clamp-2">{service.description}</p>
                     </div>
                   ))}
                 </div>
               </div>
             </section>
 
+            <div className="h-[1px] w-full bg-gray-300 px-4" />
+
             {/* O que os clientes dizem - Carousel */}
-            <section id="depoimentos" className="bg-white py-12 px-4 md:px-8">
-              <h2 className="text-3xl md:text-4xl font-semibold text-center uppercase mb-8 text-gray-900">
+            <section id="depoimentos" className="bg-white">
+              <h2 className="font-sans text-[32px]/10 line-clamp-2 font-normal text-neutral-700 uppercase text-center mb-8">
                 O que os clientes dizem...
               </h2>
 
@@ -283,11 +351,11 @@ export default function ProfessionalPage() {
                     <CarouselContent>
                       {professional.testimonials.map((testimonial) => (
                         <CarouselItem key={testimonial.id}>
-                          <div className="px-4 md:px-12 py-4 text-center">
+                          <div className="px-4 md:px-12 py-2 text-center">
                             <div className="flex justify-center">
-                              <span className="text-7xl md:text-8xl font-serif text-[#928575] leading-none">"</span>
+                              {/* <span className="text-7xl md:text-8xl font-serif text-[#928575] leading-none h-fit">"</span> */}
                             </div>
-                            <p className="text-base md:text-lg text-gray-700 italic mb-6 leading-relaxed max-w-2xl mx-auto">
+                            <p className="text-base md:text-lg font-medium font-open-sans text-neutral-700 italic mb-2 leading-relaxed max-w-lg mx-auto">
                               {testimonial.content}
                             </p>
                             <div className="flex justify-center gap-1 mb-4">
@@ -302,59 +370,61 @@ export default function ProfessionalPage() {
                                 </svg>
                               ))}
                             </div>
-                            <p className="text-sm font-semibold text-gray-900">
-                              {testimonial.author}
-                            </p>
+                            <div>
+                              <p className="text-sm font-semibold font-open-sans text-neutral-700">
+                                {testimonial.author}
+                              </p>
+                            </div>
                           </div>
                         </CarouselItem>
                       ))}
                     </CarouselContent>
-                    <CarouselPrevious className="bg-[#928575] hover:bg-[#928575]/80 text-white hover:text[#928575] rounded" />
-                    <CarouselNext className="bg-[#928575] hover:bg-[#928575]/80 text-white hover:text[#928575] rounded" />
+                    <CarouselPrevious className="left-5 bg-[#928575] hover:bg-[#928575]/80 text-white hover:text-white rounded rotate-180" />
+                    <CarouselNext className="right-5 bg-[#928575] hover:bg-[#928575]/80 text-white hover:text-white rounded" />
                   </Carousel>
                 </div>
               )}
+              <div className="h-[1px] w-full bg-gray-300 mt-8" />
             </section>
-
-            {/* Imagem grande abaixo dos depoimentos */}
-            {professional.galleryImages && professional.galleryImages.length > 1 && (
-              <div className="bg-white shadow-sm">
-                <div className="relative w-full h-64 md:h-80 overflow-hidden">
-                  <Image
-                    src={professional.galleryImages[1] || professional.coverImage}
-                    alt="Paciente em atendimento"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              </div>
-            )}
 
             {/* Nossos Serviços - lista numerada */}
             <section id="servicos" className="">
               <div className="text-center mb-6">
                 <div className="flex items-center justify-center">
                   <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
-                  <h2 className="text-3xl font-semibold tracking-[0.05em] uppercase mb-2 text-nowrap mx-4 sm:mx-8 lg:mx-12">
+                  <h2 className="font-sans text-[32px]/10 font-normal text-neutral-700 uppercase text-center text-nowrap mx-4 sm:mx-8 lg:mx-12 mb-2">
                     Nossos serviços
                   </h2>
                   <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
                 </div>
-                <p className="text-base text-gray-600 max-w-md mx-auto">
+                <p className="font-sans text-base md:text-lg text-neutral-600 max-w-md mx-auto">
                   Lorem ipsum dolor sit amet consectetur adipiscing eli mattis sit phasellus mollis sit aliquam sit nullam.
                 </p>
               </div>
-              <div className="space-y-4">
+              {/* Imagem grande abaixo dos depoimentos */}
+              {professional.galleryImages && professional.galleryImages.length > 1 && (
+                <div className="bg-white shadow-sm">
+                  <div className="relative w-full h-64 md:h-80 overflow-hidden">
+                    <Image
+                      src={professional.galleryImages[1] || professional.coverImage}
+                      alt="Paciente em atendimento"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                </div>
+              )}
+              <div className="space-y-6 mt-8">
                 {professional.services.map((service, index) => (
-                  <div key={service.id} className="flex gap-4">
-                    <span className="text-3xl font-semibold text-[#928575] min-w-[2rem]">
+                  <div key={service.id} className="flex items-start gap-4">
+                    <span className="text-4xl sm:text-5xl font-open-sans font-medium text-[#928575] min-w-[3rem]">
                       {String(index + 1).padStart(2, "0")}
                     </span>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 uppercase mb-1">
+                    <div className="pt-1">
+                      <h3 className="font-sans font-normal text-[28px] mb-1 text-neutral-700 line-clamp-1">
                         {service.title}
                       </h3>
-                      <p className="text-sm text-gray-600">
+                      <p className="font-sans text-base md:text-lg/6 text-neutral-600 line-clamp-2">
                         {service.description}
                       </p>
                     </div>
@@ -364,16 +434,155 @@ export default function ProfessionalPage() {
             </section>
 
             <div className="h-[1px] w-full bg-gray-300 px-4"></div>
+            {/* <p className="text-center text-[#DDDDDD] font-open-sans text-base mb-3 max-w-md mx-auto">OLÁ <span className="font-open-sans font-extrabold text-[#DDDDDD]">PORTAL</span></p> */}
+            <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto -mt-2">
+              <h2 className="font-sans text-[32px]/10 line-clamp-2 font-normal text-neutral-700 uppercase text-center mb-8">Artigos relacionados</h2>
+              <Carousel className="w-full mb-8" opts={{ loop: false }}>
+                <CarouselContent>
+                  {posts.map((post) => (
+                    <CarouselItem key={post.id} className="basis-1/1 sm:basis-1/2 pb-32 sm:pb-24">
+                      <Link href={post ? `/blog/${post.slug}` : "#"} className="relative bg-white group block">
+                        <div className="relative w-full h-48 sm:h-56">
+                          <Image
+                            src={post?.featured_image || ""}
+                            alt={post?.title || "Health"}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        {post && (
+                          <div className="px-4 bg-white absolute top-[55%] sm:top-[45%] left-0 right-4 sm:right-8 py-4 shadow-md">
+                            <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-[10px] border-none uppercase">
+                              {post.category?.name || "CATEGORIA"}
+                            </Badge>
+                            <h3 className="font-open-sans font-semibold text-sm sm:text-base mb-1 text-gray-900 uppercase line-clamp-2">
+                              {post.title}
+                            </h3>
+                            {post.excerpt && (
+                              <p className="text-xs sm:text-sm font-open-sans text-gray-600 mb-3 line-clamp-2">
+                                {post.excerpt}
+                              </p>
+                            )}
+                            <span className="font-lato text-[10px] italic text-gray-500 border border-gray-300 px-2 py-1 uppercase">
+                              LEIA MAIS
+                            </span>
+                          </div>
+                        )}
+                      </Link>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-2 sm:left-4 bg-white/80 hover:bg-white hidden sm:flex rotate-180" />
+                <CarouselNext className="right-2 sm:right-4 bg-white/80 hover:bg-white hidden sm:flex" />
+              </Carousel>
+              {/* Dots de paginação */}
+              <div className="flex justify-center mt-6 space-x-2">
+                {posts.map((_, idx) => (
+                  <div
+                    key={idx}
+                    className={`w-2 h-2 rounded-full transition-colors ${idx === 0 ? 'bg-[#6D758F]' : 'bg-gray-300'}`}
+                  />
+                ))}
+              </div>
+            </section>
+
+            {/* Formulário de Contato */}
+            {/* <section
+              id="contato"
+              className="pb-10 text-center"
+            >
+              <div className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto">
+                <div className="flex items-center justify-center">
+                  <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
+                  <h2 className="font-sans text-[32px]/10 font-normal text-neutral-700 uppercase text-center text-nowrap mx-4 sm:mx-8 lg:mx-12 mb-2">
+                    Entrar em contato
+                  </h2>
+                  <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
+                </div>
+                <p className="text-center text-gray-600 font-lato text-base mb-8 max-w-md mx-auto">
+                  Lorem ipsum dolor sit amet consectetur adipiscing eli mattis sit phasellus mollis sit aliquam sit nullam.
+                </p>
+
+                <form onSubmit={handleFormSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="text-start">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Nome
+                      </label>
+                      <Input
+                        className="rounded-full shadow"
+                        type="text"
+                        placeholder="Digite seu nome"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="text-start">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Telefone
+                      </label>
+                      <Input
+                        className="rounded-full shadow"
+                        type="tel"
+                        placeholder="Digite seu telefone"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-start">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Email
+                      </label>
+                      <Input
+                        className="rounded-full shadow"
+                        type="email"
+                        placeholder="Deixe seu e-mail"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="text-start">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Mensagem
+                    </label>
+                    <Textarea
+                      className="rounded-3xl shadow"
+                      placeholder="Escreva sua mensagem aqui..."
+                      rows={4}
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className="bg-[#126861] hover:bg-[#0f5650] text-white rounded-full px-4 py-3 text-base font-semibold flex items-center gap-2"
+                  >
+                    ENVIAR
+                    <IoIosArrowRoundForward className="h-8 w-8 text-white" />
+                  </Button>
+                </form>
+              </div>
+            </section> */}
           </div>
 
           {/* Right Sidebar */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-1 space-y-6 relative">
             {/* Card principal da barra lateral */}
-            <aside className="bg-[#F6F4ED] border border-[#E2DED2] p-4 space-y-4">
+            <aside className="bg-[#F6F4ED] border border-[#E2DED2] p-4 space-y-4 sticky -top-[575px] 2xl:-top-60">
               {/* Galeria: 1 imagem grande + 3 pequenas */}
               {professional.galleryImages && professional.galleryImages.length > 0 && (
                 <div className="space-y-2">
-                  <div className="relative w-full aspect-[4/3] overflow-hidden">
+                  <div className="relative w-full aspect-[4/2] overflow-hidden">
                     <Image
                       src={professional.galleryImages[0] || "/placeholder.svg?height=220&width=320"}
                       alt="Consultório"
@@ -386,7 +595,7 @@ export default function ProfessionalPage() {
                       {professional.galleryImages.slice(1, 3).map((image, i) => (
                         <div
                           key={i}
-                          className="relative h-20 overflow-hidden"
+                          className="relative h-32 overflow-hidden"
                         >
                           <Image
                             src={image}
@@ -408,7 +617,7 @@ export default function ProfessionalPage() {
                     <RiMapPin2Fill className="h-4 w-4 rounded-full text-[#126861]" />
                     <span>Endereço</span>
                   </div>
-                  <p className="leading-snug">{professional.address}</p>
+                  <p className="leading-snug whitespace-pre-line">{professional.address}</p>
                 </div>
 
                 <div className="bg-white border border-[#E2DED2] px-3 py-3">
@@ -416,7 +625,7 @@ export default function ProfessionalPage() {
                     <FaClock className="h-4 w-4 rounded-full text-[#126861]" />
                     <span>Horários</span>
                   </div>
-                  <p className="leading-snug">{professional.workingHours}</p>
+                  <p className="leading-snug whitespace-pre-line">{professional.workingHours}</p>
                 </div>
 
                 <div className="bg-white border border-[#E2DED2] px-3 py-3">
@@ -424,186 +633,179 @@ export default function ProfessionalPage() {
                     <FaPhoneAlt className="h-4 w-4 rounded-full text-[#126861]" />
                     <span>Contatos</span>
                   </div>
-                  <p className="leading-snug">{professional.phone}</p>
-                  <p className="leading-snug break-all">{professional.email}</p>
+                  {
+                    (() => {
+                      function parsePhones(text) {
+                        const regex = /\(\d{2}\)\s?\d{4,5}-\d{4}/g;
+
+                        // divide o texto em partes mantendo os números
+                        const parts = text.split(regex);
+
+                        // extrai os números para reinserir
+                        const phones = text.match(regex) || [];
+
+                        const result = [];
+
+                        parts.forEach((part, index) => {
+                          result.push(part); // adiciona o texto normal
+
+                          if (phones[index]) {
+                            const raw = phones[index].replace(/[^\d]/g, ""); // remove formatação
+                            result.push(
+                              <a
+                                key={index}
+                                href={`tel:${raw}`}
+                                className="text-blue-500 underline"
+                              >
+                                {phones[index]}
+                              </a>
+                            );
+                          }
+                        });
+
+                        return result;
+                      }
+
+                      return (
+                        <div>
+                          <p className="leading-snug whitespace-pre-line no-underline text-neutral-700">
+                            {parsePhones(professional.phone)}
+                          </p>
+                        </div>
+                      );
+                    })()
+                  }
+                  {/* <p className="leading-snug whitespace-pre-line">{professional.phone}</p> */}
+                  {professional.socialLinks.whatsapp && (
+                    <div className="flex items-center gap-2 text-xs">
+                      WhatsApp:
+                      <a
+                        href={professional.socialLinks.whatsapp}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-5 h- text-[#928575] flex items-center justify-center text-xs transition-colors"
+                      >
+                        <IoLogoWhatsapp className="w-5 h-5" />
+                      </a>
+                      {professional.socialLinks.whatsapp}
+                    </div>
+                  )}
                 </div>
               </div>
 
               {/* Redes sociais */}
               <div className="pt-2">
                 <p className="text-lg font-semibold text-gray-800 mb-1">Redes Sociais</p>
-                <div className="flex flex-wrap gap-2">
+                <div className="grid grid-cols-2 gap-1">
                   {professional.socialLinks.facebook && (
-                    <a
-                      href={professional.socialLinks.facebook}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 bg-white hover:bg-[#928575]/80 text-[#928575] hover:text-white rounded-md flex items-center justify-center text-xs transition-colors"
-                    >
-                      <FaFacebookF className="w-5 h-5" />
-                    </a>
+                    <div className="flex items-center gap-2 text-xs">
+                      <a
+                        href={professional.socialLinks.facebook}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-10 h-10 bg-white hover:bg-[#928575]/80 text-[#928575] hover:text-white rounded-md flex items-center justify-center text-xs transition-colors"
+                      >
+                        <FaFacebookF className="w-5 h-5" />
+                      </a>
+                      Facebook
+                    </div>
                   )}
                   {professional.socialLinks.twitter && (
-                    <a
-                      href={professional.socialLinks.twitter}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 bg-white hover:bg-[#928575]/80 text-[#928575] hover:text-white rounded-md flex items-center justify-center text-xs transition-colors"
-                    >
-                      <FaTwitter className="w-5 h-5" />
-                    </a>
+                    <div className="flex items-center gap-2 text-xs">
+                      <a
+                        href={professional.socialLinks.twitter}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-10 h-10 bg-white hover:bg-[#928575]/80 text-[#928575] hover:text-white rounded-md flex items-center justify-center text-xs transition-colors"
+                      >
+                        <FaTwitter className="w-5 h-5" />
+                      </a>
+                      Twitter
+                    </div>
                   )}
                   {professional.socialLinks.instagram && (
-                    <a
-                      href={professional.socialLinks.instagram}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 bg-white hover:bg-[#928575]/80 text-[#928575] hover:text-white rounded-md flex items-center justify-center text-xs transition-colors"
-                    >
-                      <AiFillInstagram className="w-5 h-5" />
-                    </a>
+                    <div className="flex items-center gap-2 text-xs">
+                      <a
+                        href={professional.socialLinks.instagram}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-10 h-10 bg-white hover:bg-[#928575]/80 text-[#928575] hover:text-white rounded-md flex items-center justify-center text-xs transition-colors"
+                      >
+                        <AiFillInstagram className="w-5 h-5" />
+                      </a>
+                      <div>
+                        Instagram
+                      </div>
+                    </div>
                   )}
                   {professional.socialLinks.linkedin && (
-                    <a
-                      href={professional.socialLinks.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 bg-white hover:bg-[#928575]/80 text-[#928575] hover:text-white rounded-md flex items-center justify-center text-xs transition-colors"
-                    >
-                      <FaLinkedinIn className="w-5 h-5" />
-                    </a>
+                    <div className="flex items-center gap-2 text-xs">
+                      <a
+                        href={professional.socialLinks.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-10 h-10 bg-white hover:bg-[#928575]/80 text-[#928575] hover:text-white rounded-md flex items-center justify-center text-xs transition-colors"
+                      >
+                        <FaLinkedinIn className="w-5 h-5" />
+                      </a>
+                      LinkedIn
+                    </div>
                   )}
-                  <div className="w-10 h-10 bg-white hover:bg-[#928575]/80 text-[#928575] hover:text-white rounded-md flex items-center justify-center text-xs">
-                    <FaYoutube className="w-5 h-5" />
-                  </div>
-                  <div className="w-10 h-10 bg-white hover:bg-[#928575]/80 text-[#928575] hover:text-white rounded-md flex items-center justify-center text-xs">
-                    <IoLogoWhatsapp className="w-5 h-5" />
-                  </div>
+
+                  {professional.email && (
+                    <div className="flex items-center gap-2 text-xs">
+                      <a
+                        href={`mailto:${professional.email}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-10 h-10 bg-white hover:bg-[#928575]/80 text-[#928575] hover:text-white rounded-md flex items-center justify-center text-xs transition-colors"
+                      >
+                        <Mail className="w-5 h-5" />
+                      </a>
+                      E-mail
+                    </div>
+                  )}
+
                 </div>
               </div>
+              {/* LOCALIZAÇÃO - mapa abaixo da barra lateral */}
+              <section className="bg-white shadow-sm p-4">
+                <h3 className="text-base font-semibold tracking-[0.25em] uppercase mb-3">
+                  Localização
+                </h3>
+                <div className="relative w-full h-64 bg-gray-200 overflow-hidden">
+                  <iframe
+                    src={`https://maps.google.com/maps?q=${encodeURIComponent(professional.address?.split('\n')[0] || professional.address)}&output=embed`}
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                </div>
+              </section>
             </aside>
-
-            {/* LOCALIZAÇÃO - mapa abaixo da barra lateral */}
-            <section className="bg-white shadow-sm p-4">
-              <h3 className="text-base font-semibold tracking-[0.25em] uppercase mb-3">
-                Localização
-              </h3>
-              <div className="relative w-full h-64 bg-gray-200 overflow-hidden">
-                <iframe
-                  src={`https://maps.google.com/maps?q=${encodeURIComponent(professional.address)}&output=embed`}
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                />
-              </div>
-            </section>
           </div>
         </div>
 
-        {/* Formulário de Contato */}
-        <section
-          id="contato"
-          className="bg-[#F6F4ED] border border-[#E2DED2] py-10 text-center"
-        >
-          <div className="max-w-7xl mx-auto">
-            <div className="flex items-center justify-center">
-              <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
-              <h2 className="text-7xl font-bold text-center text-gray-900 mb-2 text-nowrap mx-4 sm:mx-8 lg:mx-12">Entrar em Contato</h2>
-              <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
-            </div>
-            <p className="text-center text-gray-600 mb-8 max-w-md mx-auto">
-              Lorem ipsum dolor sit amet consectetur adipiscing eli mattis sit phasellus mollis sit aliquam sit nullam.
-            </p>
-
-            <form onSubmit={handleFormSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="text-start">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nome
-                  </label>
-                  <Input
-                    className="rounded-full shadow"
-                    type="text"
-                    placeholder="Digite seu nome"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="text-start">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Telefone
-                  </label>
-                  <Input
-                    className="rounded-full shadow"
-                    type="tel"
-                    placeholder="Digite seu telefone"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <div className="text-start">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email
-                  </label>
-                  <Input
-                    className="rounded-full shadow"
-                    type="email"
-                    placeholder="Deixe seu e-mail"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="text-start">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Mensagem
-                </label>
-                <Textarea
-                  className="rounded-3xl shadow"
-                  placeholder="Escreva sua mensagem aqui..."
-                  rows={4}
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  required
-                />
-              </div>
-
-              <Button
-                type="submit"
-                className="bg-[#126861] hover:bg-[#0f5650] text-white rounded-full px-4 py-3 text-base font-semibold flex items-center gap-2"
-              >
-                ENVIAR
-                <IoIosArrowRoundForward className="h-8 w-8 text-white" />
-              </Button>
-            </form>
-          </div>
-        </section>
-
         {/* Perguntas Frequentes */}
-        <section id="faq" className="py-20">
-          <h2 className="text-4xl font-semibold text-center text-gray-900 mb-2">Perguntas Frequentes</h2>
-          <p className="text-center text-gray-600 mb-8 max-w-md mx-auto">
+        <div className="h-[1px] w-full bg-gray-300 px-4 mx-auto max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl"></div>
+
+        <section id="faq" className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto mt-8">
+          <h2 className="font-sans text-[32px]/10 line-clamp-2 font-normal text-neutral-700 uppercase text-center mb-2">Perguntas Frequentes</h2>
+          <p className="font-sans text-base md:text-lg text-center text-neutral-600 max-w-md mx-auto">
             Lorem ipsum dolor sit amet consectetur adipiscing eli mattis sit phasellus mollis sit aliquam sit nullam.
           </p>
 
-          <div className="space-y-4 max-w-7xl mx-auto">
+          <div className="space-y-4 max-w-7xl mx-auto mt-6">
             {professional.faqs.map((faq, index) => (
               <div key={faq.id} className="border border-gray-200 rounded-lg overflow-hidden">
                 <button
                   onClick={() => toggleFaq(index)}
                   className={`w-full flex items-center justify-between p-4 text-left ${openFaqIndex === index ? 'bg-[#F3F0E8]' : ''} hover:bg-[#F3F0E8] transition-colors`}
                 >
-                  <span className="font-medium text-gray-900">{faq.question}</span>
+                  <span className=" text-neutral-700">{faq.question}</span>
                   <ChevronDown
                     className={`w-5 h-5 text-gray-500 transition-transform ${openFaqIndex === index ? 'rotate-180' : ''
                       }`}
@@ -618,55 +820,6 @@ export default function ProfessionalPage() {
             ))}
           </div>
         </section>
-
-        {/* Últimas Dicas e Notícias */}
-        {posts.length > 0 && (
-          <section className="mt-16 max-w-7xl mx-auto">
-            <h2 className="text-3xl font-bold text-center text-gray-900 mb-2">Últimas Dicas e Notícias</h2>
-            <p className="text-center text-gray-600 mb-8">
-              Lorem ipsum dolor sit amet, consecteur adipiscing elit
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {posts.map((post) => (
-                <Link
-                  key={post.id}
-                  href={`/blog/${post.slug}`}
-                  className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
-                >
-                  <div className="relative w-full h-48">
-                    <Image
-                      src={post.featured_image || "/placeholder.svg?height=200&width=400"}
-                      alt={post.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] text-white mb-2 text-xs">
-                      {post.category?.name || "CATEGORIA"}
-                    </Badge>
-                    <h3 className="font-bold text-gray-900 mb-2 line-clamp-2">
-                      {post.title}
-                    </h3>
-                    {post.excerpt && (
-                      <p className="text-sm text-gray-600 line-clamp-2">
-                        {post.excerpt}
-                      </p>
-                    )}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="mt-4 w-full"
-                    >
-                      LEIA MAIS
-                    </Button>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
       </div>
     </div>
   )

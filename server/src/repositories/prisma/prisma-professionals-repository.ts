@@ -42,7 +42,7 @@ export class PrismaProfessionalsRepository implements ProfessionalsRepository {
 
     // Filtro de especialidade
     if (specialty) {
-      where.specialty = {
+      where.title = {
         contains: specialty,
         mode: "insensitive",
       }
@@ -53,7 +53,7 @@ export class PrismaProfessionalsRepository implements ProfessionalsRepository {
       where.OR = [
         { name: { contains: search, mode: "insensitive" } },
         { title: { contains: search, mode: "insensitive" } },
-        { specialty: { contains: search, mode: "insensitive" } },
+        // { specialty: { contains: search, mode: "insensitive" } },
         { bio: { contains: search, mode: "insensitive" } },
         { city: { contains: search, mode: "insensitive" } },
       ]

@@ -6,6 +6,7 @@ export async function createProfessional(request: FastifyRequest, reply: Fastify
   const createProfessionalBodySchema = z.object({
     name: z.string(),
     slug: z.string(),
+    register: z.string().optional(),
     title: z.string(),
     specialty: z.string(),
     bio: z.string(),

@@ -142,7 +142,7 @@ export default function Home() {
   }
 
   // Função auxiliar para buscar múltiplos slots por seção e posição
-  const getSlots = (section: string, position: string) => {
+ const getSlots = (section: string, position: string) => {
     return slots
       .filter((slot) => slot.section === section && slot.position === position)
       .sort((a, b) => (a.slot_index ?? 0) - (b.slot_index ?? 0))
@@ -188,7 +188,7 @@ export default function Home() {
                           <div className="flex w-full max-w-[1080px] 2xl:max-w-7xl mx-auto">
                             <div className="absolute top-1/2 -translate-y-1/2 max-sm:left-1/2 max-sm:-translate-x-1/2 w-[calc(100%-2rem)] sm:w-[calc(100%-4rem)] md:w-[calc(100%-8rem)] lg:w-auto lg:max-w-xl">
                               <div className="bg-white p-4 sm:p-4 md:p-5 shadow-xl border-t-[4px] sm:border-t-[6px] border-[#126861]">
-                                <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-3 sm:mb-4 text-xs sm:text-sm uppercase">
+                                <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 sm:mb-3 text-xs uppercase">
                                   {post.category?.name || "CATEGORIA"}
                                 </Badge>
                                 <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl 2xl:text-4xl font-open-sans font-semibold mb-3 sm:mb-4 text-gray-900 text-left leading-tight line-clamp-2 uppercase">
@@ -213,8 +213,8 @@ export default function Home() {
                   )
                 })}
               </CarouselContent>
-              <CarouselPrevious className="left-2 sm:left-4 md:left-10 top-1/2 -translate-y-1/2 w-12 h-12 bg-gray-500/60 hover:bg-gray-500/80 border-0 rounded-xl hidden sm:flex" />
-              <CarouselNext className="right-2 sm:right-4 md:right-10 top-1/2 -translate-y-1/2 w-12 h-12 bg-gray-500/60 hover:bg-gray-500/80 border-0 rounded-xl hidden sm:flex" />
+              <CarouselPrevious className="left-2 sm:left-4 md:left-10 top-1/2 -translate-y-1/2 bg-transparent hover:bg-transparent border-0 rounded-xl hidden sm:flex rotate-180 [&_svg]:!size-12" />
+              <CarouselNext className="right-2 sm:right-4 md:right-12 top-1/2 -translate-y-1/2 bg-transparent hover:bg-transparent border-0 rounded-xl hidden sm:flex [&_svg]:!size-12" />
             </Carousel>
             {/* Pagination Dots */}
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
@@ -233,13 +233,13 @@ export default function Home() {
       </section>
 
       {/* EM DESTAQUE Section */}
-      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto py-8 sm:py-12 bg-white">
+      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto py-5 sm:py-12 bg-white">
         <div className="flex items-center justify-center mb-5 md:mb-0">
           <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
           <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl font-volkhov text-nowrap mx-4 sm:mx-8 lg:mx-12 font-bold text-[#126861]"><span className="text-[#928575]">EM</span> DESTAQUE</h2>
           <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
         </div>
-        <p className="text-center font-lato text-sm sm:text-base lg:text-xl text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
+        <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
 
         <div className="hidden md:grid grid-cols-1 xl:grid-cols-2 gap-6 sm:gap-6 lg:gap-8">
           {/* Main Featured Article */}
@@ -251,7 +251,7 @@ export default function Home() {
             const month = publishedDate.toLocaleDateString('pt-BR', { month: 'long' }).toUpperCase()
 
             return (
-              <Link href={post ? `/blog/${post.slug}` : "#"} className="relative h-[300px] sm:h-[350px] lg:h-[400px] 2xl:h-[450px] group block">
+              <Link href={post ? `/blog/${post.slug}` : "#"} className="relative h-[300px] sm:h-auto lg:h-auto 2xl:h-auto group block">
                 {post?.featured_image ? (
                   <Image
                     src={post.featured_image}
@@ -264,32 +264,19 @@ export default function Home() {
                 )}
                 {post && (
                   <>
-                    {/* Date Badge - Top Left */}
-                    <div className="absolute top-4 left-4 bg-[#333333] text-white text-center px-3 py-2">
-                      <div className="text-2xl font-bold leading-none">{day}</div>
-                      <div className="w-8 h-[2px] bg-[#C68C0E] mx-auto my-1"></div>
-                      <div className="text-xs font-medium tracking-wide">{month}</div>
-                    </div>
-
-                    {/* Play Button - Center */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full border-2 border-white/80 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <div className="w-0 h-0 border-l-[16px] border-l-white border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent ml-1"></div>
-                    </div>
-
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                    <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 text-white">
-                      <div className="flex items-center gap-3 mb-3">
-                        <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white text-xs uppercase px-3 py-1">
-                          {post.category?.name || "CATEGORIA"}
-                        </Badge>
-                        <span className="text-xs text-gray-300 flex items-center gap-1">
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" strokeWidth="2" /><path strokeWidth="2" d="M12 6v6l4 2" /></svg>
-                          {publishedDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }).toUpperCase()}
-                        </span>
-                      </div>
-                      <h3 className="text-xl sm:text-2xl lg:text-3xl font-open-sans font-bold uppercase line-clamp-2 leading-tight">
+                    <div className="absolute bottom-4 sm:bottom-10 left-4 sm:left-6 right-4 sm:right-6 text-white">
+                      <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-3 text-[10px] uppercase">
+                        {post.category?.name || "CATEGORIA"}
+                      </Badge>
+                      <h4 className="font-open-sans font-semibold text-base lg:text-lg/6 max-w-80 uppercase mb-1 line-clamp-2">
                         {post.title}
-                      </h3>
+                      </h4>
+                      {post.excerpt && (
+                        <p className="text-xs sm:text-base font-open-sans font-medium max-w-96 opacity-90 line-clamp-2">
+                          {post.excerpt}
+                        </p>
+                      )}
                     </div>
                   </>
                 )}
@@ -308,21 +295,24 @@ export default function Home() {
                 <Link
                   key={slot.id}
                   href={`/blog/${post.slug}`}
-                  className={`flex gap-4 group ${index !== 0 ? "border-t border-[#EEEEEE] pt-4" : ""} ${index !== 2 ? "pb-4" : ""}`}
+                  className={`flex gap-4 group ${index == 1 ? "border-y border-[#EEEEEE] py-4 my-4" : ""}`}
                 >
                   <div className="flex-1">
-                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-xs uppercase px-3 py-1">
+                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-[10px] mt-0 border-none uppercase">
                       {post.category?.name || "CATEGORIA"}
                     </Badge>
-                    <h4 className="font-open-sans font-bold text-base lg:text-lg text-gray-900 uppercase line-clamp-2 leading-tight mb-2">
+                    <h4 className="font-open-sans font-semibold text-base lg:text-lg/6 text-gray-900 uppercase mb-1 line-clamp-2">
                       {post.title}
                     </h4>
-                    <div className="flex items-center gap-1 text-xs text-gray-500">
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" strokeWidth="2" /><path strokeWidth="2" d="M12 6v6l4 2" /></svg>
-                      {publishedDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }).toUpperCase()}
+                    <div className="flex items-center font-open-sans font-medium gap-1 text-xs text-gray-500">
+                      {post.excerpt && (
+                        <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 max-w-72">
+                          {post.excerpt}
+                        </p>
+                      )}
                     </div>
                   </div>
-                  <div className="relative w-32 lg:w-40 h-24 lg:h-28 flex-shrink-0">
+                  <div className="relative w-32 lg:w-40 h-24 lg:h-auto">
                     <Image
                       src={post.featured_image || placeholderImages.office}
                       alt={post.title}
@@ -347,17 +337,17 @@ export default function Home() {
                 <Link
                   key={slot.id}
                   href={`/blog/${post.slug}`}
-                  className={`flex gap-4 sm:gap-6 lg:gap-10 group ${index === 1 || index === 2 ? "border-t border-[#EEEEEE] pt-2 sm:py-2 2xl:py-5" : ""}`}
+                  className={`flex gap-4 sm:gap-6 lg:gap-10 group ${index === 1 || index === 2 ? "border-t border-[#EEEEEE] sm:py-2 2xl:py-5" : ""}`}
                 >
                   <div className="flex-1">
-                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-1 2xl:mb-2 text-xs uppercase">
+                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white text-xs uppercase">
                       {post.category?.name || "CATEGORIA"}
                     </Badge>
-                    <h4 className="font-open-sans font-semibold text-base sm:text-lg max-w-full sm:max-w-56 transition-colors uppercase line-clamp-2">
+                    <h4 className="font-open-sans font-semibold text-base sm:text-lg max-w-full sm:max-w-56 transition-colors uppercase mb-1 line-clamp-2">
                       {post.title}
                     </h4>
                     {post.excerpt && (
-                      <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 mt-1">
+                      <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">
                         {post.excerpt}
                       </p>
                     )}
@@ -460,7 +450,7 @@ export default function Home() {
       })()}
 
       {/* PARA REFLEXÃO Section */}
-      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto bg-white">
+      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto py-0 sm:py-12 bg-white">
         <div className="flex items-center w-full mb-5 md:mb-0">
           <div className="h-2 sm:h-3 w-full bg-gray-300" />
           <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov text-nowrap mx-2 sm:mx-8 lg:mx-12 font-bold text-[#126861]">
@@ -468,12 +458,12 @@ export default function Home() {
           </h2>
           <div className="h-2 sm:h-3 w-full bg-gray-300" />
         </div>
-        <p className="text-center font-lato text-sm sm:text-base lg:text-xl text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
+        <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
 
         <div className="w-full max-w-[1080px] 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-0">
           <Carousel className="w-full" opts={{ loop: false }}>
             <CarouselContent>
-              {getSlots("PARA_REFLEXAO", "CAROUSEL").map((slot) => {
+              {getSlots("PARA_REFLEXAO", "CAROUSEL").slice(0, 5).map((slot) => {
                 const post = slot.post
                 if (!post) return null
 
@@ -487,12 +477,12 @@ export default function Home() {
                         className="object-cover rounded-xl"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent rounded-xl" />
-                      <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-5 right-4 sm:right-5 text-white">
-                        <p className="font-open-sans font-semibold text-base sm:text-lg lg:text-xl max-w-xs mb-2 uppercase line-clamp-2">
+                      <div className="absolute bottom-4 sm:bottom-8 left-4 sm:left-5 right-4 sm:right-5 text-white">
+                        <p className="font-open-sans font-semibold text-base/6 max-w-xs mb-1 uppercase line-clamp-2">
                           {post.title}
                         </p>
                         {post.excerpt && (
-                          <p className="text-xs sm:text-sm font-lato opacity-90 line-clamp-2">
+                          <p className="text-xs font-open-sans font-medium opacity-90 line-clamp-2">
                             {post.excerpt}
                           </p>
                         )}
@@ -502,11 +492,11 @@ export default function Home() {
                 )
               })}
             </CarouselContent>
-            <CarouselPrevious className="left-2 sm:left-4 bg-white/80 hover:bg-white hidden sm:flex" />
+            <CarouselPrevious className="left-2 sm:left-4 bg-white/80 hover:bg-white hidden sm:flex rotate-180" />
             <CarouselNext className="right-2 sm:right-4 bg-white/80 hover:bg-white hidden sm:flex" />
           </Carousel>
-          <div className="flex justify-center mt-4 space-x-2">
-            {getSlots("PARA_REFLEXAO", "CAROUSEL").map((slot, idx) => (
+          <div className="flex justify-center mt-10 space-x-2">
+            {getSlots("PARA_REFLEXAO", "CAROUSEL").slice(0, 5).map((slot, idx) => (
               <div key={slot.id} className={`w-2 h-2 rounded-full ${idx === 0 ? 'bg-[#6D758F]' : 'bg-gray-300'}`} />
             ))}
           </div>
@@ -514,60 +504,62 @@ export default function Home() {
       </section>
 
       {/* NOSSA SAÚDE Section */}
-      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto sm:pt-4 bg-white">
+      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto py-0 sm:pb-12 bg-white">
         <div className="flex items-center justify-center mb-5 md:mb-0">
           <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
           <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov text-nowrap mx-4 sm:mx-8 lg:mx-12 font-bold text-[#126861]"><span className="text-[#928575]">NOSSA</span> SAÚDE</h2>
           <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
         </div>
-        <p className="text-center font-lato text-sm sm:text-base lg:text-xl text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
+        <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-4 sm:px-6 lg:px-0">
+        <div className="flex flex-row gap-6 px-4 sm:px-6 lg:px-0">
           {/* Main Article */}
-          {(() => {
-            const slot = getSlot("NOSSA_SAUDE", "MAIN", null)
-            const post = slot?.post
-            return (
-              <Link href={post ? `/blog/${post.slug}` : "#"} className="relative bg-white group md:border-b-8 border-[#B4B9C9] block min-h-[200px] sm:min-h-[350px]">
-                <div className="relative w-full h-60 sm:h-72">
-                  <Image
-                    src={post?.featured_image || placeholderImages.business}
-                    alt={post?.title || "Health"}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                {post && (
-                  <div className="px-4 bg-white absolute top-[35%] sm:top-[50%] left-0 right-6 sm:right-10">
-                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mt-4 sm:mt-5 mb-2 text-xs uppercase">
-                      {post.category?.name || "CATEGORIA"}
-                    </Badge>
-                    <h3 className="font-open-sans font-semibold text-base sm:text-lg mb-2 sm:mb-3 text-gray-900 uppercase line-clamp-2">
-                      {post.title}
-                    </h3>
-                    {post.excerpt && (
-                      <p className="text-sm sm:text-base font-lato text-gray-600 mb-4 sm:mb-5 max-w-full lg:max-w-72">
-                        {post.excerpt}
-                      </p>
-                    )}
-                    {/* <Button className="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 -py-2 px-1 font-lato text-xs italic uppercase rounded-sm">
-                      LEIA MAIS
-                    </Button> */}
+          <div className="basis-4/12">
+            {(() => {
+              const slot = getSlot("NOSSA_SAUDE", "MAIN", null)
+              const post = slot?.post
+              return (
+                <Link href={post ? `/blog/${post.slug}` : "#"} className="relative bg-white group block min-h-[200px] sm:min-h-[350px]">
+                  <div className="relative w-full h-60 sm:h-72">
+                    <Image
+                      src={post?.featured_image || placeholderImages.business}
+                      alt={post?.title || "Health"}
+                      fill
+                      className="object-cover"
+                    />
                   </div>
-                )}
-              </Link>
-            )
-          })()}
+                  {post && (
+                    <div className="px-4 bg-white absolute top-[35%] sm:top-[55%] left-0 right-6 sm:right-10 py-5 shadow-lg">
+                      <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-[10px] border-none uppercase">
+                        {post.category?.name || "CATEGORIA"}
+                      </Badge>
+                      <h3 className="font-open-sans font-semibold text-base sm:text-lg/6 mb-1 text-gray-900 uppercase line-clamp-2">
+                        {post.title}
+                      </h3>
+                      {post.excerpt && (
+                        <p className="text-xs sm:text-base font-open-sans font-medium text-gray-600 mb-4 sm:mb-5 max-w-full lg:max-w-72">
+                          {post.excerpt}
+                        </p>
+                      )}
+                      <span className="font-lato text-[10px] italic text-gray-500 border border-gray-300 px-2 py-1 uppercase">
+                        LEIA MAIS
+                      </span>
+                    </div>
+                  )}
+                </Link>
+              )
+            })()}
+          </div>
 
           {/* Side Articles */}
-          <div className="space-y-4">
-            {getSlots("NOSSA_SAUDE", "SIDE").slice(0, 4).map((slot) => {
+          <div className="space-y-4 basis-6/12">
+            {getSlots("NOSSA_SAUDE", "SIDE").slice(0, 3).map((slot, index) => {
               const post = slot.post
               if (!post) return null
 
               return (
-                <Link key={slot.id} href={`/blog/${post.slug}`} className="flex gap-3 sm:gap-4 group">
-                  <div className="relative w-32 sm:w-40 h-auto sm:h-32 flex-shrink-0">
+                <Link key={slot.id} href={`/blog/${post.slug}`} className={`flex gap-3 sm:gap-4 group ${index == 1 ? "border-y border-[#EEEEEE] py-4 my-4" : ""}`}>
+                  <div className="relative w-32 sm:w-40 h-28 sm:h-auto flex-shrink-0">
                     <Image
                       src={post.featured_image || placeholderImages.boy}
                       alt={post.title}
@@ -576,14 +568,14 @@ export default function Home() {
                     />
                   </div>
                   <div className="flex-1">
-                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-1 text-xs uppercase">
+                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-[10px] border-none uppercase">
                       {post.category?.name || "CATEGORIA"}
                     </Badge>
-                    <h4 className="font-open-sans font-semibold text-base sm:text-lg mb-1 transition-colors uppercase line-clamp-2">
+                    <h4 className="font-open-sans font-semibold text-base sm:text-lg/6 mb-1 transition-colors uppercase line-clamp-2">
                       {post.title}
                     </h4>
                     {post.excerpt && (
-                      <p className="text-sm sm:text-base lg:text-base font-lato text-gray-600 line-clamp-2">
+                      <p className="text-xs sm:text-sm font-open-sans font-medium text-gray-600 line-clamp-2">
                         {post.excerpt}
                       </p>
                     )}
@@ -597,46 +589,48 @@ export default function Home() {
           </div>
 
           {/* Ad Banner - Tamanho: 300x600px */}
-          {(() => {
-            const ad = getAd("NOSSA_SAUDE_RIGHT")
-            if (!ad) return null
-            return (
-              <div className="hidden lg:block">
-                <AdBanner
-                  imageUrl={ad.image_url}
-                  title={ad.title}
-                  buttonLink={ad.link_url}
-                  backgroundColor="bg-transparent"
-                  className="h-[600px] object-contain"
-                  imageClassName="object-contain"
-                  variant="vertical"
-                />
-              </div>
-            )
-          })()}
+          <div className="basis-2/12 ">
+            {(() => {
+              const ad = getAd("NOSSA_SAUDE_RIGHT")
+              if (!ad) return null
+              return (
+                <div className="hidden lg:block">
+                  <AdBanner
+                    imageUrl={ad.image_url}
+                    title={ad.title}
+                    buttonLink={ad.link_url}
+                    backgroundColor="bg-transparent"
+                    className="h-[438px] w-full object-contain"
+                    imageClassName="h-auto w-full object-cover"
+                    variant="vertical"
+                  />
+                </div>
+              )
+            })()}
+          </div>
         </div>
       </section>
 
       {/* SOBRE RELACIONAMENTOS Section (Carousel) */}
-      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto sm:pt-4 bg-white">
+      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto sm:pt-4 sm:pb-12 bg-white">
         <div className="flex items-center w-full mb-5 md:mb-0">
-          <div className="h-2 sm:h-3 w-full bg-gray-300" />
+          <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
           <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov md:text-nowrap mx-2 sm:mx-8 lg:mx-12 font-bold text-[#126861]">
-            <span className="text-[#928575]">DICAS DE</span> RELACIONAMENTO
+            <span className="text-[#928575]">SOBRE</span> RELACIONAMENTOS
           </h2>
-          <div className="h-2 sm:h-3 w-full bg-gray-300" />
+          <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
         </div>
-        <p className="text-center font-lato text-sm sm:text-base lg:text-xl text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
+        <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
 
         <Carousel className="w-full pl-4 sm:pl-1" >
           <CarouselContent>
-            {getSlots("SOBRE_RELACIONAMENTOS", "CAROUSEL").map((slot) => {
+            {getSlots("SOBRE_RELACIONAMENTOS", "CAROUSEL").slice(0, 5).map((slot) => {
               const post = slot.post
               if (!post) return null
 
               return (
                 <CarouselItem key={slot.id} className="basis-5/6 md:basis-1/2 lg:basis-1/3">
-                  <Link href={`/blog/${post.slug}`} className="relative bg-white group pb-24 sm:pb-32 block">
+                  <Link href={`/blog/${post.slug}`} className="relative bg-white group pb-44 block">
                     <div className="relative w-full h-48 sm:h-56">
                       <Image
                         src={post.featured_image || placeholderImages.business}
@@ -645,15 +639,15 @@ export default function Home() {
                         className="object-cover"
                       />
                     </div>
-                    <div className="px-3 sm:px-4 py-3 sm:py-4 bg-white absolute top-[30%] sm:top-[35%] left-0 right-6 sm:right-10 shadow-lg">
-                      <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 sm:mb-3 text-xs uppercase">
+                    <div className="px-3 sm:px-4 py-3 sm:py-4 bg-white absolute top-[30%] sm:top-[45%] left-0 right-6 sm:right-10 shadow-lg">
+                      <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-[10px] border-none uppercase">
                         {post.category?.name || "CATEGORIA"}
                       </Badge>
-                      <h3 className="font-open-sans font-semibold text-base sm:text-lg lg:text-xl mb-2 text-gray-900 uppercase line-clamp-2">
+                      <h3 className="font-open-sans font-semibold text-base sm:text-lg/6 mb-1 text-gray-900 uppercase line-clamp-2">
                         {post.title}
                       </h3>
                       {post.excerpt && (
-                        <p className="text-xs sm:text-sm font-lato text-gray-600 mb-2 line-clamp-2">
+                        <p className="text-xs sm:text-base font-open-sans font-medium text-gray-600 mb-2 line-clamp-2">
                           {post.excerpt}
                         </p>
                       )}
@@ -666,11 +660,11 @@ export default function Home() {
               )
             })}
           </CarouselContent>
-          <CarouselPrevious className="left-2 top-1/3 bg-white/80 hover:bg-white hidden sm:flex" />
+          <CarouselPrevious className="left-2 top-1/3 bg-white/80 hover:bg-white hidden sm:flex rotate-180" />
           <CarouselNext className="right-2 top-1/3 bg-white/80 hover:bg-white hidden sm:flex" />
         </Carousel>
         <div className="flex justify-center mt-4 space-x-2">
-          {getSlots("SOBRE_RELACIONAMENTOS", "CAROUSEL").map((slot, idx) => (
+          {getSlots("SOBRE_RELACIONAMENTOS", "CAROUSEL").slice(0, 5).map((slot, idx) => (
             <div key={slot.id} className={`w-2 h-2 rounded-full ${idx === 0 ? 'bg-[#6D758F]' : 'bg-gray-300'}`} />
           ))}
         </div>
@@ -692,60 +686,135 @@ export default function Home() {
       })()}
 
       {/* EMPRESAS & NEGÓCIOS Section */}
-      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto sm:pt-4 bg-white">
-        <div className="flex items-center w-full mb-5 md:mb-0">
-          <div className="h-2 sm:h-3 w-full bg-gray-300" />
-          <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov md:text-nowrap mx-2 sm:mx-8 lg:mx-12 font-bold text-[#126861]">
-            <span className="text-[#928575] text-nowrap">EMPRESAS &</span> NEGÓCIOS
-          </h2>
-          <div className="h-2 sm:h-3 w-full bg-gray-300" />
-        </div>
-        <p className="text-center font-lato text-sm sm:text-base lg:text-xl text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
+      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto py-0 sm:py-12 bg-white">
+        <div className="flex flex-row gap-6">
+          <div>
+            <div className="flex items-center w-full mb-5 md:mb-0">
+              <div className="h-2 sm:h-3 w-full bg-gray-300" />
+              <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov md:text-nowrap mx-2 sm:mx-8 lg:mx-12 font-bold text-[#126861]">
+                <span className="text-[#928575] text-nowrap">EMPRESAS &</span> NEGÓCIOS
+              </h2>
+              <div className="h-2 sm:h-3 w-full bg-gray-300" />
+            </div>
+            <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
 
-        <div className="hidden md:grid grid-cols-1 lg:grid-cols-3 gap-6 ">
-          {/* Main Articles - Left Column */}
-          <div className="lg:col-span-2 space-y-4">
-            {getSlots("EMPRESAS_NEGOCIOS", "MAIN").slice(0, 3).map((slot, index) => {
-              const post = slot.post
-              if (!post) return null
+            <div className="hidden md:grid grid-cols-1 gap-6 ">
+              {/* Main Articles - Left Column */}
+              <div className="lg:col-span-2 space-y-4">
+                {getSlots("EMPRESAS_NEGOCIOS", "MAIN").slice(0, 3).map((slot, index) => {
+                  const post = slot.post
+                  if (!post) return null
 
-              return (
-                <Link
-                  key={slot.id}
-                  href={`/blog/${post.slug}`}
-                  className={`flex flex-col sm:flex-row gap-3 sm:gap-4 group bg-white pb-4 ${index === 0 || index === 1 ? 'border-b-2' : ''}`}
-                >
-                  <div className="relative w-full sm:w-60 md:w-72 h-48 sm:h-auto flex-shrink-0">
-                    <Image
-                      src={post.featured_image || placeholderImages.office}
-                      alt={post.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-xs uppercase">
-                      {post.category?.name || "EMPRESAS & NEGÓCIOS"}
-                    </Badge>
-                    <h4 className="font-open-sans font-semibold text-base sm:text-lg mb-2 text-gray-900 uppercase line-clamp-2">
-                      {post.title}
-                    </h4>
-                    {post.excerpt && (
-                      <p className="text-xs sm:text-sm font-lato text-gray-600 line-clamp-2 mb-2">
-                        {post.excerpt}
-                      </p>
-                    )}
-                    <span className="font-lato text-[10px] italic text-gray-500 border border-gray-300 px-2 py-1 uppercase">
-                      LEIA MAIS
-                    </span>
-                  </div>
-                </Link>
-              )
-            })}
+                  return (
+                    <Link
+                      key={slot.id}
+                      href={`/blog/${post.slug}`}
+                      className={`flex flex-col sm:flex-row gap-3 sm:gap-4 group bg-white pb-4 ${index === 0 || index === 1 || index === 2 ? 'border-b' : ''}`}
+                    >
+                      <div className="relative w-full sm:w-60 md:w-72 h-48 sm:h-auto flex-shrink-0">
+                        <Image
+                          src={post.featured_image || placeholderImages.office}
+                          alt={post.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-[10px] mt-0 border-none uppercase">
+                          {post.category?.name || "CATEGORIA"}
+                        </Badge>
+                        <h4 className="font-open-sans font-semibold text-base lg:text-lg/6 text-gray-900 uppercase mb-1 line-clamp-2">
+                          {post.title}
+                        </h4>
+                        <div className="flex items-center font-open-sans font-medium gap-1 text-xs text-gray-500">
+                          {post.excerpt && (
+                            <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 max-w-72">
+                              {post.excerpt}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </Link>
+                  )
+                })}
+                {getSlots("EMPRESAS_NEGOCIOS", "MAIN").slice(1, 2).map((slot, index) => {
+                  const post = slot.post
+                  if (!post) return null
+
+                  return (
+                    <Link
+                      key={slot.id}
+                      href={`/blog/${post.slug}`}
+                      className={`flex flex-col sm:flex-row gap-3 sm:gap-4 group bg-white pb-4`}
+                    >
+                      <div className="relative w-full sm:w-60 md:w-72 h-48 sm:h-auto flex-shrink-0">
+                        <Image
+                          src={post.featured_image || placeholderImages.office}
+                          alt={post.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-[10px] mt-0 border-none uppercase">
+                          {post.category?.name || "CATEGORIA"}
+                        </Badge>
+                        <h4 className="font-open-sans font-semibold text-base lg:text-lg/6 text-gray-900 uppercase mb-1 line-clamp-2">
+                          {post.title}
+                        </h4>
+                        <div className="flex items-center font-open-sans font-medium gap-1 text-xs text-gray-500">
+                          {post.excerpt && (
+                            <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 max-w-72">
+                              {post.excerpt}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </Link>
+                  )
+                })}
+              </div>
+            </div>
+            <div className="md:hidden space-y-5 px-4 sm:px-6 lg:px-0">
+
+              {/* Smaller Articles */}
+              {getSlots("EMPRESAS_NEGOCIOS", "SIDE").slice(0, 3).map((slot) => {
+                const post = slot.post
+                if (!post) return null
+
+                return (
+                  <Link key={slot.id} href={`/blog/${post.slug}`} className="flex gap-3 sm:gap-4 group">
+                    <div className="relative w-32 sm:w-40 h-auto sm:h-28 flex-shrink-0">
+                      <Image
+                        src={post.featured_image || placeholderImages.office}
+                        alt={post.title}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-xs uppercase">
+                        {post.category?.name || "EMPRESAS & NEGÓCIOS"}
+                      </Badge>
+                      <h4 className="font-open-sans font-semibold text-base sm:text-lg text-gray-900 uppercase line-clamp-2">
+                        {post.title}
+                      </h4>
+                      {post.excerpt && (
+                        <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 mt-1">
+                          {post.excerpt}
+                        </p>
+                      )}
+                      <span className="font-lato text-[10px] italic text-gray-500 border border-gray-300 px-2 py-1 uppercase">
+                        LEIA MAIS
+                      </span>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
           </div>
-
           {/* Right Column - Ad Banner and Smaller Articles */}
-          <div className="space-y-2 border border-[#B6B6B6] p-3 sm:p-4">
+          <div className="space-y-2 border border-[#B6B6B6]/40 p-3 sm:p-4 hidden md:block">
             {/* Ad Banner */}
             {(() => {
               const ad = getAd("EMPRESAS_NEGOCIOS_RIGHT")
@@ -764,79 +833,44 @@ export default function Home() {
             })()}
 
             {/* Smaller Articles */}
-            {getSlots("EMPRESAS_NEGOCIOS", "SIDE").slice(0, 3).map((slot) => {
-              const post = slot.post
-              if (!post) return null
+            <div className="border-t-4 border-[#B6B6B6] pt-4 space-y-4">
+              {getSlots("EMPRESAS_NEGOCIOS", "SIDE").slice(0, 3).map((slot, index) => {
+                const post = slot.post
+                if (!post) return null
 
-              return (
-                <Link key={slot.id} href={`/blog/${post.slug}`} className="flex gap-3 sm:gap-4 group">
-                  <div className="relative w-32 sm:w-40 h-24 sm:h-28 flex-shrink-0">
-                    <Image
-                      src={post.featured_image || placeholderImages.office}
-                      alt={post.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-open-sans font-semibold text-xs sm:text-sm mb-1 text-gray-900 uppercase line-clamp-2">
-                      {post.title}
-                    </h4>
-                    {post.excerpt && (
-                      <p className="text-xs font-lato text-gray-600 line-clamp-2 mb-2">
-                        {post.excerpt}
-                      </p>
-                    )}
-                    <span className="font-lato text-[10px] italic text-gray-500 border border-gray-300 px-2 py-1 uppercase">
-                      LEIA MAIS
-                    </span>
-                  </div>
-                </Link>
-              )
-            })}
+                return (
+                  <Link key={slot.id} href={`/blog/${post.slug}`} className={`flex gap-3 sm:gap-4 group ${index == 1 ? "border-y border-[#EEEEEE] py-4" : ""}`}>
+                    <div className="relative w-24 h-24 sm:h-28 flex-shrink-0">
+                      <Image
+                        src={post.featured_image || placeholderImages.office}
+                        alt={post.title}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-open-sans font-semibold text-xs sm:text-sm mb-1 text-gray-900 uppercase line-clamp-2">
+                        {post.title}
+                      </h4>
+                      {post.excerpt && (
+                        <p className="text-xs font-lato text-gray-600 line-clamp-2 mb-2">
+                          {post.excerpt}
+                        </p>
+                      )}
+                      <span className="font-lato text-[10px] italic text-gray-500 border border-gray-300 px-2 py-1 uppercase">
+                        LEIA MAIS
+                      </span>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
           </div>
-        </div>
-        <div className="md:hidden space-y-5 px-4 sm:px-6 lg:px-0">
-
-          {/* Smaller Articles */}
-          {getSlots("EMPRESAS_NEGOCIOS", "SIDE").slice(0, 3).map((slot) => {
-            const post = slot.post
-            if (!post) return null
-
-            return (
-              <Link key={slot.id} href={`/blog/${post.slug}`} className="flex gap-3 sm:gap-4 group">
-                <div className="relative w-32 sm:w-40 h-auto sm:h-28 flex-shrink-0">
-                  <Image
-                    src={post.featured_image || placeholderImages.office}
-                    alt={post.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="flex-1">
-                  <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-xs uppercase">
-                    {post.category?.name || "EMPRESAS & NEGÓCIOS"}
-                  </Badge>
-                  <h4 className="font-open-sans font-semibold text-base sm:text-lg text-gray-900 uppercase line-clamp-2">
-                    {post.title}
-                  </h4>
-                  {post.excerpt && (
-                    <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 mt-1">
-                      {post.excerpt}
-                    </p>
-                  )}
-                  <span className="font-lato text-[10px] italic text-gray-500 border border-gray-300 px-2 py-1 uppercase">
-                    LEIA MAIS
-                  </span>
-                </div>
-              </Link>
-            )
-          })}
         </div>
       </section>
 
       {/* ESTÉTICA & BELEZA Section */}
-      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto bg-white">
+      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto py-0 sm:pb-14 bg-white">
         <div className="flex items-center justify-center">
           <div className="flex items-center justify-center w-full mb-5 md:mb-0">
             <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
@@ -846,7 +880,7 @@ export default function Home() {
             <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
           </div>
         </div>
-        <p className="text-center font-lato text-sm sm:text-base lg:text-xl text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
+        <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
 
         <div className="hidden md:grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
           {getSlots("ESTETICA_BELEZA", "GRID").slice(0, 6).map((slot) => {
@@ -854,7 +888,7 @@ export default function Home() {
             if (!post) return null
 
             return (
-              <Link key={slot.id} href={`/blog/${post.slug}`} className="relative h-48 sm:h-56 lg:h-64 group block">
+              <Link key={slot.id} href={`/blog/${post.slug}`} className="relative h-48 sm:h-56 lg:h-[320px] group block">
                 <Image
                   src={post.featured_image || placeholderImages.beauty}
                   alt={post.title}
@@ -862,13 +896,18 @@ export default function Home() {
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 text-white">
-                  <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-xs uppercase">
-                    {post.category?.name || "ESTÉTICA & BELEZA"}
-                  </Badge>
-                  <p className="font-open-sans font-semibold text-sm sm:text-base lg:text-lg uppercase line-clamp-2">
+                <div className="absolute bottom-3 sm:bottom-6 left-3 sm:left-4 right-3 sm:right-4 text-white">
+                  {/* <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-[10px] mt-0 border-none uppercase">
+                    {post.category?.name || "CATEGORIA"}
+                  </Badge> */}
+                  <h4 className="font-open-sans font-semibold text-base lg:text-lg/6 uppercase mb-1 line-clamp-2">
                     {post.title}
-                  </p>
+                  </h4>
+                  {post.excerpt && (
+                    <p className="text-xs font-open-sans font-medium opacity-90 line-clamp-2">
+                      {post.excerpt}
+                    </p>
+                  )}
                 </div>
               </Link>
             )
@@ -914,12 +953,12 @@ export default function Home() {
       </section>
 
       {/* RINDO À TOA & QUEBRA CUCA Section */}
-      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto sm:pt-4 bg-white">
+      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto py-0 sm:pb-12 bg-white">
         <div className="hidden md:flex items-center justify-center mb-6 sm:mb-10">
           <div className="flex items-center justify-center w-full">
-            <h2 className="text-base sm:text-xl md:text-2xl lg:text-3xl 2xl:text-5xl font-volkhov text-nowrap mx-2 sm:mx-6 lg:mx-12 font-bold text-[#928575]">RINDO À TOA</h2>
+            <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov text-nowrap mx-2 sm:mx-6 lg:mx-12 font-bold text-[#928575]">RINDO À TOA</h2>
             <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
-            <h2 className="text-base sm:text-xl md:text-2xl lg:text-3xl 2xl:text-5xl font-volkhov text-nowrap mx-2 sm:mx-6 lg:mx-12 font-bold text-[#126861]">QUEBRA CUCA</h2>
+            <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov text-nowrap mx-2 sm:mx-6 lg:mx-12 font-bold text-[#126861]">QUEBRA CUCA</h2>
           </div>
         </div>
         <div className="flex md:hidden items-center justify-center">
@@ -940,12 +979,12 @@ export default function Home() {
                 if (!post) return null
 
                 return (
-                  <Link key={slot.id} href={`/blog/${post.slug}`} className="grid grid-cols-2 gap-3 sm:gap-4 group">
+                  <Link key={slot.id} href={`/blog/${post.slug}`} className="flex gap-3 sm:gap-4 group">
                     <div className="flex-1 text-start">
-                      <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-1 sm:mb-2 text-xs uppercase">
-                        {post.category?.name || "RINDO À TOA"}
+                      <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-[10px] mt-0 border-none uppercase">
+                        {post.category?.name || "Rindo Atoa"}
                       </Badge>
-                      <h4 className="font-open-sans font-semibold text-base sm:text-lg lg:text-lg mb-1 sm:mb-2 transition-colors uppercase line-clamp-2">
+                      <h4 className="font-open-sans font-semibold text-base lg:text-lg/6 uppercase mb-1 line-clamp-2">
                         {post.title}
                       </h4>
                       {post.excerpt && (
@@ -954,14 +993,14 @@ export default function Home() {
                         </p>
                       )}
                     </div>
-                    <div className="relative flex-shrink-0 w-auto sm:w-auto h-auto sm:h-40">
+                    {/* <div className="relative flex-shrink-0 w-auto sm:w-32 h-auto">
                       <Image
                         src={post.featured_image || placeholderImages.cartoon}
                         alt={post.title}
                         fill
                         className="object-cover"
                       />
-                    </div>
+                    </div> */}
                   </Link>
                 )
               })}
@@ -979,7 +1018,7 @@ export default function Home() {
                   title={ad.title}
                   buttonLink={ad.link_url}
                   backgroundColor="bg-transparent"
-                  className="h-full min-h-[400px]"
+                  className="h-full min-h-[380px]"
                   imageClassName=""
                   variant="vertical"
                 />
@@ -995,8 +1034,8 @@ export default function Home() {
                 if (!post) return null
 
                 return (
-                  <Link key={slot.id} href={`/blog/${post.slug}`} className="grid grid-cols-2 gap-3 sm:gap-4 group">
-                    <div className="relative flex-shrink-0 w-auto sm:w-auto h-auto sm:h-40 text-start">
+                  <Link key={slot.id} href={`/blog/${post.slug}`} className="flex gap-3 sm:gap-4 group">
+                    <div className="relative flex-shrink-0 w-28 h-auto text-start">
                       <Image
                         src={post.featured_image || placeholderImages.cartoon}
                         alt={post.title}
@@ -1005,10 +1044,10 @@ export default function Home() {
                       />
                     </div>
                     <div className="">
-                      <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-1 sm:mb-2 text-xs uppercase">
-                        {post.category?.name || "QUEBRA CUCA"}
+                      <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-[10px] mt-0 border-none uppercase">
+                        {post.category?.name || "Rindo Atoa"}
                       </Badge>
-                      <h4 className="font-open-sans font-semibold text-base sm:text-lg lg:text-lg mb-1 sm:mb-2 transition-colors uppercase line-clamp-2">
+                      <h4 className="font-open-sans font-semibold text-base lg:text-lg/6 uppercase mb-1 line-clamp-2">
                         {post.title}
                       </h4>
                       {post.excerpt && (
@@ -1035,19 +1074,20 @@ export default function Home() {
             title={ad.title}
             buttonLink={ad.link_url}
             backgroundColor="bg-transparent"
+            imageClassName="max-h-[210px]"
             variant="horizontal"
           />
         )
       })()}
 
       {/* GASTRONOMIA Section (Carousel) */}
-      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl pt-5 mx-auto bg-white">
+      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl py-0 sm:py-12 mx-auto bg-white">
         <div className="flex items-center w-full justify-center mb-5 md:mb-0">
           <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
           <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov md:text-nowrap mx-4 sm:mx-8 lg:mx-12 font-bold text-[#126861]">GASTRONOMIA</h2>
           <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
         </div>
-        <p className="text-center font-lato text-sm sm:text-base lg:text-xl text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
+        <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
         <div className="pl-4 sm:pl-6 lg:pl-0">
           <Carousel className="w-full" opts={{ loop: false }}>
             <CarouselContent>
@@ -1066,11 +1106,11 @@ export default function Home() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent rounded-xl" />
                       <div className="absolute bottom-4 sm:bottom-5 left-4 sm:left-5 right-4 sm:right-5 text-white">
-                        <p className="font-open-sans font-semibold text-base sm:text-lg uppercase line-clamp-2 mb-1">
+                        <h4 className="font-open-sans font-semibold text-base lg:text-lg/6 uppercase mb-1 line-clamp-2">
                           {post.title}
-                        </p>
+                        </h4>
                         {post.excerpt && (
-                          <p className="text-xs sm:text-sm font-lato opacity-90 line-clamp-2">
+                          <p className="text-xs font-open-sans font-medium opacity-90 line-clamp-2">
                             {post.excerpt}
                           </p>
                         )}
@@ -1080,11 +1120,11 @@ export default function Home() {
                 )
               })}
             </CarouselContent>
-            <CarouselPrevious className="left-2 sm:left-4 bg-white/80 hover:bg-white hidden sm:flex" />
+            <CarouselPrevious className="left-2 sm:left-4 bg-white/80 hover:bg-white hidden sm:flex rotate-180" />
             <CarouselNext className="right-2 sm:right-4 bg-white/80 hover:bg-white hidden sm:flex" />
           </Carousel>
         </div>
-        <div className="flex justify-center mt-4 space-x-2">
+        <div className="flex justify-center mt-10 space-x-2">
           {getSlots("GASTRONOMIA", "CAROUSEL").map((slot, idx) => (
             <div key={slot.id} className={`w-2 h-2 rounded-full ${idx === 0 ? 'bg-[#6D758F]' : 'bg-gray-300'}`} />
           ))}
@@ -1092,21 +1132,21 @@ export default function Home() {
       </section>
 
       {/* SUPER DICAS Section */}
-      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl pt-5 mx-auto bg-white">
+      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl py-0 sm:pb-12 mx-auto bg-white">
         <div className="flex items-center justify-center mb-5 md:mb-0">
           <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
           <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov text-nowrap mx-4 sm:mx-8 lg:mx-12 font-bold text-[#126861]"><span className="text-[#928575]">SUPER</span> DICAS</h2>
           <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
         </div>
-        <p className="text-center font-lato text-sm sm:text-base lg:text-xl text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
+        <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
 
-        <div className="hidden md:flex flex-col md:flex-row gap-6 sm:gap-8 lg:gap-10 px-4 sm:px-6 lg:px-0">
+        <div className="hidden md:grid grid-cols-1 xl:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 px-4 sm:px-6 lg:px-0">
           {/* Main Article */}
           {(() => {
             const slot = getSlot("SUPER_DICAS", "MAIN", null)
             const post = slot?.post
             return (
-              <Link href={post ? `/blog/${post.slug}` : "#"} className="relative w-full md:w-[60%] lg:w-[774.77px] h-auto group block">
+              <Link href={post ? `/blog/${post.slug}` : "#"} className="relative w-full h-auto group block">
                 {post?.featured_image ? (
                   <Image
                     src={post.featured_image}
@@ -1120,13 +1160,18 @@ export default function Home() {
                 {post && (
                   <>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                    <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 text-white">
-                      <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 sm:mb-3 text-xs uppercase">
+                    <div className="absolute bottom-4 sm:bottom-10 left-4 sm:left-6 right-4 sm:right-6 text-white">
+                      <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-3 text-[10px] uppercase">
                         {post.category?.name || "CATEGORIA"}
                       </Badge>
-                      <h3 className="text-xl sm:text-2xl lg:text-3xl font-open-sans font-semibold mb-2 sm:mb-3 uppercase line-clamp-2">
+                      <h4 className="font-open-sans font-semibold text-base lg:text-lg/6 max-w-80 uppercase mb-1 line-clamp-2">
                         {post.title}
-                      </h3>
+                      </h4>
+                      {post.excerpt && (
+                        <p className="text-xs sm:text-base font-open-sans font-medium max-w-96 opacity-90 line-clamp-2">
+                          {post.excerpt}
+                        </p>
+                      )}
                     </div>
                   </>
                 )}
@@ -1136,24 +1181,26 @@ export default function Home() {
 
           {/* Side Articles */}
           <div className="space-y-4 flex-1">
-            {getSlots("SUPER_DICAS", "SIDE").slice(0, 3).map((slot) => {
+            {getSlots("SUPER_DICAS", "SIDE").slice(0, 3).map((slot, index) => {
               const post = slot.post
               if (!post) return null
 
               return (
-                <Link key={slot.id} href={`/blog/${post.slug}`} className="flex gap-3 sm:gap-4 group">
+                <Link key={slot.id} href={`/blog/${post.slug}`} className={`flex gap-3 sm:gap-4 group ${index == 1 ? "border-y border-[#EEEEEE] py-4 my-4" : ""}`}>
                   <div className="flex-1">
-                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-1 sm:mb-2 text-xs uppercase">
+                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-[10px] mt-0 border-none uppercase">
                       {post.category?.name || "CATEGORIA"}
                     </Badge>
-                    <h4 className="font-open-sans font-semibold text-base sm:text-lg lg:text-xl mb-1 sm:mb-2 transition-colors uppercase line-clamp-2">
+                    <h4 className="font-open-sans font-semibold text-base lg:text-lg/6 max-w-72 text-gray-900 uppercase mb-1 line-clamp-2">
                       {post.title}
                     </h4>
-                    {post.excerpt && (
-                      <p className="text-xs sm:text-sm font-lato text-gray-600 line-clamp-2">
-                        {post.excerpt}
-                      </p>
-                    )}
+                    <div className="flex items-center font-open-sans font-medium gap-1 text-xs text-gray-500">
+                      {post.excerpt && (
+                        <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 max-w-[264px]">
+                          {post.excerpt}
+                        </p>
+                      )}
+                    </div>
                   </div>
                   <div className="relative w-40 sm:w-48 h-28 sm:h-32 flex-shrink-0">
                     <Image
@@ -1225,7 +1272,7 @@ export default function Home() {
                   <>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                     <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 text-white">
-                      <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 sm:mb-3 text-xs">
+                      <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 sm:mb-3 text-xs uppercase">
                         {post.category?.name || "CATEGORIA"}
                       </Badge>
                       <h3 className="text-lg sm:text-xl lg:text-2xl 2xl:text-3xl font-open-sans font-semibold mb-2 sm:mb-3 uppercase line-clamp-2">
@@ -1275,10 +1322,10 @@ export default function Home() {
           </div>
         </div>
         {/* Social Share */}
-        <div className="flex justify-center">
-          <SocialShare />
-        </div>
       </section>
+      <div className="flex justify-center">
+        <SocialShare />
+      </div>
     </div>
   )
 }

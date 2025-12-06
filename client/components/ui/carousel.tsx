@@ -8,6 +8,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io"
 
 type CarouselApi = UseEmblaCarouselType[1]
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
@@ -194,10 +195,14 @@ const CarouselItem = React.forwardRef<
 })
 CarouselItem.displayName = "CarouselItem"
 
+interface CarouselButtonProps extends React.ComponentProps<typeof Button> {
+  iconClassName?: string
+}
+
 const CarouselPrevious = React.forwardRef<
   HTMLButtonElement,
-  React.ComponentProps<typeof Button>
->(({ className, variant = "outline", size = "icon", ...props }, ref) => {
+  CarouselButtonProps
+>(({ className, variant = "outline", size = "icon", iconClassName, ...props }, ref) => {
   const { orientation, scrollPrev, canScrollPrev } = useCarousel()
 
   return (
@@ -209,14 +214,14 @@ const CarouselPrevious = React.forwardRef<
         "absolute  h-8 w-8 rounded-full",
         orientation === "horizontal"
           ? "-left-12 top-1/2 -translate-y-1/2"
-          : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
+          : "-top-12 left-1/2 -translate-x-1/2",
         className
       )}
       disabled={!canScrollPrev}
       onClick={scrollPrev}
       {...props}
     >
-      <ArrowLeft className="h-4 w-4" />
+      <IoIosArrowForward className={iconClassName || "h-4 w-4"} />
       <span className="sr-only">Previous slide</span>
     </Button>
   )
@@ -225,8 +230,8 @@ CarouselPrevious.displayName = "CarouselPrevious"
 
 const CarouselNext = React.forwardRef<
   HTMLButtonElement,
-  React.ComponentProps<typeof Button>
->(({ className, variant = "outline", size = "icon", ...props }, ref) => {
+  CarouselButtonProps
+>(({ className, variant = "outline", size = "icon", iconClassName, ...props }, ref) => {
   const { orientation, scrollNext, canScrollNext } = useCarousel()
 
   return (
@@ -238,14 +243,14 @@ const CarouselNext = React.forwardRef<
         "absolute h-8 w-8 rounded-full",
         orientation === "horizontal"
           ? "-right-12 top-1/2 -translate-y-1/2"
-          : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
+          : "-bottom-12 left-1/2 -translate-x-1/2",
         className
       )}
       disabled={!canScrollNext}
       onClick={scrollNext}
       {...props}
     >
-      <ArrowRight className="h-4 w-4" />
+      <IoIosArrowForward className={iconClassName || "h-4 w-4"} />
       <span className="sr-only">Next slide</span>
     </Button>
   )
