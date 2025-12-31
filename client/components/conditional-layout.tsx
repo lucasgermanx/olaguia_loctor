@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { MobileBottomNav } from "@/components/mobile-bottom-nav"
+import { ScrollToTop } from "@/components/scroll-to-top"
 
 export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -17,6 +18,8 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
       {!isAdminRoute && <Footer />}
       {/* Menu mobile apenas nas páginas internas, não na home */}
       {!isAdminRoute && !isHomePage && <MobileBottomNav />}
+      {/* Botão de voltar ao topo em todas as páginas */}
+      {!isAdminRoute && <ScrollToTop />}
     </>
   )
 }

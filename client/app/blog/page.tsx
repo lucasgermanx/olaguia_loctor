@@ -137,7 +137,7 @@ export default async function BlogPage({
       </div>
 
       {/* Main Content Section */}
-      <section className="py-8 md:py-12 w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto">
+      <section className="py-8 md:py-12 w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto">
         <div className="mx-auto">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Main Content - Left Side */}

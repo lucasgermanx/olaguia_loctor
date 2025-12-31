@@ -299,7 +299,7 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
             type="button"
             variant="ghost"
             size="sm"
-            onClick={() => editor.chain().focus().toggleHighlight({ color: '#fbbf24' }).run()}
+            onClick={() => editor.chain().focus().toggleHighlight({ color: '#E8DED0' }).run()}
             className={editor.isActive("highlight") ? "bg-gray-200" : ""}
             title="Destacar texto"
           >

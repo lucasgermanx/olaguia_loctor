@@ -18,10 +18,6 @@ export async function updatePost(request: FastifyRequest, reply: FastifyReply) {
     category_id: z.string().optional(),
     professional_id: z.string().optional(),
     tags: z.array(z.string()).optional(),
-    theme: z.string().optional(),
-    position: z.string().default("MAIN").optional(),
-    order: z.number().optional(),
-    featured: z.boolean().optional(),
   })
   console.log(request.body)
   const { id } = updatePostParamsSchema.parse(request.params)

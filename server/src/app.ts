@@ -15,7 +15,7 @@ import { join } from "path"
 export const app = fastify()
 
 app.register(require("@fastify/cors"), {
-  origin: ["https://olaguia.loctor.dev", "http://localhost:3007"],
+  origin: ["https://olaguia.loctor.dev", "http://localhost:3000", "http://72.60.3.246:3000"],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"]
 })

@@ -42,6 +42,7 @@ export default function NewPostPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState("")
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [categories, setCategories] = useState<Category[]>([])
   const [tags, setTags] = useState<Tag[]>([])
   const [professionals, setProfessionals] = useState<Professional[]>([])
@@ -109,14 +110,32 @@ export default function NewPostPage() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
+    setFieldErrors((prev) => {
+      const copy = { ...prev }
+      delete copy[name as string]
+      return copy
+    })
   }
 
   const handleContentChange = (content: string) => {
     setFormData((prev) => ({ ...prev, content }))
+    const plain = content.replace(/<[^>]*>/g, "").trim()
+    if (plain) {
+      setFieldErrors((prev) => {
+        const copy = { ...prev }
+        delete copy.content
+        return copy
+      })
+    }
   }
 
   const handleCategoryChange = (value: string) => {
     setFormData((prev) => ({ ...prev, category_id: value }))
+    setFieldErrors((prev) => {
+      const copy = { ...prev }
+      delete copy.category_id
+      return copy
+    })
   }
 
   const handleProfessionalChange = (value: string) => {
@@ -126,11 +145,15 @@ export default function NewPostPage() {
   const handleTagChange = (tagId: string) => {
     setFormData((prev) => {
       const tagIds = [...prev.tag_ids]
-      if (tagIds.includes(tagId)) {
-        return { ...prev, tag_ids: tagIds.filter((id) => id !== tagId) }
-      } else {
-        return { ...prev, tag_ids: [...tagIds, tagId] }
+      const newTagIds = tagIds.includes(tagId) ? tagIds.filter((id) => id !== tagId) : [...tagIds, tagId]
+      if (newTagIds.length > 0) {
+        setFieldErrors((prevErr) => {
+          const copy = { ...prevErr }
+          delete copy.tag_ids
+          return copy
+        })
       }
+      return { ...prev, tag_ids: newTagIds }
     })
   }
 
@@ -146,10 +169,35 @@ export default function NewPostPage() {
     setFormData((prev) => ({ ...prev, slug }))
   }
 
+  const validateForm = () => {
+    const errors: Record<string, string> = {}
+    if (!formData.title.trim()) errors.title = "Título é obrigatório"
+    if (!formData.slug.trim()) errors.slug = "Slug é obrigatório"
+    if (!formData.excerpt.trim()) errors.excerpt = "Resumo é obrigatório"
+    const plainContent = formData.content.replace(/<[^>]*>/g, "").trim()
+    if (!plainContent) errors.content = "Conteúdo é obrigatório"
+    if (!formData.featured_image.trim()) errors.featured_image = "URL da imagem é obrigatória"
+    if (!formData.category_id.trim()) errors.category_id = "Categoria é obrigatória"
+    if (!formData.tag_ids || formData.tag_ids.length === 0) errors.tag_ids = "Selecione pelo menos uma tag"
+    return errors
+  }
+
+  const errorClass = (key: string) => (fieldErrors[key] ? 'ring-1 ring-red-500 rounded-md p-2' : '')
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSaving(true)
     setError("")
+    setFieldErrors({})
+
+    // Validar campos obrigatórios
+    const errors = validateForm()
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors)
+      setIsSaving(false)
+      setError("Por favor, preencha os campos obrigatórios.")
+      return
+    }
 
     try {
       const token = localStorage.getItem("token")
@@ -158,12 +206,14 @@ export default function NewPostPage() {
         return
       }
 
-      // Preparar dados para enviar - converter tag_ids para tags
+      // Preparar dados para enviar - converter tag_ids para tags e omitir enums vazios
       const submitData = {
         ...formData,
         tags: formData.tag_ids,
         tag_ids: undefined, // Remover tag_ids
         professional_id: formData.professional_id || undefined, // Converter string vazia para undefined
+        theme: formData.theme || undefined,
+        position: formData.position || undefined,
       }
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/posts`, {
@@ -215,49 +265,55 @@ export default function NewPostPage() {
 
         {error && <div className="bg-red-50 text-red-600 p-4 rounded-md mb-6">{error}</div>}
 
+
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
               <Card>
                 <CardContent className="pt-6">
                   <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="title">Título</Label>
+                    <div className={errorClass('title')}>
+                      <Label htmlFor="title">Título <span className="text-red-500">*</span></Label>
                       <Input id="title" name="title" value={formData.title} onChange={handleInputChange} required />
-                    </div>
+                      {fieldErrors.title && <p className="text-sm text-red-600 mt-1">{fieldErrors.title}</p>}
+                    </div> 
 
                     <div className="flex gap-4">
-                      <div className="flex-1">
-                        <Label htmlFor="slug">Slug</Label>
+                      <div className={`flex-1 ${errorClass('slug')}`}>
+                        <Label htmlFor="slug">Slug <span className="text-red-500">*</span></Label>
                         <div className="flex gap-2">
                           <Input id="slug" name="slug" value={formData.slug} onChange={handleInputChange} required />
                           <Button type="button" variant="outline" onClick={generateSlug}>
                             Gerar
                           </Button>
                         </div>
+                        {fieldErrors.slug && <p className="text-sm text-red-600 mt-1">{fieldErrors.slug}</p>}
                       </div>
                     </div>
 
-                    <div>
-                      <Label htmlFor="excerpt">Resumo</Label>
+                    <div className={errorClass('excerpt')}>
+                      <Label htmlFor="excerpt">Resumo <span className="text-red-500">*</span></Label>
                       <Textarea
                         id="excerpt"
                         name="excerpt"
+                        required
                         value={formData.excerpt}
                         onChange={handleInputChange}
                         rows={3}
                       />
+                      {fieldErrors.excerpt && <p className="text-sm text-red-600 mt-1">{fieldErrors.excerpt}</p>}
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
               <Card>
-                <CardContent className="pt-6">
-                  <Label htmlFor="content">Conteúdo</Label>
+                <CardContent className={`pt-6 ${errorClass('content')}`}>
+                  <Label htmlFor="content">Conteúdo <span className="text-red-500">*</span></Label>
                   <div className="mt-2">
                     <RichTextEditor value={formData.content} onChange={handleContentChange} />
                   </div>
+                  {fieldErrors.content && <p className="text-sm text-red-600 mt-1">{fieldErrors.content}</p>}
                 </CardContent>
               </Card>
             </div>
@@ -291,20 +347,22 @@ export default function NewPostPage() {
               <Card>
                 <CardContent className="pt-6">
                   <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="featured_image">URL da Imagem Destacada</Label>
+                    <div className={errorClass('featured_image')}>
+                      <Label htmlFor="featured_image">URL da Imagem Destacada <span className="text-red-500">*</span></Label>
                       <Input
                         id="featured_image"
                         name="featured_image"
                         value={formData.featured_image}
+                        required
                         onChange={handleInputChange}
                         placeholder="https://exemplo.com/imagem.jpg"
                       />
+                      {fieldErrors.featured_image && <p className="text-sm text-red-600 mt-1">{fieldErrors.featured_image}</p>}
                     </div>
 
-                    <div>
-                      <Label htmlFor="category">Categoria</Label>
-                      <Select value={formData.category_id} onValueChange={handleCategoryChange}>
+                    <div className={errorClass('category_id')}>
+                      <Label htmlFor="category">Categoria <span className="text-red-500">*</span></Label>
+                      <Select value={formData.category_id} required onValueChange={handleCategoryChange}>
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione uma categoria" />
                         </SelectTrigger>
@@ -316,6 +374,7 @@ export default function NewPostPage() {
                           ))}
                         </SelectContent>
                       </Select>
+                      {fieldErrors.category_id && <p className="text-sm text-red-600 mt-1">{fieldErrors.category_id}</p>}
                     </div>
 
                     <div>
@@ -338,8 +397,8 @@ export default function NewPostPage() {
                       </p>
                     </div>
 
-                    <div>
-                      <Label>Tags</Label>
+                    <div className={errorClass('tag_ids')}>
+                      <Label>Tags <span className="text-red-500">*</span></Label>
                       <div className="mt-2 space-y-2">
                         {tags.map((tag) => (
                           <div key={tag.id} className="flex items-center">
@@ -354,6 +413,7 @@ export default function NewPostPage() {
                           </div>
                         ))}
                       </div>
+                      {fieldErrors.tag_ids && <p className="text-sm text-red-600 mt-1">{fieldErrors.tag_ids}</p>}
                     </div>
                   </div>
                 </CardContent>

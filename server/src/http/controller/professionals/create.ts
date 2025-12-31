@@ -17,12 +17,21 @@ export async function createProfessional(request: FastifyRequest, reply: Fastify
     address: z.string(),
     city: z.string().optional(),
     state: z.string().optional(),
+    additional_cities: z.any().optional(), // Array de cidades adicionais: [{city, state}]
     working_hours: z.string().optional(),
     specialties: z.any().optional(),
     services: z.any().optional(),
     testimonials: z.any().optional(),
     faqs: z.any().optional(),
     gallery_images: z.any().optional(),
+    // Campos da seção "Dores do Cliente"
+    pain_points_title: z.string().optional(),
+    pain_points_subtitle: z.string().optional(),
+    pain_points_image: z.string().optional(),
+    pain_points: z.any().optional(),
+    // Campos da seção de Serviços
+    services_section_title: z.string().optional(),
+    services_section_subtitle: z.string().optional(),
     social_facebook: z.string().optional(),
     social_instagram: z.string().optional(),
     social_linkedin: z.string().optional(),

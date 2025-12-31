@@ -134,9 +134,10 @@ export function Header({ isHomePage = false }: HeaderProps) {
         isScrolled ? "bg-[#f5f5f0] py-3" : "bg-[#f5f5f0] py-4",
       )}
     >
-      <div className="container max-w-7xl mx-auto flex items-center justify-between px-4 md:px-6">
-        <Link href="/" className="flex items-center space-x-3">
-          <Image src="/logo-marrom.png" alt="Logo" width={200} height={54} className="max-w-32 md:max-w-48" />
+      <div className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto flex items-center justify-between">
+        <Link href="/" className="flex items-center">
+          <Image src="/olaguia.png" alt="Logo" width={300} height={80} className="max-w-32 md:max-w-48" />
+          <Image src="/20anos.png" alt="Logo" width={300} height={80} className="max-w-14 md:max-w-20" />
         </Link>
 
         {/* Desktop Navigation */}
@@ -206,7 +207,7 @@ export function Header({ isHomePage = false }: HeaderProps) {
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
                     autoFocus
-                    className="w-64 px-4 py-2 pr-10 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[#126861]"
+                    className="w-32 px-4 py-2 pr-10 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[#126861]"
                   />
                   <button
                     type="submit"

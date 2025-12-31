@@ -12,6 +12,7 @@ interface Professional {
   slug: string
   title: string
   specialty: string
+  additional_cities: Array<{ city: string; state: string }>
   city: string
   state: string
 }
@@ -89,11 +90,16 @@ export function MainSearchBar() {
           setProfissionais(uniqueProfessionals)
 
           // Extrair cidades únicas
-          const cidadesUnicas = [...new Set(
-            professionals
-              .filter((p: Professional) => p.city)
-              .map((p: Professional) => p.city)
-          )].sort() as string[]
+          const cidadesUnicas = [
+            ...new Set(
+              professionals
+                .flatMap((p: Professional) => [
+                  p.city,
+                  ...(p.additional_cities?.map(city => city.city) ?? [])
+                ])
+                .filter(Boolean)
+            )
+          ].sort() as string[]
 
           setCidades(cidadesUnicas)
 
@@ -162,7 +168,7 @@ export function MainSearchBar() {
           <div className="flex text-start items-center justify-start gap-4">
             {/* <h2 className="text-2xl md:text-3xl font-bold text-[#353E5C] mb-4">Pesquisar</h2> */}
             <p className="text-gray-600 text-sm mb-4">
-              Encontre profissionais e empresas por localização, especialidade ou categoria
+              Encontre Profissionais e Empresas por Cidade e/ou Nome e/ou Especialidade e/ou Tema específico
             </p>
           </div>
 

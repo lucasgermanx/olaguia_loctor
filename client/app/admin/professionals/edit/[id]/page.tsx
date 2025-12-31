@@ -7,6 +7,7 @@ import { AdminLayout } from "@/components/admin/admin-layout"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
 import { Loader2, Save, Plus, X, ArrowRight } from "lucide-react"
 import Image from "next/image"
 import { FaClock, FaPhoneAlt } from "react-icons/fa"
@@ -29,6 +30,18 @@ interface FAQ {
   id: string
   question: string
   answer: string
+}
+
+interface PainPoint {
+  id: string
+  title: string
+  description: string
+}
+
+interface AdditionalCity {
+  id: string
+  city: string
+  state: string
 }
 
 export default function EditProfessionalPage() {
@@ -71,6 +84,19 @@ export default function EditProfessionalPage() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
   const [faqs, setFaqs] = useState<FAQ[]>([])
   const [galleryImages, setGalleryImages] = useState<string[]>([])
+
+  // Estados para a seção "Dores do Cliente"
+  const [painPointsTitle, setPainPointsTitle] = useState("")
+  const [painPointsSubtitle, setPainPointsSubtitle] = useState("")
+  const [painPointsImage, setPainPointsImage] = useState("")
+  const [painPoints, setPainPoints] = useState<PainPoint[]>([])
+
+  // Estados para a seção de Serviços
+  const [servicesSectionTitle, setServicesSectionTitle] = useState("")
+  const [servicesSectionSubtitle, setServicesSectionSubtitle] = useState("")
+
+  // Estados para cidades adicionais de atuação
+  const [additionalCities, setAdditionalCities] = useState<AdditionalCity[]>([])
 
   useEffect(() => {
     const fetchProfessional = async () => {
@@ -125,6 +151,19 @@ export default function EditProfessionalPage() {
           setTestimonials(prof.testimonials || [])
           setFaqs(prof.faqs || [])
           setGalleryImages(prof.gallery_images || [])
+
+          // Carregar dados de "Dores do Cliente"
+          setPainPointsTitle(prof.pain_points_title || "")
+          setPainPointsSubtitle(prof.pain_points_subtitle || "")
+          setPainPointsImage(prof.pain_points_image || "")
+          setPainPoints(prof.pain_points || [])
+
+          // Carregar dados da seção de Serviços
+          setServicesSectionTitle(prof.services_section_title || "")
+          setServicesSectionSubtitle(prof.services_section_subtitle || "")
+
+          // Carregar cidades adicionais de atuação
+          setAdditionalCities(prof.additional_cities || [])
         } else {
           setError("Profissional não encontrado")
         }
@@ -239,6 +278,46 @@ export default function EditProfessionalPage() {
     setGalleryImages((prev) => prev.filter((_, i) => i !== index))
   }
 
+  // Dores do Cliente (Pain Points)
+  const addPainPoint = () => {
+    setPainPoints((prev) => [
+      ...prev,
+      { id: Date.now().toString(), title: "", description: "" },
+    ])
+  }
+
+  const updatePainPoint = (id: string, field: keyof PainPoint, value: string) => {
+    setPainPoints((prev) =>
+      prev.map((painPoint) =>
+        painPoint.id === id ? { ...painPoint, [field]: value } : painPoint
+      )
+    )
+  }
+
+  const removePainPoint = (id: string) => {
+    setPainPoints((prev) => prev.filter((painPoint) => painPoint.id !== id))
+  }
+
+  // Cidades Adicionais de Atuação
+  const addAdditionalCity = () => {
+    setAdditionalCities((prev) => [
+      ...prev,
+      { id: Date.now().toString(), city: "", state: "" },
+    ])
+  }
+
+  const updateAdditionalCity = (id: string, field: keyof AdditionalCity, value: string) => {
+    setAdditionalCities((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, [field]: value } : item
+      )
+    )
+  }
+
+  const removeAdditionalCity = (id: string) => {
+    setAdditionalCities((prev) => prev.filter((item) => item.id !== id))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSaving(true)
@@ -258,6 +337,13 @@ export default function EditProfessionalPage() {
         testimonials,
         faqs,
         gallery_images: galleryImages,
+        additional_cities: additionalCities,
+        pain_points_title: painPointsTitle,
+        pain_points_subtitle: painPointsSubtitle,
+        pain_points_image: painPointsImage,
+        pain_points: painPoints,
+        services_section_title: servicesSectionTitle,
+        services_section_subtitle: servicesSectionSubtitle,
       }
 
       const response = await fetch(
@@ -445,63 +531,90 @@ export default function EditProfessionalPage() {
                 </div>
               </section>
 
-              {/* Seção com Imagem de Capa e Serviços */}
-              <section className="bg-white overflow-hidden">
-                <div className="relative w-full h-48 md:h-64 bg-gray-100 mb-6">
-                  {formData.cover_image ? (
-                    <Image
-                      src={formData.cover_image}
-                      alt="Capa"
-                      fill
-                      className="object-cover"
+              {/* Seção "Dores do Cliente" (VOCÊ ENFRENTA ALGUM DESTES PROBLEMAS?) */}
+              <section className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                <h2 className="text-xl md:text-2xl font-semibold text-gray-900 uppercase mb-4">
+                  Seção Dores
+                </h2>
+                <p className="text-sm text-gray-600 mb-6">
+                  Configure a seção "VOCÊ ENFRENTA ALGUM DESTES PROBLEMAS?" que aparece na página do profissional
+                </p>
+
+                <div className="space-y-4 mb-6">
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                      Título
+                    </Label>
+                    <Input
+                      placeholder="Ex: VOCÊ ENFRENTA ALGUM DESTES PROBLEMAS?"
+                      value={painPointsTitle}
+                      onChange={(e) => setPainPointsTitle(e.target.value)}
                     />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400">
-                      <span>Imagem de Capa</span>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                      Subtítulo/Descrição
+                    </Label>
+                    <Textarea
+                      placeholder="Ex: A seguir apresentamos alguns dos principais problemas que as pessoas nos relatam quando nos procuram..."
+                      value={painPointsSubtitle}
+                      onChange={(e) => setPainPointsSubtitle(e.target.value)}
+                      rows={3}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                      Imagem da Seção
+                    </Label>
+                    <div className="relative w-full h-32 bg-gray-100 mb-2 rounded overflow-hidden">
+                      {painPointsImage ? (
+                        <Image
+                          src={painPointsImage}
+                          alt="Imagem das dores"
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                          <span className="text-sm">Imagem da seção de problemas</span>
+                        </div>
+                      )}
                     </div>
-                  )}
+                    <Input
+                      placeholder="URL da imagem"
+                      value={painPointsImage}
+                      onChange={(e) => setPainPointsImage(e.target.value)}
+                    />
+                  </div>
                 </div>
 
-                <Input
-                  placeholder="URL da Imagem de Capa"
-                  name="cover_image"
-                  value={formData.cover_image}
-                  onChange={handleInputChange}
-                  className="mb-6"
-                />
-
-                <h2 className="text-xl md:text-2xl font-semibold text-gray-900 uppercase mb-4">
-                  Serviços Oferecidos
-                </h2>
-
-                {/* Lista de serviços */}
                 <div className="space-y-3 mb-4">
-                  {services.map((service) => (
-                    <div key={service.id} className="flex items-start gap-4 border border-gray-200 rounded-lg p-4">
-                      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#126861] flex items-center justify-center text-white">
+                  {painPoints.map((painPoint) => (
+                    <div key={painPoint.id} className="flex items-start gap-4 border border-gray-200 rounded-lg p-4 bg-white">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#7a6b5a] flex items-center justify-center text-white">
                         <ArrowRight className="w-4 h-4" />
                       </div>
                       <div className="flex-1 space-y-2">
                         <div className="flex gap-2">
                           <Input
-                            placeholder="Título do serviço"
-                            value={service.title}
-                            onChange={(e) => updateService(service.id, "title", e.target.value)}
+                            placeholder="Título do problema (ex: Implantes Dentários)"
+                            value={painPoint.title}
+                            onChange={(e) => updatePainPoint(painPoint.id, "title", e.target.value)}
                             className="font-semibold"
                           />
                           <Button
                             type="button"
                             variant="ghost"
                             size="icon"
-                            onClick={() => removeService(service.id)}
+                            onClick={() => removePainPoint(painPoint.id)}
                           >
                             <X size={16} />
                           </Button>
                         </div>
                         <Textarea
-                          placeholder="Descrição do serviço"
-                          value={service.description}
-                          onChange={(e) => updateService(service.id, "description", e.target.value)}
+                          placeholder="Descrição do problema..."
+                          value={painPoint.description}
+                          onChange={(e) => updatePainPoint(painPoint.id, "description", e.target.value)}
                           rows={2}
                           className="text-sm"
                         />
@@ -510,9 +623,9 @@ export default function EditProfessionalPage() {
                   ))}
                 </div>
 
-                <Button type="button" onClick={addService} variant="outline" className="w-full">
+                <Button type="button" onClick={addPainPoint} variant="outline" className="w-full">
                   <Plus size={16} className="mr-2" />
-                  Adicionar Serviço
+                  Adicionar Problema/Dor
                 </Button>
               </section>
 
@@ -565,6 +678,102 @@ export default function EditProfessionalPage() {
                   <Plus size={16} className="mr-2" />
                   Adicionar Depoimento
                 </Button>
+              </section>
+
+              {/* Seção com Imagem de Capa e Serviços */}
+              <section className="bg-white overflow-hidden">
+                {/* Título e Subtítulo da Seção de Serviços */}
+                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">Título</h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Configure o título e subtítulo que aparecem na seção de serviços
+                  </p>
+                  <div className="space-y-3">
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                        Título
+                      </Label>
+                      <Input
+                        placeholder="Ex: TRATAMENTOS ODONTOLÓGICOS ESPECIALIZADOS"
+                        value={servicesSectionTitle}
+                        onChange={(e) => setServicesSectionTitle(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                        Subtítulo
+                      </Label>
+                      <Textarea
+                        placeholder="Ex: Oferecemos tratamentos de alta qualidade com tecnologia de ponta..."
+                        value={servicesSectionSubtitle}
+                        onChange={(e) => setServicesSectionSubtitle(e.target.value)}
+                        rows={2}
+                      />
+                    </div>
+                    <div className="relative w-full h-48 md:h-64 bg-gray-100 mb-6">
+                      {formData.cover_image ? (
+                        <Image
+                          src={formData.cover_image}
+                          alt="Capa"
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                          <span>Imagem de Capa</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <Input
+                      placeholder="URL da Imagem de Capa"
+                      name="cover_image"
+                      value={formData.cover_image}
+                      onChange={handleInputChange}
+                      className="mb-6"
+                    />
+                  </div>
+                  {/* Lista de serviços */}
+                  <div className="space-y-3 mb-4">
+                    {services.map((service, index) => (
+                      <div key={service.id} className="flex items-start gap-4 border border-gray-200 rounded-lg p-4">
+                        <span className="text-4xl sm:text-5xl font-open-sans font-medium text-[#928575] min-w-[3rem]">
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                        <div className="flex-1 space-y-2">
+                          <div className="flex gap-2">
+                            <Input
+                              placeholder="Título do serviço"
+                              value={service.title}
+                              onChange={(e) => updateService(service.id, "title", e.target.value)}
+                              className="font-semibold"
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeService(service.id)}
+                            >
+                              <X size={16} />
+                            </Button>
+                          </div>
+                          <Textarea
+                            placeholder="Descrição do serviço"
+                            value={service.description}
+                            onChange={(e) => updateService(service.id, "description", e.target.value)}
+                            rows={2}
+                            className="text-sm"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <Button type="button" onClick={addService} variant="outline" className="w-full">
+                    <Plus size={16} className="mr-2" />
+                    Adicionar Serviço
+                  </Button>
+                </div>
               </section>
 
               {/* Galeria de Imagens */}
@@ -699,6 +908,52 @@ export default function EditProfessionalPage() {
                         maxLength={2}
                         className="text-xs uppercase"
                       />
+                    </div>
+
+                    {/* Cidades Adicionais de Atuação */}
+                    <div className="mt-3 pt-3 border-t border-[#E2DED2]">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-semibold text-gray-600">Outras Cidades de Atuação</span>
+                        <Button
+                          type="button"
+                          onClick={addAdditionalCity}
+                          className="text-xs px-2 py-1 bg-[#126861] text-white hover:bg-[#0e5550] h-7"
+                        >
+                          + Cidade
+                        </Button>
+                      </div>
+                      {additionalCities.length === 0 ? (
+                        <p className="text-xs text-gray-500 italic">
+                          Adicione cidades onde você também atende (atendimento domiciliar, etc)
+                        </p>
+                      ) : (
+                        <div className="space-y-2">
+                          {additionalCities.map((item) => (
+                            <div key={item.id} className="flex gap-2 items-center">
+                              <Input
+                                value={item.city}
+                                onChange={(e) => updateAdditionalCity(item.id, "city", e.target.value)}
+                                placeholder="Cidade"
+                                className="text-xs flex-1"
+                              />
+                              <Input
+                                value={item.state}
+                                onChange={(e) => updateAdditionalCity(item.id, "state", e.target.value.toUpperCase())}
+                                placeholder="UF"
+                                maxLength={2}
+                                className="text-xs w-16 uppercase"
+                              />
+                              <Button
+                                type="button"
+                                onClick={() => removeAdditionalCity(item.id)}
+                                className="bg-red-500 hover:bg-red-600 text-white h-8 w-8 p-0 flex items-center justify-center"
+                              >
+                                ✕
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
 

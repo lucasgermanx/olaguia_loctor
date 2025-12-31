@@ -214,14 +214,38 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
   }
 
   const revistaCategories = [
-    "Reflexão",
-    "Relacionamento",
-    "OLÁ Gourmet",
-    "Super Dicas",
-    "Quebra Cuca",
-    "Rindo à Toa",
-    "Provérbios & Citações",
-    "Edições Anteriores",
+    {
+      label: "Reflexão",
+      slug: "reflexao"
+    },
+    {
+      label: "Relacionamento",
+      slug: "relacionamento"
+    },
+    {
+      label: "OLÁ Gourmet",
+      slug: "olagourmet"
+    },
+    {
+      label: "Super Dicas",
+      slug: "superdicas"
+    },
+    {
+      label: "Quebra Cuca",
+      slug: "quebracuca"
+    },
+    {
+      label: "Rindo à Toa",
+      slug: "rindoatoa"
+    },
+    {
+      label: "Provérbios & Citações",
+      slug: "provencitas"
+    },
+    {
+      label: "Edições Anteriores",
+      slug: "edicoesanteriores"
+    }
   ]
 
   const parceirosCategories = [
@@ -378,18 +402,16 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
             </p>
             <div className="space-y-2">
               {revistaCategories.map((category) => {
-                const tag = findTagByName(category)
-                const tagSlug = tag?.slug || normalizeSlug(category)
 
                 return (
                   <Link
-                    key={category}
-                    href={`/blog?tag=${tagSlug}`}
+                    key={category.slug}
+                    href={`/blog?category=${category.slug}`}
                     className="flex items-center gap-2 group"
                   >
                     <BookOpen width={20} height={20} className="text-[#928575]" />
                     <span className="text-sm text-gray-700 group-hover:text-[#126861] transition-colors">
-                      {category}
+                      {category.label}
                     </span>
                   </Link>
                 )
@@ -408,24 +430,41 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
         </p>
         <div className="space-y-2">
           {[
-            "Empresas & Negócios",
-            "Mantendo & Reformando",
-            "Saúde",
-            "Estética",
-            "Serviços",
+            {
+              label: "Saúde",
+              slug: "saude"
+            },
+            {
+              label: "Estética Beleza",
+              slug: "estetica-beleza"
+            },
+            {
+              label: "Empresas & Negócios",
+              slug: "empresas-negocios"
+            },
+            {
+              label: "Mantendo & Reformando",
+              slug: "mantendo-reformando"
+            },
+            {
+              label: "Gastronomia",
+              slug: "gastronomia"
+            },
+            {
+              label: "Serviços",
+              slug: "servicos"
+            }
           ].map((cat) => {
-            const tag = findTagByName(cat)
-            const tagSlug = tag?.slug || normalizeSlug(cat)
 
             return (
               <Link
-                key={cat}
-                href={`/blog?tag=${tagSlug}`}
+                key={cat.slug}
+                href={`/blog?category=${cat.slug}`}
                 className="flex items-center gap-2 group"
               >
                 <Grid2X2 width={20} height={20} className="text-[#928575]" />
                 <span className="text-sm text-gray-700 group-hover:text-[#126861] transition-colors">
-                  <span>{cat}</span>
+                  <span>{cat.label}</span>
                 </span>
               </Link>
             )

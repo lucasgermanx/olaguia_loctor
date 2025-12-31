@@ -14,12 +14,21 @@ interface CreateProfessionalUseCaseRequest {
   address: string
   city?: string
   state?: string
+  additional_cities?: any // Array de cidades adicionais: [{city, state}]
   working_hours?: string
   specialties?: any
   services?: any
   testimonials?: any
   faqs?: any
   gallery_images?: any
+  // Campos da seção "Dores do Cliente"
+  pain_points_title?: string
+  pain_points_subtitle?: string
+  pain_points_image?: string
+  pain_points?: any
+  // Campos da seção de Serviços
+  services_section_title?: string
+  services_section_subtitle?: string
   social_facebook?: string
   social_instagram?: string
   social_linkedin?: string
@@ -50,12 +59,19 @@ export class CreateProfessionalUseCase {
     address,
     city,
     state,
+    additional_cities,
     working_hours,
     specialties,
     services,
     testimonials,
     faqs,
     gallery_images,
+    pain_points_title,
+    pain_points_subtitle,
+    pain_points_image,
+    pain_points,
+    services_section_title,
+    services_section_subtitle,
     social_facebook,
     social_instagram,
     social_linkedin,
@@ -78,12 +94,19 @@ export class CreateProfessionalUseCase {
       address,
       city,
       state,
+      additional_cities,
       working_hours,
       specialties,
       services,
       testimonials,
       faqs,
       gallery_images,
+      pain_points_title,
+      pain_points_subtitle,
+      pain_points_image,
+      pain_points,
+      services_section_title,
+      services_section_subtitle,
       social_facebook,
       social_instagram,
       social_linkedin,

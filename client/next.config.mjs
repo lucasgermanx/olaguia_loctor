@@ -6,6 +6,7 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  allowedDevOrigins: ['olaguia.loctor.dev', '*.olaguia.loctor.dev'],
   images: {
     remotePatterns: [
       {
@@ -20,6 +21,11 @@ const nextConfig = {
         protocol: 'https',
         hostname: '*.unsplash.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
+      
     ],
     unoptimized: true,
   },

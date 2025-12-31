@@ -142,7 +142,7 @@ export default function Home() {
   }
 
   // Função auxiliar para buscar múltiplos slots por seção e posição
- const getSlots = (section: string, position: string) => {
+  const getSlots = (section: string, position: string) => {
     return slots
       .filter((slot) => slot.section === section && slot.position === position)
       .sort((a, b) => (a.slot_index ?? 0) - (b.slot_index ?? 0))
@@ -233,13 +233,13 @@ export default function Home() {
       </section>
 
       {/* EM DESTAQUE Section */}
-      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto py-5 sm:py-12 bg-white">
+      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto py-5 sm:py-12 bg-white">
         <div className="flex items-center justify-center mb-5 md:mb-0">
           <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
           <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl font-volkhov text-nowrap mx-4 sm:mx-8 lg:mx-12 font-bold text-[#126861]"><span className="text-[#928575]">EM</span> DESTAQUE</h2>
           <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
         </div>
-        <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
+        <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Muita informação e diversão para o seu dia a dia</p>
 
         <div className="hidden md:grid grid-cols-1 xl:grid-cols-2 gap-6 sm:gap-6 lg:gap-8">
           {/* Main Featured Article */}
@@ -450,7 +450,7 @@ export default function Home() {
       })()}
 
       {/* PARA REFLEXÃO Section */}
-      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto py-0 sm:py-12 bg-white">
+      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto py-5 sm:py-12 bg-white">
         <div className="flex items-center w-full mb-5 md:mb-0">
           <div className="h-2 sm:h-3 w-full bg-gray-300" />
           <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov text-nowrap mx-2 sm:mx-8 lg:mx-12 font-bold text-[#126861]">
@@ -458,7 +458,7 @@ export default function Home() {
           </h2>
           <div className="h-2 sm:h-3 w-full bg-gray-300" />
         </div>
-        <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
+        <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Os conteúdos mais lidos na Revista OLÁ Guia</p>
 
         <div className="w-full max-w-[1080px] 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-0">
           <Carousel className="w-full" opts={{ loop: false }}>
@@ -504,15 +504,15 @@ export default function Home() {
       </section>
 
       {/* NOSSA SAÚDE Section */}
-      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto py-0 sm:pb-12 bg-white">
+      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto pb-5 sm:pb-12 bg-white">
         <div className="flex items-center justify-center mb-5 md:mb-0">
           <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
           <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov text-nowrap mx-4 sm:mx-8 lg:mx-12 font-bold text-[#126861]"><span className="text-[#928575]">NOSSA</span> SAÚDE</h2>
           <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
         </div>
-        <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
+        <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Muito conteúdo pra a sua qualidade de vida</p>
 
-        <div className="flex flex-row gap-6 px-4 sm:px-6 lg:px-0">
+        <div className="flex flex-col md:flex-row gap-6 px-4 sm:px-6 lg:px-0">
           {/* Main Article */}
           <div className="basis-4/12">
             {(() => {
@@ -552,7 +552,7 @@ export default function Home() {
           </div>
 
           {/* Side Articles */}
-          <div className="space-y-4 basis-6/12">
+          <div className="space-y-4 mt-16 md:mt-0 basis-6/12">
             {getSlots("NOSSA_SAUDE", "SIDE").slice(0, 3).map((slot, index) => {
               const post = slot.post
               if (!post) return null
@@ -612,7 +612,7 @@ export default function Home() {
       </section>
 
       {/* SOBRE RELACIONAMENTOS Section (Carousel) */}
-      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto sm:pt-4 sm:pb-12 bg-white">
+      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 pb-5 md:px-0 mx-auto sm:pt-4 sm:pb-12 bg-white">
         <div className="flex items-center w-full mb-5 md:mb-0">
           <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
           <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov md:text-nowrap mx-2 sm:mx-8 lg:mx-12 font-bold text-[#126861]">
@@ -620,7 +620,7 @@ export default function Home() {
           </h2>
           <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
         </div>
-        <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
+        <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Dicas e segredos para um bom relacionamento</p>
 
         <Carousel className="w-full pl-4 sm:pl-1" >
           <CarouselContent>
@@ -639,7 +639,7 @@ export default function Home() {
                         className="object-cover"
                       />
                     </div>
-                    <div className="px-3 sm:px-4 py-3 sm:py-4 bg-white absolute top-[30%] sm:top-[45%] left-0 right-6 sm:right-10 shadow-lg">
+                    <div className="px-3 sm:px-4 py-3 sm:py-4 bg-white absolute top-[55%] sm:top-[45%] left-0 right-6 sm:right-10 shadow-lg">
                       <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-[10px] border-none uppercase">
                         {post.category?.name || "CATEGORIA"}
                       </Badge>
@@ -686,7 +686,7 @@ export default function Home() {
       })()}
 
       {/* EMPRESAS & NEGÓCIOS Section */}
-      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto py-0 sm:py-12 bg-white">
+      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto py-5 sm:py-12 bg-white">
         <div className="flex flex-row gap-6">
           <div>
             <div className="flex items-center w-full mb-5 md:mb-0">
@@ -696,7 +696,7 @@ export default function Home() {
               </h2>
               <div className="h-2 sm:h-3 w-full bg-gray-300" />
             </div>
-            <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
+            <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Tudo para o seu negócio e sucesso</p>
 
             <div className="hidden md:grid grid-cols-1 gap-6 ">
               {/* Main Articles - Left Column */}
@@ -870,7 +870,7 @@ export default function Home() {
       </section>
 
       {/* ESTÉTICA & BELEZA Section */}
-      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto py-0 sm:pb-14 bg-white">
+      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto pb-5 sm:pb-14 bg-white">
         <div className="flex items-center justify-center">
           <div className="flex items-center justify-center w-full mb-5 md:mb-0">
             <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
@@ -880,7 +880,7 @@ export default function Home() {
             <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
           </div>
         </div>
-        <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
+        <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Segredos para você ficar mais linda ainda</p>
 
         <div className="hidden md:grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
           {getSlots("ESTETICA_BELEZA", "GRID").slice(0, 6).map((slot) => {
@@ -953,7 +953,7 @@ export default function Home() {
       </section>
 
       {/* RINDO À TOA & QUEBRA CUCA Section */}
-      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto py-0 sm:pb-12 bg-white">
+      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto pb-5 sm:pb-12 bg-white">
         <div className="hidden md:flex items-center justify-center mb-6 sm:mb-10">
           <div className="flex items-center justify-center w-full">
             <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov text-nowrap mx-2 sm:mx-6 lg:mx-12 font-bold text-[#928575]">RINDO À TOA</h2>
@@ -1081,13 +1081,13 @@ export default function Home() {
       })()}
 
       {/* GASTRONOMIA Section (Carousel) */}
-      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl py-0 sm:py-12 mx-auto bg-white">
+      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 py-5 sm:py-12 mx-auto bg-white">
         <div className="flex items-center w-full justify-center mb-5 md:mb-0">
           <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
-          <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov md:text-nowrap mx-4 sm:mx-8 lg:mx-12 font-bold text-[#126861]">GASTRONOMIA</h2>
+          <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov text-nowrap mx-4 sm:mx-8 lg:mx-12 font-bold text-[#126861]"><span className="text-[#928575]">OLÁ</span> GOURMET</h2>
           <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
         </div>
-        <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
+        <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Seleção das melhores receitas para você</p>
         <div className="pl-4 sm:pl-6 lg:pl-0">
           <Carousel className="w-full" opts={{ loop: false }}>
             <CarouselContent>
@@ -1132,13 +1132,13 @@ export default function Home() {
       </section>
 
       {/* SUPER DICAS Section */}
-      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl py-0 sm:pb-12 mx-auto bg-white">
+      <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 pb-5 sm:pb-12 mx-auto bg-white">
         <div className="flex items-center justify-center mb-5 md:mb-0">
           <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
           <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov text-nowrap mx-4 sm:mx-8 lg:mx-12 font-bold text-[#126861]"><span className="text-[#928575]">SUPER</span> DICAS</h2>
           <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
         </div>
-        <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Place for the subtitle</p>
+        <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Segredos e superdicas para solucionar tudo no seu dia a dia</p>
 
         <div className="hidden md:grid grid-cols-1 xl:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 px-4 sm:px-6 lg:px-0">
           {/* Main Article */}

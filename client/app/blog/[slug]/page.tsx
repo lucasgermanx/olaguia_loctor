@@ -447,7 +447,7 @@ export default function BlogPostPage() {
         <MainSearchBar />
       </div>
 
-      <div className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto py-8">
+      <div className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto py-8">
         <div className="flex flex-col lg:flex-row lg:items-start gap-8">
           {/* Main Content - Left Column */}
           <div className="w-full lg:w-3/4 lg:flex-shrink-0">
@@ -575,22 +575,26 @@ export default function BlogPostPage() {
                   fontSize: 'inherit',
                   lineHeight: '1.8'
                 }}
+                className="[&_img]:h-48 [&_img]:sm:h-56 [&_img]:w-full [&_img]:object-cover [&_img]:rounded-lg [&_img]:my-4 [&_mark]:bg-[#E8DED0] [&_mark]:px-1 [&_mark]:rounded"
               />
             </div>
             {/* Tags */}
             {postTags.length > 0 && (
               <div className="mb-8 flex items-center  gap-2">
-                <h3 className="text-sm font-semibold text-white bg-[#928575]/40 w-fit px-4 py-1 rounded-md">TAGS:</h3>
-                <div className="flex flex-wrap gap-2 items-center">
-                  {postTags.map((tag: any) => (
-                    <Link
-                      key={tag.id}
-                      href={`/blog?tag=${tag.slug}`}
-                      className="flex items-center bg-gray-100 text-gray-700 px-4 py-[6px] rounded-md text-xs font-semibold uppercase hover:bg-gray-200 transition-colors"
-                    >
-                      {tag.name}
-                    </Link>
-                  ))}
+                <div className="flex flex-col">
+                  <p className="text-gray-600 font-lato text-base mb-8 mx-auto">Se você quer conhecer mais postagens sobre os temas(tags) que estão abaixos, clique em uma das tags abaixo que o portal vai apresentar as postagens relativas ao tema(tag) escolhido.</p>
+                  <div className="flex flex-wrap gap-x-2 items-center">
+                    <h3 className="text-[10px] font-normal text-white bg-[#928575]/40 w-fit px-4 py-1 rounded-md">TAGS:</h3>
+                    {postTags.map((tag: any) => (
+                      <Link
+                        key={tag.id}
+                        href={`/blog?tag=${tag.slug}`}
+                        className="flex items-center bg-gray-100 text-gray-700 px-4 py-[6px] rounded-md text-xs font-semibold uppercase hover:bg-gray-200 transition-colors"
+                      >
+                        {tag.name}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
@@ -712,6 +716,11 @@ export default function BlogPostPage() {
           <div className="w-full lg:w-1/4 mt-20 hidden lg:block">
             <BlogSidebarNew categories={categories || []} tags={tags || []} />
           </div>
+        </div>
+
+        {/* Compartilhe */}
+        <div className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto px-4 mb-8">
+          <SocialShare title={post?.title || ""} />
         </div>
       </div>
     </div>

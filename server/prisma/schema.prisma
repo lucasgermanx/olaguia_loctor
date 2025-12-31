@@ -93,12 +93,6 @@ model Post {
   created_at     DateTime  @default(now())
   updated_at     DateTime  @updatedAt
 
-  // Tema e posicionamento
-  theme    PostTheme?
-  position PostPosition?
-  order    Int?          @default(0) // Ordem dentro da seção/posição
-  featured Boolean       @default(false) // Se deve aparecer em destaque
-
   // Relacionamentos
   author          User          @relation(fields: [author_id], references: [id])
   author_id       String
@@ -275,12 +269,24 @@ model Professional {
   address          String
   city             String?
   state            String?
+  additional_cities Json?    // Array de cidades adicionais onde o profissional atua: [{city, state}]
   working_hours    String?
   specialties      Json? // Array de especialidades
   services         Json? // Array de serviços
   testimonials     Json? // Array de depoimentos
   faqs             Json? // Array de perguntas frequentes
   gallery_images   Json? // Array de URLs de imagens da galeria
+  
+  // Seção "Dores do Cliente" (VOCÊ ENFRENTA ALGUM DESTES PROBLEMAS?)
+  pain_points_title    String?  // Título da seção (ex: "VOCÊ ENFRENTA ALGUM DESTES PROBLEMAS?")
+  pain_points_subtitle String?  @db.Text // Subtítulo/descrição da seção
+  pain_points_image    String?  // URL da imagem da seção
+  pain_points          Json?    // Array de dores: [{id, title, description}]
+  
+  // Seção de Serviços (aparece após SOBRE com imagem e lista de serviços)
+  services_section_title    String?  // Título da seção de serviços
+  services_section_subtitle String?  @db.Text // Subtítulo da seção de serviços
+  
   social_facebook  String?
   social_instagram String?
   social_linkedin  String?

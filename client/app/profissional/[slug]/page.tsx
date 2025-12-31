@@ -32,6 +32,7 @@ import { RiMapPin2Fill } from "react-icons/ri";
 import { AiFillInstagram } from "react-icons/ai"
 import { IoIosArrowRoundForward, IoLogoWhatsapp } from "react-icons/io"
 import { MainSearchBar } from "@/components/blog/main-search-bar"
+import { SocialShare } from "@/components/blog/social-share"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"
 
@@ -66,6 +67,18 @@ interface Professional {
     question: string
     answer: string
   }>
+  // Campos da seção "Dores do Cliente"
+  painPointsTitle?: string
+  painPointsSubtitle?: string
+  painPointsImage?: string
+  painPoints?: Array<{
+    id: string
+    title: string
+    description: string
+  }>
+  // Campos da seção de Serviços
+  servicesSectionTitle?: string
+  servicesSectionSubtitle?: string
   socialLinks: {
     facebook?: string
     instagram?: string
@@ -190,6 +203,14 @@ export default function ProfessionalPage() {
             services: prof.services || [],
             testimonials: prof.testimonials || [],
             faqs: prof.faqs || [],
+            // Dores do Cliente
+            painPointsTitle: prof.pain_points_title || "",
+            painPointsSubtitle: prof.pain_points_subtitle || "",
+            painPointsImage: prof.pain_points_image || "",
+            painPoints: prof.pain_points || [],
+            // Seção de Serviços
+            servicesSectionTitle: prof.services_section_title || "",
+            servicesSectionSubtitle: prof.services_section_subtitle || "",
             socialLinks: {
               facebook: prof.social_facebook,
               instagram: prof.social_instagram,
@@ -258,7 +279,7 @@ export default function ProfessionalPage() {
 
       {/* Conteúdo principal */}
       <div className=" py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto mb-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto mb-10">
           {/* Coluna esquerda - conteúdo principal */}
           <div className="lg:col-span-2 space-y-10">
             {/* SOBRE - foto + texto, como no layout */}
@@ -294,48 +315,63 @@ export default function ProfessionalPage() {
             </section>
 
             <div className="h-[1px] w-full bg-gray-300 px-4" />
-            {/* Seção de Serviços com imagem e lista */}
-            <section className="bg-white overflow-hidden">
-              {/* Conteúdo */}
-              <div className="">
-                <h2 className="font-sans text-[32px]/10 line-clamp-2 font-normal text-neutral-700 uppercase mb-4">
-                  {professional.specialty || "LOREM IPSUM DOLOR SIT AMET SEE CONSECTETUR ADIPINSIG"}
-                </h2>
-                <p className="font-sans text-base md:text-lg text-neutral-600 mb-6 leading-relaxed line-clamp-2">
-                  {professional.bio.split('\n')[0] || "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam"}
-                </p>
+            <div className="flex flex-col items-center justify-center md:hidden">
+              <p className="text-center text-gray-600 font-lato text-base mb-8 max-w-md mx-auto">Se você já conhece esse profissional/empresa, e quer entrar em contato com ele clique no botão abaixo para conhecer os dados de contato.</p>
+              <Button className="bg-[#928575] hover:bg-[#928575]/80 text-white hover:text-white rounded-md flex items-center justify-center text-xs transition-colors">
+                <Link href="#contato">
+                  Entrar em contato
+                </Link>
+              </Button>
+            </div>
+            <div className="h-[1px] w-full bg-gray-300 px-4" />
 
-                {/* Imagem do consultório */}
-                {professional.coverImage && (
-                  <div className="relative w-full h-48 md:h-64">
-                    <Image
-                      src={professional.coverImage}
-                      alt={professional.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                )}
+            {/* Seção "VOCÊ ENFRENTA ALGUM DESTES PROBLEMAS?" */}
+            {professional.painPoints && professional.painPoints.length > 0 && (
+              <>
+                <section className="bg-white overflow-hidden">
+                  <h2 className="font-sans text-[32px]/10 font-normal text-neutral-700 uppercase mb-4">
+                    {professional.painPointsTitle || "VOCÊ ENFRENTA ALGUM DESTES PROBLEMAS?"}
+                  </h2>
+                  {professional.painPointsSubtitle && (
+                    <p className="font-sans text-base md:text-lg text-neutral-600 mb-6 leading-relaxed">
+                      {professional.painPointsSubtitle}
+                    </p>
+                  )}
 
-                {/* Lista de serviços numerada */}
-                <div className="space-y-4 mt-8">
-                  {professional.services.slice(0, 6).map((service, index) => (
-                    <div
-                      key={service.id}
-                      className="flex-1 items-center gap-4"
-                    >
-                      <div className="flex items-center gap-2">
-                        <div className="flex-shrink-0 w-6 h-6 rounded-lg bg-[#7a6b5a] flex items-center justify-center text-white font-semibold">
-                          <ArrowRight className="w-4 h-4" />
-                        </div>
-                        <h3 className="font-sans font-normal text-[28px] mb-1 text-neutral-700 line-clamp-1">{service.title}</h3>
-                      </div>
-                      <p className="font-sans text-[17px] text-neutral-600 line-clamp-2">{service.description}</p>
+                  {/* Imagem da seção */}
+                  {professional.painPointsImage && (
+                    <div className="relative w-full h-48 md:h-64 mb-8">
+                      <Image
+                        src={professional.painPointsImage}
+                        alt={professional.painPointsTitle || "Problemas"}
+                        fill
+                        className="object-cover"
+                      />
                     </div>
-                  ))}
-                </div>
-              </div>
-            </section>
+                  )}
+
+                  {/* Lista de dores/problemas */}
+                  <div className="space-y-4">
+                    {professional.painPoints.map((painPoint) => (
+                      <div
+                        key={painPoint.id}
+                        className="flex-1 items-center gap-4"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className="flex-shrink-0 w-6 h-6 rounded-lg bg-[#7a6b5a] flex items-center justify-center text-white font-semibold">
+                            <ArrowRight className="w-4 h-4" />
+                          </div>
+                          <h3 className="font-sans font-normal text-[28px] mb-1 text-neutral-700 line-clamp-1">{painPoint.title}</h3>
+                        </div>
+                        <p className="font-sans text-[17px] text-neutral-600 line-clamp-2">{painPoint.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </>
+            )}
+
+
 
             <div className="h-[1px] w-full bg-gray-300 px-4" />
 
@@ -347,11 +383,11 @@ export default function ProfessionalPage() {
 
               {professional.testimonials && professional.testimonials.length > 0 && (
                 <div className="max-w-4xl mx-auto">
-                  <Carousel className="w-full" opts={{ loop: false }}>
+                  <Carousel className="w-full pb-20 sm:pb-0" opts={{ loop: false }}>
                     <CarouselContent>
                       {professional.testimonials.map((testimonial) => (
                         <CarouselItem key={testimonial.id}>
-                          <div className="px-4 md:px-12 py-2 text-center">
+                          <div className="px-4 md:px-12 py-2 text-center pb-8 sm:pb-2">
                             <div className="flex justify-center">
                               {/* <span className="text-7xl md:text-8xl font-serif text-[#928575] leading-none h-fit">"</span> */}
                             </div>
@@ -379,26 +415,23 @@ export default function ProfessionalPage() {
                         </CarouselItem>
                       ))}
                     </CarouselContent>
-                    <CarouselPrevious className="left-5 bg-[#928575] hover:bg-[#928575]/80 text-white hover:text-white rounded rotate-180" />
-                    <CarouselNext className="right-5 bg-[#928575] hover:bg-[#928575]/80 text-white hover:text-white rounded" />
+                    <CarouselPrevious className="-bottom-2 left-1/3 -translate-x-12 sm:left-4 md:left-5 sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2 sm:translate-x-0 bg-[#928575] hover:bg-[#928575]/80 text-white hover:text-white rounded rotate-180" />
+                    <CarouselNext className="-bottom-2 right-1/3 translate-x-12 sm:right-4 md:right-5 sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2 sm:translate-x-0 bg-[#928575] hover:bg-[#928575]/80 text-white hover:text-white rounded" />
                   </Carousel>
                 </div>
               )}
               <div className="h-[1px] w-full bg-gray-300 mt-8" />
             </section>
-
             {/* Nossos Serviços - lista numerada */}
             <section id="servicos" className="">
               <div className="text-center mb-6">
-                <div className="flex items-center justify-center">
-                  <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
-                  <h2 className="font-sans text-[32px]/10 font-normal text-neutral-700 uppercase text-center text-nowrap mx-4 sm:mx-8 lg:mx-12 mb-2">
-                    Nossos serviços
+                <div className="flex items-start justify-start">
+                  <h2 className="font-sans text-[32px]/10 font-normal text-neutral-700 uppercase mb-4">
+                    {professional.servicesSectionTitle || "Nossos serviços"}
                   </h2>
-                  <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
                 </div>
-                <p className="font-sans text-base md:text-lg text-neutral-600 max-w-md mx-auto">
-                  Lorem ipsum dolor sit amet consectetur adipiscing eli mattis sit phasellus mollis sit aliquam sit nullam.
+                <p className="font-sans text-start text-base md:text-lg text-neutral-600">
+                  {professional.servicesSectionSubtitle || "Veja a seguir os serviços que oferecemos e a descrição de cada um. <br /> Tendo alguma dúvida entre em contato para maiores informações."}
                 </p>
               </div>
               {/* Imagem grande abaixo dos depoimentos */}
@@ -414,20 +447,19 @@ export default function ProfessionalPage() {
                   </div>
                 </div>
               )}
-              <div className="space-y-6 mt-8">
+              <div className="space-y-4 mt-8">
                 {professional.services.map((service, index) => (
-                  <div key={service.id} className="flex items-start gap-4">
-                    <span className="text-4xl sm:text-5xl font-open-sans font-medium text-[#928575] min-w-[3rem]">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <div className="pt-1">
-                      <h3 className="font-sans font-normal text-[28px] mb-1 text-neutral-700 line-clamp-1">
-                        {service.title}
-                      </h3>
-                      <p className="font-sans text-base md:text-lg/6 text-neutral-600 line-clamp-2">
-                        {service.description}
-                      </p>
+                  <div
+                    key={service.id}
+                    className="flex-1 items-center gap-4"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="flex-shrink-0 w-6 h-6 rounded-lg flex items-center justify-center text-white font-normal mr-1">
+                        <span className="text-4xl text-[#7a6b5a]">{String(index + 1).padStart(2, "0")}</span>
+                      </div>
+                      <h3 className="font-sans font-normal text-[28px] mb-1 text-neutral-700 line-clamp-1">{service.title}</h3>
                     </div>
+                    <p className="font-sans text-[17px] text-neutral-600 line-clamp-2">{service.description}</p>
                   </div>
                 ))}
               </div>
@@ -435,12 +467,12 @@ export default function ProfessionalPage() {
 
             <div className="h-[1px] w-full bg-gray-300 px-4"></div>
             {/* <p className="text-center text-[#DDDDDD] font-open-sans text-base mb-3 max-w-md mx-auto">OLÁ <span className="font-open-sans font-extrabold text-[#DDDDDD]">PORTAL</span></p> */}
-            <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto -mt-2">
+            <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto -mt-2">
               <h2 className="font-sans text-[32px]/10 line-clamp-2 font-normal text-neutral-700 uppercase text-center mb-8">Artigos relacionados</h2>
               <Carousel className="w-full mb-8" opts={{ loop: false }}>
                 <CarouselContent>
                   {posts.map((post) => (
-                    <CarouselItem key={post.id} className="basis-1/1 sm:basis-1/2 pb-32 sm:pb-24">
+                    <CarouselItem key={post.id} className="basis-5/6 md:basis-1/2 lg:basis-1/3 pb-32 sm:pb-24">
                       <Link href={post ? `/blog/${post.slug}` : "#"} className="relative bg-white group block">
                         <div className="relative w-full h-48 sm:h-56">
                           <Image
@@ -491,7 +523,7 @@ export default function ProfessionalPage() {
               id="contato"
               className="pb-10 text-center"
             >
-              <div className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto">
+              <div className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto">
                 <div className="flex items-center justify-center">
                   <div className="h-2 sm:h-3 w-full bg-gray-300"></div>
                   <h2 className="font-sans text-[32px]/10 font-normal text-neutral-700 uppercase text-center text-nowrap mx-4 sm:mx-8 lg:mx-12 mb-2">
@@ -578,7 +610,7 @@ export default function ProfessionalPage() {
           {/* Right Sidebar */}
           <div className="lg:col-span-1 space-y-6 relative">
             {/* Card principal da barra lateral */}
-            <aside className="bg-[#F6F4ED] border border-[#E2DED2] p-4 space-y-4 sticky -top-[575px] 2xl:-top-60">
+            <aside className="bg-[#F6F4ED] border border-[#E2DED2] p-4 space-y-4 sticky -top-[300px] 2xl:-top-60">
               {/* Galeria: 1 imagem grande + 3 pequenas */}
               {professional.galleryImages && professional.galleryImages.length > 0 && (
                 <div className="space-y-2">
@@ -611,7 +643,7 @@ export default function ProfessionalPage() {
               )}
 
               {/* Blocos de informação */}
-              <div className="space-y-2 text-xs text-gray-700">
+              <div className="space-y-2 text-xs text-gray-700" id="contato">
                 <div className="bg-white border border-[#E2DED2] px-3 py-3">
                   <div className="flex items-center text-base gap-2 mb-1 font-semibold">
                     <RiMapPin2Fill className="h-4 w-4 rounded-full text-[#126861]" />
@@ -635,7 +667,7 @@ export default function ProfessionalPage() {
                   </div>
                   {
                     (() => {
-                      function parsePhones(text) {
+                      function parsePhones(text: string) {
                         const regex = /\(\d{2}\)\s?\d{4,5}-\d{4}/g;
 
                         // divide o texto em partes mantendo os números
@@ -644,9 +676,9 @@ export default function ProfessionalPage() {
                         // extrai os números para reinserir
                         const phones = text.match(regex) || [];
 
-                        const result = [];
+                        const result: string[] = [];
 
-                        parts.forEach((part, index) => {
+                        parts.forEach((part: string, index: number) => {
                           result.push(part); // adiciona o texto normal
 
                           if (phones[index]) {
@@ -663,12 +695,12 @@ export default function ProfessionalPage() {
                           }
                         });
 
-                        return result;
+                        return result
                       }
 
                       return (
                         <div>
-                          <p className="leading-snug whitespace-pre-line no-underline text-neutral-700">
+                          <p className="leading-snug whitespace-pre-line text-sm no-underline text-neutral-700">
                             {parsePhones(professional.phone)}
                           </p>
                         </div>
@@ -677,7 +709,7 @@ export default function ProfessionalPage() {
                   }
                   {/* <p className="leading-snug whitespace-pre-line">{professional.phone}</p> */}
                   {professional.socialLinks.whatsapp && (
-                    <div className="flex items-center gap-2 text-xs">
+                    <div className="flex items-center gap-2 text-base">
                       WhatsApp:
                       <a
                         href={professional.socialLinks.whatsapp}
@@ -792,7 +824,7 @@ export default function ProfessionalPage() {
         {/* Perguntas Frequentes */}
         <div className="h-[1px] w-full bg-gray-300 px-4 mx-auto max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl"></div>
 
-        <section id="faq" className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto mt-8">
+        <section id="faq" className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto mt-8">
           <h2 className="font-sans text-[32px]/10 line-clamp-2 font-normal text-neutral-700 uppercase text-center mb-2">Perguntas Frequentes</h2>
           <p className="font-sans text-base md:text-lg text-center text-neutral-600 max-w-md mx-auto">
             Lorem ipsum dolor sit amet consectetur adipiscing eli mattis sit phasellus mollis sit aliquam sit nullam.
@@ -820,6 +852,11 @@ export default function ProfessionalPage() {
             ))}
           </div>
         </section>
+
+        {/* Compartilhe */}
+        <div className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto px-4 mb-8">
+          <SocialShare title={professional.name} />
+        </div>
       </div>
     </div>
   )

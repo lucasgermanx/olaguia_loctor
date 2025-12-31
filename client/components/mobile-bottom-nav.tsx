@@ -8,7 +8,7 @@ import { Users, Grid2X2, BookOpen, Library, X, ChevronDown, Search } from "lucid
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"
 
-type MenuSection = "parceiros" | "categorias" | "revista" | "biblioteca" | null
+type MenuSection = "parceiros" | "categorias" | "revista" | "biblioteca" | "search" | null
 
 interface Professional {
   id: string
@@ -30,26 +30,69 @@ const navItems = [
   { key: "categorias" as const, label: "Categoria", icon: Grid2X2 },
   { key: "revista" as const, label: "Revista", icon: BookOpen },
   { key: "biblioteca" as const, label: "Biblioteca", icon: Library },
+  { key: "search" as const, label: "Busca", icon: Search }
 ]
 
 const revistaCategories = [
-  "Reflexão",
-  "Relacionamento",
-  "OLÁ Gourmet",
-  "Super Dicas",
-  "Quebra Cuca",
-  "Rindo à Toa",
-  "Provérbios & Citações",
-  "Edições Anteriores",
+  {
+    label: "Reflexão",
+    slug: "reflexao"
+  },
+  {
+    label: "Relacionamento",
+    slug: "relacionamento"
+  },
+  {
+    label: "OLÁ Gourmet",
+    slug: "olagourmet"
+  },
+  {
+    label: "Super Dicas",
+    slug: "superdicas"
+  },
+  {
+    label: "Quebra Cuca",
+    slug: "quebracuca"
+  },
+  {
+    label: "Rindo à Toa",
+    slug: "rindoatoa"
+  },
+  {
+    label: "Provérbios & Citações",
+    slug: "provencitas"
+  },
+  {
+    label: "Edições Anteriores",
+    slug: "edicoesanteriores"
+  }
 ]
 
 const categoriasItems = [
-  "Saúde",
-  "Estética Beleza",
-  "Empresas & Negócios",
-  "Mantendo & Reformando",
-  "Gastronomia",
-  "Serviços",
+  {
+    label: "Saúde",
+    slug: "saude"
+  },
+  {
+    label: "Estética Beleza",
+    slug: "estetica-beleza"
+  },
+  {
+    label: "Empresas & Negócios",
+    slug: "empresas-negocios"
+  },
+  {
+    label: "Mantendo & Reformando",
+    slug: "mantendo-reformando"
+  },
+  {
+    label: "Gastronomia",
+    slug: "gastronomia"
+  },
+  {
+    label: "Serviços",
+    slug: "servicos"
+  }
 ]
 
 const bibliotecaItems = [
@@ -82,6 +125,9 @@ export function MobileBottomNav() {
   const [especialidade, setEspecialidade] = useState("")
   const [tema, setTema] = useState("")
 
+  // Estados para busca de blog
+  const [search, setSearch] = useState("")
+
   // Dados dinâmicos
   const [cidades, setCidades] = useState<string[]>([])
   const [profissionais, setProfissionais] = useState<Professional[]>([])
@@ -95,7 +141,7 @@ export function MobileBottomNav() {
     if (activeSection === "parceiros" && cidades.length === 0) {
       fetchParceirosData()
     }
-    if ((activeSection === "revista" || activeSection === "categorias" || activeSection === "biblioteca") && tags.length === 0) {
+    if ((activeSection === "parceiros" || activeSection === "revista" || activeSection === "categorias" || activeSection === "biblioteca") && tags.length === 0) {
       fetchTags()
     }
   }, [activeSection])
@@ -191,6 +237,14 @@ export function MobileBottomNav() {
     setActiveSection(null)
   }
 
+  const handleBuscaSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const params = new URLSearchParams()
+    if (search) params.append("search", search)
+    router.push(`/blog?${params.toString()}`)
+    setActiveSection(null)
+  }
+
   const toggleSection = (section: MenuSection) => {
     setActiveSection((prev) => (prev === section ? null : section))
   }
@@ -207,7 +261,7 @@ export function MobileBottomNav() {
 
       {/* Painel deslizante */}
       <div
-        className={`fixed left-0 bottom-[100px] z-50 bg-[#f5f5f0] rounded-3xl shadow-2xl transition-transform duration-300 ease-out md:hidden ${activeSection ? "translate-y-0" : "translate-y-full hidden"
+        className={`fixed fixed left-4 right-4hxGg.CEgy'uguya4J5R) bottom-[100px] z-50 bg-[#f5f5f0] rounded-3xl shadow-2xl transition-transform duration-300 ease-out md:hidden ${activeSection ? "translate-y-0" : "translate-y-full hidden"
           }`}
         style={{ maxHeight: "100vh", overflowY: "auto" }}
       >
@@ -227,7 +281,7 @@ export function MobileBottomNav() {
             <div className="space-y-4">
               <h2 className="text-xl font-bold text-[#353E5C] uppercase">Pesquisar Parceiros</h2>
               <p className="text-sm text-gray-600">
-                Encontre profissionais e empresas por localização, especialidade ou categoria
+                Encontre Profissionais e Empresas por Cidade e/ou Nome e/ou Especialidade e/ou Tema específico
               </p>
 
               <form onSubmit={handleParceirosSubmit} className="space-y-3">
@@ -294,9 +348,9 @@ export function MobileBottomNav() {
                     className="w-full px-4 py-3 border-2 border-[#928575] rounded-full appearance-none bg-white text-[#928575] text-sm uppercase disabled:opacity-50"
                   >
                     <option value="">TEMA</option>
-                    {temas.map((t) => (
-                      <option key={t} value={t}>
-                        {t}
+                    {tags.map((t) => (
+                      <option key={t.id} value={t.slug}>
+                        {t.name}
                       </option>
                     ))}
                   </select>
@@ -326,12 +380,15 @@ export function MobileBottomNav() {
               <div className="space-y-2">
                 {revistaCategories.map((category) => (
                   <button
-                    key={category}
-                    onClick={() => handleTagClick(category)}
+                    key={category.slug}
+                    onClick={() => {
+                      router.push(`/blog?category=${category.slug}`)
+                      setActiveSection(null)
+                    }}
                     className="flex items-center gap-3 w-full px-4 py-3 bg-white rounded-lg hover:bg-gray-100 transition-colors text-left"
                   >
-                    <Image src="/logoicon.png" alt={category} width={24} height={24} />
-                    <span className="text-sm text-gray-700">{category}</span>
+                    <Image src="/logoicon.png" alt={category.label} width={24} height={24} />
+                    <span className="text-sm text-gray-700">{category.label}</span>
                   </button>
                 ))}
               </div>
@@ -349,14 +406,55 @@ export function MobileBottomNav() {
               <div className="space-y-2">
                 {categoriasItems.map((cat) => (
                   <button
-                    key={cat}
-                    onClick={() => handleTagClick(cat)}
+                    key={cat.slug}
+                    onClick={() => {
+                      const tag = findTagByName(cat.slug)
+                      const tagSlug = tag?.slug || normalizeSlug(cat.slug)
+                      router.push(`/blog?category=${cat.slug}`)
+                      setActiveSection(null)
+                    }}
                     className="flex items-center gap-3 w-full px-4 py-3 bg-white rounded-lg hover:bg-gray-100 transition-colors text-left"
                   >
-                    <Image src="/logoicon.png" alt={cat} width={24} height={24} />
-                    <span className="text-sm text-gray-700">{cat}</span>
+                    <Image src="/logoicon.png" alt={cat.label} width={24} height={24} />
+                    <span className="text-sm text-gray-700">{cat.label}</span>
                   </button>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* BUSCA */}
+          {activeSection === "search" && (
+            /* w-full garante 100%, px-4 garante os 16px de cada lado internamente */
+            <div className="w-full px-4 space-y-4">
+              <h2 className="text-xl font-bold text-gray-900 uppercase">Busca</h2>
+
+              <div className="relative space-y-4 w-full">
+                <form
+                  onSubmit={e => {
+                    e.preventDefault()
+                    if (search.trim()) {
+                      window.location.href = `/blog?search=${encodeURIComponent(search)}`
+                    }
+                  }}
+                  className="relative"
+                >
+                  <input
+                    type="text"
+                    placeholder="Pesquisar..."
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    autoFocus
+                    className="w-full px-4 py-3 pr-14 border-2 border-[#928575] rounded-full appearance-none bg-white text-[#928575] text-sm uppercase disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-[#126861]"
+                  />
+                  <button
+                    type="submit"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-[#126861] hover:bg-[#0f5650] text-white rounded-full flex items-center justify-center transition-colors w-10 h-10"
+                    aria-label="Pesquisar"
+                  >
+                    <Search className="h-5 w-5" />
+                  </button>
+                </form>
               </div>
             </div>
           )}

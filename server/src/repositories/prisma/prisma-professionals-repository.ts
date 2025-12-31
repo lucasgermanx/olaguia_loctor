@@ -21,6 +21,7 @@ export class PrismaProfessionalsRepository implements ProfessionalsRepository {
 
   async findMany({ page, per_page, city, specialty, search, active, featured }: FindManyParams) {
     const where: Prisma.ProfessionalWhereInput = {}
+    const andConditions: Prisma.ProfessionalWhereInput[] = []
 
     // Filtro de ativo
     if (active !== undefined) {
@@ -32,12 +33,24 @@ export class PrismaProfessionalsRepository implements ProfessionalsRepository {
       where.featured = featured
     }
 
-    // Filtro de cidade
+    // Filtro de cidade (busca na cidade principal E nas cidades adicionais)
     if (city) {
-      where.city = {
-        contains: city,
-        mode: "insensitive",
-      }
+      andConditions.push({
+        OR: [
+          {
+            city: {
+              contains: city,
+              mode: "insensitive",
+            }
+          },
+          {
+            additional_cities: {
+              // Verifica se dentro do array existe algum objeto com essa cidade exata
+              array_contains: [{ city: city }] 
+            },
+          },
+        ]
+      })
     }
 
     // Filtro de especialidade
@@ -50,13 +63,19 @@ export class PrismaProfessionalsRepository implements ProfessionalsRepository {
 
     // Busca por texto
     if (search) {
-      where.OR = [
-        { name: { contains: search, mode: "insensitive" } },
-        { title: { contains: search, mode: "insensitive" } },
-        // { specialty: { contains: search, mode: "insensitive" } },
-        { bio: { contains: search, mode: "insensitive" } },
-        { city: { contains: search, mode: "insensitive" } },
-      ]
+      andConditions.push({
+        OR: [
+          { name: { contains: search, mode: "insensitive" } },
+          { title: { contains: search, mode: "insensitive" } },
+          { bio: { contains: search, mode: "insensitive" } },
+          { city: { contains: search, mode: "insensitive" } },
+        ]
+      })
+    }
+
+    // Combinar condições AND se houver
+    if (andConditions.length > 0) {
+      where.AND = andConditions
     }
 
     const [professionals, total] = await Promise.all([

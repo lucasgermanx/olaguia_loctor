@@ -12,14 +12,10 @@ export async function createPost(request: FastifyRequest, reply: FastifyReply) {
     published: z.boolean().default(false),
     category_id: z.string(),
     professional_id: z.string().optional(),
-    tags: z.array(z.string()).optional(),
-    theme: z.string().optional(),
-    position: z.string().optional(),
-    order: z.number().optional(),
-    featured: z.boolean().optional(),
+    tags: z.array(z.string()).optional()
   })
 
-  const { title, slug, excerpt, content, featured_image, published, category_id, professional_id, tags, theme, position, order, featured } = createPostBodySchema.parse(
+  const { title, slug, excerpt, content, featured_image, published, category_id, professional_id, tags } = createPostBodySchema.parse(
     request.body,
   )
 
@@ -42,10 +38,6 @@ export async function createPost(request: FastifyRequest, reply: FastifyReply) {
       professional_id: professional_id || undefined,
       author_id: request.user.sub,
       tags,
-      theme,
-      position,
-      order,
-      featured,
     })
 
     return reply.status(201).send({ post })

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Loader2, MapPin, Phone, Mail } from "lucide-react"
 import { MainSearchBar } from "@/components/blog/main-search-bar"
 import { BlogSidebarNew } from "@/components/blog/blog-sidebar-new"
+import { SocialShare } from "@/components/blog/social-share"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"
 
@@ -30,6 +31,7 @@ interface Professional {
   register?: string
   active: boolean
   featured: boolean
+  additional_cities?: { city: string; state: string }[]
   socialLinks: {
     facebook?: string
     instagram?: string
@@ -403,7 +405,7 @@ function ProfessionalsPageContent() {
       <div className="hidden md:block ">
         <MainSearchBar />
       </div>
-      <div className="py-10 flex flex-col lg:flex-row gap-8 w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl mx-auto">
+      <div className="py-10 flex flex-col lg:flex-row gap-8 w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto">
         {/* Conteúdo principal */}
         <div className=" lg:w-3/4">
           {/* Header */}
@@ -432,6 +434,8 @@ function ProfessionalsPageContent() {
             <div className="space-y-12">
               {professionals.map((professional) => {
                 const posts = professionalPosts[professional.id] || []
+
+                console.log({ additional_cities: professional.additional_cities })
 
                 // Componente para renderizar card do profissional
                 const ProfessionalCard = ({ prof }: { prof: Professional }) => (
@@ -463,6 +467,15 @@ function ProfessionalsPageContent() {
 
                         <div className="h-[1px] w-full bg-gray-200 my-2" />
                         <p className="text-sm text-gray-700 line-clamp-4 mb-2">{prof.city}, {prof.state}</p>
+                        {prof.additional_cities && prof.additional_cities.length > 0 && (
+                          <>
+                           {prof.additional_cities.map((city: any) => {
+                            return (
+                              <p key={city.id} className="text-sm text-gray-700 line-clamp-4 mb-1">{city.city}, {city.state}</p>
+                            )
+                           })}
+                          </>
+                        )}
                         <Button
                           className="w-full bg-[#126861] hover:bg-[#0f5650] text-white mt-4"
                           size="sm"
@@ -638,6 +651,11 @@ function ProfessionalsPageContent() {
         <div className="w-full lg:w-1/4 hidden md:block sticky top-20">
           <BlogSidebarNew categories={categories || []} tags={tags || []} />
         </div>
+      </div>
+
+      {/* Compartilhe */}
+      <div className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto px-4 mb-8">
+        <SocialShare title="Profissionais - OLÁ Guia" />
       </div>
     </div>
   )
