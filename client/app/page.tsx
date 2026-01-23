@@ -88,8 +88,16 @@ export default function Home() {
   const [slots, setSlots] = useState<HomeSlot[]>([])
   const [ads, setAds] = useState<Ad[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [carouselApi, setCarouselApi] = useState<CarouselApi>()
-  const [currentSlide, setCurrentSlide] = useState(0)
+  const [heroCarouselApi, setHeroCarouselApi] = useState<CarouselApi>()
+  const [heroCurrentSlide, setHeroCurrentSlide] = useState(0)
+  const [reflexaoCarouselApi, setReflexaoCarouselApi] = useState<CarouselApi>()
+  const [reflexaoCurrentSlide, setReflexaoCurrentSlide] = useState(0)
+  const [relacionamentosCarouselApi, setRelacionamentosCarouselApi] = useState<CarouselApi>()
+  const [relacionamentosCurrentSlide, setRelacionamentosCurrentSlide] = useState(0)
+  const [esteticaCarouselApi, setEsteticaCarouselApi] = useState<CarouselApi>()
+  const [esteticaCurrentSlide, setEsteticaCurrentSlide] = useState(0)
+  const [gastronomiaCarouselApi, setGastronomiaCarouselApi] = useState<CarouselApi>()
+  const [gastronomiaCurrentSlide, setGastronomiaCurrentSlide] = useState(0)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -118,18 +126,46 @@ export default function Home() {
     fetchData()
   }, [])
 
-  // Atualizar o índice do slide atual quando o carousel muda
+  // Atualizar o índice do slide atual quando os carousels mudam
   useEffect(() => {
-    if (!carouselApi) {
-      return
-    }
-
-    setCurrentSlide(carouselApi.selectedScrollSnap())
-
-    carouselApi.on("select", () => {
-      setCurrentSlide(carouselApi.selectedScrollSnap())
+    if (!heroCarouselApi) return
+    setHeroCurrentSlide(heroCarouselApi.selectedScrollSnap())
+    heroCarouselApi.on("select", () => {
+      setHeroCurrentSlide(heroCarouselApi.selectedScrollSnap())
     })
-  }, [carouselApi])
+  }, [heroCarouselApi])
+
+  useEffect(() => {
+    if (!reflexaoCarouselApi) return
+    setReflexaoCurrentSlide(reflexaoCarouselApi.selectedScrollSnap())
+    reflexaoCarouselApi.on("select", () => {
+      setReflexaoCurrentSlide(reflexaoCarouselApi.selectedScrollSnap())
+    })
+  }, [reflexaoCarouselApi])
+
+  useEffect(() => {
+    if (!relacionamentosCarouselApi) return
+    setRelacionamentosCurrentSlide(relacionamentosCarouselApi.selectedScrollSnap())
+    relacionamentosCarouselApi.on("select", () => {
+      setRelacionamentosCurrentSlide(relacionamentosCarouselApi.selectedScrollSnap())
+    })
+  }, [relacionamentosCarouselApi])
+
+  useEffect(() => {
+    if (!esteticaCarouselApi) return
+    setEsteticaCurrentSlide(esteticaCarouselApi.selectedScrollSnap())
+    esteticaCarouselApi.on("select", () => {
+      setEsteticaCurrentSlide(esteticaCarouselApi.selectedScrollSnap())
+    })
+  }, [esteticaCarouselApi])
+
+  useEffect(() => {
+    if (!gastronomiaCarouselApi) return
+    setGastronomiaCurrentSlide(gastronomiaCarouselApi.selectedScrollSnap())
+    gastronomiaCarouselApi.on("select", () => {
+      setGastronomiaCurrentSlide(gastronomiaCarouselApi.selectedScrollSnap())
+    })
+  }, [gastronomiaCarouselApi])
 
   // Função auxiliar para buscar slots por seção e posição
   const getSlot = (section: string, position: string, slotIndex: number | null = null) => {
@@ -154,7 +190,7 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col bg-white">
+    <div className="flex flex-col bg-white overflow-x-hidden">
       {/* Hero Carousel */}
       <section className="relative w-full h-[300px] sm:h-[300px] lg:h-[350px]">
         {isLoading ? (
@@ -166,7 +202,7 @@ export default function Home() {
             <Carousel
               className="w-full h-full"
               opts={{ loop: true }}
-              setApi={setCarouselApi}
+              setApi={setHeroCarouselApi}
             >
               <CarouselContent className="h-[300px] sm:h-[300px] lg:h-[350px]">
                 {getSlots("HERO", "CAROUSEL").map((slot, index) => {
@@ -221,8 +257,8 @@ export default function Home() {
               {getSlots("HERO", "CAROUSEL").map((slot, idx) => (
                 <button
                   key={slot.id}
-                  onClick={() => carouselApi?.scrollTo(idx)}
-                  className={`w-2 h-2 rounded-full transition-all ${idx === currentSlide ? 'bg-[#6D758F] w-6' : 'bg-gray-300 hover:bg-gray-400'
+                  onClick={() => heroCarouselApi?.scrollTo(idx)}
+                  className={`w-2 h-2 rounded-full transition-all ${idx === heroCurrentSlide ? 'bg-[#6D758F] w-6' : 'bg-gray-300 hover:bg-gray-400'
                     }`}
                   aria-label={`Ir para slide ${idx + 1}`}
                 />
@@ -461,7 +497,7 @@ export default function Home() {
         <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Os conteúdos mais lidos na Revista OLÁ Guia</p>
 
         <div className="w-full max-w-[1080px] 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-0">
-          <Carousel className="w-full" opts={{ loop: false }}>
+          <Carousel className="w-full" opts={{ loop: false }} setApi={setReflexaoCarouselApi}>
             <CarouselContent>
               {getSlots("PARA_REFLEXAO", "CAROUSEL").slice(0, 5).map((slot) => {
                 const post = slot.post
@@ -497,7 +533,12 @@ export default function Home() {
           </Carousel>
           <div className="flex justify-center mt-10 space-x-2">
             {getSlots("PARA_REFLEXAO", "CAROUSEL").slice(0, 5).map((slot, idx) => (
-              <div key={slot.id} className={`w-2 h-2 rounded-full ${idx === 0 ? 'bg-[#6D758F]' : 'bg-gray-300'}`} />
+              <button
+                key={slot.id}
+                onClick={() => reflexaoCarouselApi?.scrollTo(idx)}
+                className={`w-2 h-2 rounded-full transition-all ${idx === reflexaoCurrentSlide ? 'bg-[#6D758F] w-6' : 'bg-gray-300 hover:bg-gray-400'}`}
+                aria-label={`Ir para slide ${idx + 1}`}
+              />
             ))}
           </div>
         </div>
@@ -622,7 +663,7 @@ export default function Home() {
         </div>
         <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Dicas e segredos para um bom relacionamento</p>
 
-        <Carousel className="w-full pl-4 sm:pl-1" >
+        <Carousel className="w-full pl-4 sm:pl-1" opts={{ loop: false }} setApi={setRelacionamentosCarouselApi}>
           <CarouselContent>
             {getSlots("SOBRE_RELACIONAMENTOS", "CAROUSEL").slice(0, 5).map((slot) => {
               const post = slot.post
@@ -665,7 +706,12 @@ export default function Home() {
         </Carousel>
         <div className="flex justify-center mt-4 space-x-2">
           {getSlots("SOBRE_RELACIONAMENTOS", "CAROUSEL").slice(0, 5).map((slot, idx) => (
-            <div key={slot.id} className={`w-2 h-2 rounded-full ${idx === 0 ? 'bg-[#6D758F]' : 'bg-gray-300'}`} />
+            <button
+              key={slot.id}
+              onClick={() => relacionamentosCarouselApi?.scrollTo(idx)}
+              className={`w-2 h-2 rounded-full transition-all ${idx === relacionamentosCurrentSlide ? 'bg-[#6D758F] w-6' : 'bg-gray-300 hover:bg-gray-400'}`}
+              aria-label={`Ir para slide ${idx + 1}`}
+            />
           ))}
         </div>
       </section>
@@ -914,7 +960,7 @@ export default function Home() {
           })}
         </div>
         <div className="md:hidden w-full max-w-[1080px] 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-0">
-          <Carousel className="w-full" opts={{ loop: false }}>
+          <Carousel className="w-full" opts={{ loop: false }} setApi={setEsteticaCarouselApi}>
             <CarouselContent>
               {getSlots("ESTETICA_BELEZA", "GRID").map((slot) => {
                 const post = slot.post
@@ -944,8 +990,13 @@ export default function Home() {
             <CarouselNext className="right-2 sm:right-4 bg-white/80 hover:bg-white hidden sm:flex" />
           </Carousel>
           <div className="flex justify-center mt-4 space-x-2">
-            {getSlots("PARA_REFLEXAO", "CAROUSEL").map((slot, idx) => (
-              <div key={slot.id} className={`w-2 h-2 rounded-full ${idx === 0 ? 'bg-[#6D758F]' : 'bg-gray-300'}`} />
+            {getSlots("ESTETICA_BELEZA", "GRID").map((slot, idx) => (
+              <button
+                key={slot.id}
+                onClick={() => esteticaCarouselApi?.scrollTo(idx)}
+                className={`w-2 h-2 rounded-full transition-all ${idx === esteticaCurrentSlide ? 'bg-[#6D758F] w-6' : 'bg-gray-300 hover:bg-gray-400'}`}
+                aria-label={`Ir para slide ${idx + 1}`}
+              />
             ))}
           </div>
         </div>
@@ -1089,7 +1140,7 @@ export default function Home() {
         </div>
         <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Seleção das melhores receitas para você</p>
         <div className="pl-4 sm:pl-6 lg:pl-0">
-          <Carousel className="w-full" opts={{ loop: false }}>
+          <Carousel className="w-full" opts={{ loop: false }} setApi={setGastronomiaCarouselApi}>
             <CarouselContent>
               {getSlots("GASTRONOMIA", "CAROUSEL").map((slot) => {
                 const post = slot.post
@@ -1126,7 +1177,12 @@ export default function Home() {
         </div>
         <div className="flex justify-center mt-10 space-x-2">
           {getSlots("GASTRONOMIA", "CAROUSEL").map((slot, idx) => (
-            <div key={slot.id} className={`w-2 h-2 rounded-full ${idx === 0 ? 'bg-[#6D758F]' : 'bg-gray-300'}`} />
+            <button
+              key={slot.id}
+              onClick={() => gastronomiaCarouselApi?.scrollTo(idx)}
+              className={`w-2 h-2 rounded-full transition-all ${idx === gastronomiaCurrentSlide ? 'bg-[#6D758F] w-6' : 'bg-gray-300 hover:bg-gray-400'}`}
+              aria-label={`Ir para slide ${idx + 1}`}
+            />
           ))}
         </div>
       </section>

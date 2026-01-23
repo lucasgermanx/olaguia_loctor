@@ -67,7 +67,7 @@ export function SocialShare({ className = "", title = "", url = "" }: SocialShar
 
   return (
     <div className={`mt-8 pt-8 border-t border-gray-200 ${className}`}>
-      <div className="flex items-center justify-between flex-wrap gap-4">
+      <div className="flex items-center justify-end flex-wrap gap-4">
         <button className="text-base text-[#928575] px-4 py-2 rounded-3xl font-semibold flex items-center gap-1 transition-colors">
           COMPARTILHE
           <IoIosArrowRoundForward className="h-5 w-5" />

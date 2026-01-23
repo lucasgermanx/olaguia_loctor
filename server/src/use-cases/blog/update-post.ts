@@ -15,6 +15,7 @@ interface UpdatePostUseCaseRequest {
   published?: boolean
   category_id?: string
   professional_id?: string
+  author_id?: string
   tags?: string[]
   theme?: string
   position?: string
@@ -43,6 +44,7 @@ export class UpdatePostUseCase {
     published,
     category_id,
     professional_id,
+    author_id,
     tags,
     theme,
     position,
@@ -74,6 +76,7 @@ export class UpdatePostUseCase {
       if (featured_image !== undefined) updateData.featured_image = featured_image
       if (category_id) updateData.category_id = category_id
       if (professional_id !== undefined) updateData.professional_id = professional_id || null
+      if (author_id) updateData.author_id = author_id
       if (theme !== undefined) updateData.theme = theme as any
       if (position !== undefined) updateData.position = position as any
       if (order !== undefined) updateData.order = order

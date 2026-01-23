@@ -272,7 +272,7 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
       <div>
         <h3 className="text-2xl font-bold text-gray-900 mb-4 uppercase tracking-wide">Pesquisar</h3>
         <p className="text-sm text-gray-600 mb-4">
-          Consectetuer nascetur orci et taciti maecenas ultricies varius quisque molestie
+          Aqui você pode pesquisar por palavras ou expressões que desejar. Pesquise que o portal mostrará artigos relacionados.
         </p>
         <form
           onSubmit={e => {
@@ -398,7 +398,7 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
         {isRevistaExpanded && (
           <>
             <p className="text-sm text-gray-600 mb-4">
-              Consectetuer nascetur orci et taciti maecenas ultricies varius quisque molestie etiam semper parturient nisl tempus
+              Aqui você pode ver todas as matérias já publicadas na revista impressa, é só escolher o tema e clicar!
             </p>
             <div className="space-y-2">
               {revistaCategories.map((category) => {
@@ -426,7 +426,8 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
       <div>
         <h3 className="text-2xl font-bold text-gray-900 mb-4 uppercase tracking-wide">CATEGORIAS DE PARCEIROS</h3>
         <p className="text-sm text-gray-600 mb-4">
-          Consectetuer nascetur orci et taciti maecenas ultricies varius quisque molestie
+          Quer conhecer os profissionais e Empresas parceiras do OLÁ GUIA?
+          Busque pela categoria clicando abaixo.
         </p>
         <div className="space-y-2">
           {[
@@ -477,7 +478,7 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
       <div>
         <h3 className="text-2xl font-bold text-gray-900 mb-4 uppercase tracking-wide">Biblioteca Técnica</h3>
         <p className="text-sm text-gray-600 mb-4">
-          Consectetuer nascetur orci et taciti maecerus ultricies varius quisque molestie etiam semper parturient nisl tempus
+          Esta biblioteca está cheia de conteúdos selecionados para ajudar você, para crescer na sua carreira e no seu negócio. Aproveite clicando nos itens abaixo!
         </p>
         <div className="grid grid-cols-1 gap-2">
           {[
@@ -508,11 +509,11 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
       </div>
       <div className="border-t border-gray-300"></div>
 
-      {/* NOSSOS SERVIÇOS */}
+      {/* SOBRE NÓS */}
       <div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-4 uppercase tracking-wide">Nossos Serviços</h3>
+        <h3 className="text-2xl font-bold text-gray-900 mb-4 uppercase tracking-wide">SOBRE NÓS</h3>
         <p className="text-sm text-gray-600 mb-4">
-          Consectetuer nascetur orci et taciti maecenas ultricies varius quisque molestie
+          Aqui você encontra um pouco da história do OLÁ GUIA e como a gente pode ajudar você na busca de clientes e aumento das suas vendas
         </p>
         <div className="space-y-4 border-r border-white/20">
           {getSlots("EMPRESAS_NEGOCIOS", "SIDE").slice(0, 3).map((slot, index) => {

@@ -17,6 +17,7 @@ export async function updatePost(request: FastifyRequest, reply: FastifyReply) {
     published: z.boolean().optional(),
     category_id: z.string().optional(),
     professional_id: z.string().optional(),
+    author_id: z.string().optional(),
     tags: z.array(z.string()).optional(),
   })
   console.log(request.body)

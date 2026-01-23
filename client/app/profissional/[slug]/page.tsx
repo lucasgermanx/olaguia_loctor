@@ -15,6 +15,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  CarouselApi,
 } from "@/components/ui/carousel"
 import {
   ChevronDown,
@@ -79,6 +80,7 @@ interface Professional {
   // Campos da seção de Serviços
   servicesSectionTitle?: string
   servicesSectionSubtitle?: string
+  healthPlans?: string[]
   socialLinks: {
     facebook?: string
     instagram?: string
@@ -109,6 +111,8 @@ export default function ProfessionalPage() {
   const [professional, setProfessional] = useState<Professional | null>(null)
   const [posts, setPosts] = useState<Post[]>([])
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
+  const [relatedPostsCarouselApi, setRelatedPostsCarouselApi] = useState<CarouselApi>()
+  const [relatedPostsCurrentSlide, setRelatedPostsCurrentSlide] = useState(0)
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -117,6 +121,7 @@ export default function ProfessionalPage() {
   })
 
   const asideRef = useRef<HTMLElement | null>(null);
+  const asideContainerRef = useRef<HTMLDivElement | null>(null);
   const topMeasureRef = useRef<HTMLElement | null>(null); // elemento que mede a área acima do aside
   const [topOffset, setTopOffset] = useState<number>(16); // valor em px para top do sticky
 
@@ -211,6 +216,7 @@ export default function ProfessionalPage() {
             // Seção de Serviços
             servicesSectionTitle: prof.services_section_title || "",
             servicesSectionSubtitle: prof.services_section_subtitle || "",
+            healthPlans: prof.health_plans || [],
             socialLinks: {
               facebook: prof.social_facebook,
               instagram: prof.social_instagram,
@@ -300,14 +306,19 @@ export default function ProfessionalPage() {
                       <p className="text-sm text-gray-600 font-semibold line-clamp-4 mb-1">{professional.register}</p>
                     )}
                     <p className="text-sm text-gray-700 line-clamp-4 mb-2 whitespace-pre-line">{professional.specialty}</p>
-                    <p className="text-sm font-semibold text-gray-600 border-t border-gray-200 pt-2">@{professional.socialLinks.instagram?.split("/").pop()}</p>
+                    {professional.healthPlans && professional.healthPlans.length > 0 && (
+                      <div className="border-t border-gray-200 pt-2">
+                        <p className="text-sm font-semibold text-gray-600 mb-1">Planos de Saúde:</p>
+                        <p className="text-sm text-gray-700">{professional.healthPlans.join(", ")}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div>
                   <h2 className="text-[32px] text-neutral-700 font-normal font-sans uppercase mb-3">
                     Sobre
                   </h2>
-                  <div className="text-base leading-relaxed text-gray-600 line-clamp-[19] whitespace-pre-line">
+                  <div className="text-base leading-relaxed text-gray-600 line-clamp-[26] whitespace-pre-line">
                     {professional.bio}
                   </div>
                 </div>
@@ -459,7 +470,10 @@ export default function ProfessionalPage() {
                       </div>
                       <h3 className="font-sans font-normal text-[28px] mb-1 text-neutral-700 line-clamp-1">{service.title}</h3>
                     </div>
-                    <p className="font-sans text-[17px] text-neutral-600 line-clamp-2">{service.description}</p>
+                    <div 
+                      className="font-sans text-[17px] text-neutral-600 line-clamp-2 [&_a]:text-[#7a6b5a] [&_a]:underline [&_a]:hover:text-[#928575]"
+                      dangerouslySetInnerHTML={{ __html: service.description }}
+                    />
                   </div>
                 ))}
               </div>
@@ -469,10 +483,10 @@ export default function ProfessionalPage() {
             {/* <p className="text-center text-[#DDDDDD] font-open-sans text-base mb-3 max-w-md mx-auto">OLÁ <span className="font-open-sans font-extrabold text-[#DDDDDD]">PORTAL</span></p> */}
             <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto -mt-2">
               <h2 className="font-sans text-[32px]/10 line-clamp-2 font-normal text-neutral-700 uppercase text-center mb-8">Artigos relacionados</h2>
-              <Carousel className="w-full mb-8" opts={{ loop: false }}>
+              <Carousel className="w-full mb-8" opts={{ loop: false }} setApi={setRelatedPostsCarouselApi}>
                 <CarouselContent>
-                  {posts.map((post) => (
-                    <CarouselItem key={post.id} className="basis-5/6 md:basis-1/2 lg:basis-1/3 pb-32 sm:pb-24">
+                  {posts.slice(0, 3).map((post) => (
+                    <CarouselItem key={post.id} className="basis-1/2 pb-32 sm:pb-24">
                       <Link href={post ? `/blog/${post.slug}` : "#"} className="relative bg-white group block">
                         <div className="relative w-full h-48 sm:h-56">
                           <Image
@@ -509,12 +523,21 @@ export default function ProfessionalPage() {
               </Carousel>
               {/* Dots de paginação */}
               <div className="flex justify-center mt-6 space-x-2">
-                {posts.map((_, idx) => (
-                  <div
-                    key={idx}
-                    className={`w-2 h-2 rounded-full transition-colors ${idx === 0 ? 'bg-[#6D758F]' : 'bg-gray-300'}`}
-                  />
-                ))}
+                {posts.slice(0, 3).map((_, idx) => {
+                  // Com 2 slides visíveis por vez, temos 2 slides: slide 0 (posts 0-1) e slide 1 (post 2)
+                  // Cada dot representa uma postagem, e ao clicar vai para o slide onde ela está
+                  const slideIndex = idx < 2 ? 0 : 1
+                  // Um dot está ativo se o slide atual contém a postagem correspondente
+                  const isActive = (idx < 2 && relatedPostsCurrentSlide === 0) || (idx === 2 && relatedPostsCurrentSlide === 1)
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => relatedPostsCarouselApi?.scrollTo(slideIndex)}
+                      className={`w-2 h-2 rounded-full transition-colors ${isActive ? 'bg-[#6D758F]' : 'bg-gray-300'}`}
+                      aria-label={`Ir para postagem ${idx + 1}`}
+                    />
+                  )
+                })}
               </div>
             </section>
 
@@ -608,9 +631,9 @@ export default function ProfessionalPage() {
           </div>
 
           {/* Right Sidebar */}
-          <div className="lg:col-span-1 space-y-6 relative">
+          <div ref={asideContainerRef} className="lg:col-span-1">
             {/* Card principal da barra lateral */}
-            <aside className="bg-[#F6F4ED] border border-[#E2DED2] p-4 space-y-4 sticky -top-[300px] 2xl:-top-60">
+            <aside ref={asideRef} className="bg-[#F6F4ED] border border-[#E2DED2] p-4 space-y-4 sticky" style={{ top: `${topOffset}px`, alignSelf: 'flex-start' }}>
               {/* Galeria: 1 imagem grande + 3 pequenas */}
               {professional.galleryImages && professional.galleryImages.length > 0 && (
                 <div className="space-y-2">
@@ -715,7 +738,7 @@ export default function ProfessionalPage() {
                         href={professional.socialLinks.whatsapp}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-5 h- text-[#928575] flex items-center justify-center text-xs transition-colors"
+                        className="w-5 h-5 text-[#928575] flex items-center justify-center text-xs transition-colors"
                       >
                         <IoLogoWhatsapp className="w-5 h-5" />
                       </a>
@@ -855,7 +878,9 @@ export default function ProfessionalPage() {
 
         {/* Compartilhe */}
         <div className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto px-4 mb-8">
-          <SocialShare title={professional.name} />
+          <div className="flex justify-end">
+            <SocialShare title={professional.name} />
+          </div>
         </div>
       </div>
     </div>

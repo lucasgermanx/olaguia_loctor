@@ -261,7 +261,7 @@ export function MobileBottomNav() {
 
       {/* Painel deslizante */}
       <div
-        className={`fixed fixed left-4 right-4hxGg.CEgy'uguya4J5R) bottom-[100px] z-50 bg-[#f5f5f0] rounded-3xl shadow-2xl transition-transform duration-300 ease-out md:hidden ${activeSection ? "translate-y-0" : "translate-y-full hidden"
+        className={`fixed left-4 right-4hxGg.CEgy'uguya4J5R) bottom-[100px] z-50 bg-[#f5f5f0] rounded-3xl shadow-2xl transition-transform duration-300 ease-out md:hidden ${activeSection ? "translate-y-0" : "translate-y-full hidden"
           }`}
         style={{ maxHeight: "100vh", overflowY: "auto" }}
       >
@@ -374,7 +374,7 @@ export function MobileBottomNav() {
             <div className="space-y-4">
               <h2 className="text-xl font-bold text-gray-900 uppercase">Revista</h2>
               <p className="text-sm text-gray-600">
-                Consectetuer nascetur orci et taciti maecenas ultricies varius quisque molestie etiam semper parturient nisl tempus
+                Aqui você pode ver todas as matérias já publicadas na revista impressa, é só escolher o tema e clicar!
               </p>
 
               <div className="space-y-2">
@@ -400,7 +400,8 @@ export function MobileBottomNav() {
             <div className="space-y-4">
               <h2 className="text-xl font-bold text-gray-900 uppercase">Categorias</h2>
               <p className="text-sm text-gray-600">
-                Consectetuer nascetur orci et taciti maecenas ultricies varius quisque molestie
+                Quer conhecer os profissionais e Empresas parceiras do OLÁ GUIA?
+                Busque pela categoria clicando abaixo.
               </p>
 
               <div className="space-y-2">
@@ -464,7 +465,7 @@ export function MobileBottomNav() {
             <div className="space-y-4">
               <h2 className="text-xl font-bold text-[#126861] uppercase">Biblioteca Técnica</h2>
               <p className="text-sm text-gray-600">
-                Consectetuer nascetur orci et taciti maecerus ultricies varius quisque molestie etiam semper parturient nisl tempus
+                Esta biblioteca está cheia de conteúdos selecionados para ajudar você, para crescer na sua carreira e no seu negócio. Aproveite clicando nos itens abaixo!
               </p>
 
               <div className="grid grid-cols-2 gap-3">
@@ -498,13 +499,21 @@ export function MobileBottomNav() {
                 className="flex flex-col items-center gap-1 text-xs"
               >
                 <div
-                  className={`flex h-11 w-11 items-center justify-center rounded-2xl transition-colors ${isActive ? "bg-[#7a6b5a]" : "bg-[#928575]"
-                    } text-white`}
+                  className={`flex h-11 w-11 items-center justify-center rounded-2xl transition-colors ${item.key === "search"
+                    ? "bg-[#F6F4ED] text-[#7a6b5a]"
+                    : isActive
+                      ? "bg-[#7a6b5a] text-white"
+                      : "bg-[#928575] text-white"
+                    }`}
                 >
                   <Icon className="h-5 w-5" />
                 </div>
                 <span
-                  className={`font-medium transition-colors ${isActive ? "text-[#7a6b5a]" : "text-[#928575]"
+                  className={`font-medium transition-colors ${item.key === "search"
+                    ? "text-[#7a6b5a]"
+                    : isActive
+                      ? "text-[#7a6b5a]"
+                      : "text-[#928575]"
                     }`}
                 >
                   {item.label}

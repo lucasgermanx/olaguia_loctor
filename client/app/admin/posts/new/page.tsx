@@ -37,6 +37,12 @@ interface Professional {
   title: string
 }
 
+interface User {
+  id: string
+  name: string
+  email: string
+}
+
 export default function NewPostPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
@@ -46,6 +52,7 @@ export default function NewPostPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [tags, setTags] = useState<Tag[]>([])
   const [professionals, setProfessionals] = useState<Professional[]>([])
+  const [users, setUsers] = useState<User[]>([])
 
   const [formData, setFormData] = useState({
     title: "",
@@ -55,6 +62,7 @@ export default function NewPostPage() {
     category_id: "",
     tag_ids: [] as string[],
     professional_id: "",
+    author_id: "",
     featured_image: "",
     published: false,
     theme: "",
@@ -73,8 +81,8 @@ export default function NewPostPage() {
           return
         }
 
-        // Buscar categorias, tags e profissionais
-        const [categoriesRes, tagsRes, professionalsRes] = await Promise.all([
+        // Buscar categorias, tags, profissionais e usuários
+        const [categoriesRes, tagsRes, professionalsRes, usersRes] = await Promise.all([
           fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/categories`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
@@ -82,6 +90,9 @@ export default function NewPostPage() {
             headers: { Authorization: `Bearer ${token}` },
           }),
           fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/professionals?per_page=100`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/admin/users`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
         ])
 
         if (categoriesRes.ok && tagsRes.ok) {
@@ -95,6 +106,11 @@ export default function NewPostPage() {
         if (professionalsRes.ok) {
           const professionalsData = await professionalsRes.json()
           setProfessionals(professionalsData.professionals || [])
+        }
+
+        if (usersRes.ok) {
+          const usersData = await usersRes.json()
+          setUsers(usersData.users || [])
         }
       } catch (error) {
         console.error("Error fetching data:", error)
@@ -212,6 +228,7 @@ export default function NewPostPage() {
         tags: formData.tag_ids,
         tag_ids: undefined, // Remover tag_ids
         professional_id: formData.professional_id || undefined, // Converter string vazia para undefined
+        author_id: formData.author_id || undefined, // Converter string vazia para undefined
         theme: formData.theme || undefined,
         position: formData.position || undefined,
       }
@@ -375,6 +392,26 @@ export default function NewPostPage() {
                         </SelectContent>
                       </Select>
                       {fieldErrors.category_id && <p className="text-sm text-red-600 mt-1">{fieldErrors.category_id}</p>}
+                    </div>
+
+                    <div>
+                      <Label htmlFor="author">Autor</Label>
+                      <Select value={formData.author_id || "none"} onValueChange={(value) => setFormData((prev) => ({ ...prev, author_id: value === "none" ? "" : value }))}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione um autor (padrão: usuário logado)" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">Usuário logado (padrão)</SelectItem>
+                          {users.map((user) => (
+                            <SelectItem key={user.id} value={user.id}>
+                              {user.name} ({user.email})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Selecione o autor do post. Se não selecionar, será usado o usuário logado.
+                      </p>
                     </div>
 
                     <div>

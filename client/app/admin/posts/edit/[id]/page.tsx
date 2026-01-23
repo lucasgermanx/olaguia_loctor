@@ -37,6 +37,12 @@ interface Professional {
   title: string
 }
 
+interface User {
+  id: string
+  name: string
+  email: string
+}
+
 interface Post {
   id: string
   title: string
@@ -45,6 +51,7 @@ interface Post {
   content: string
   category_id: string
   professional_id?: string
+  author_id?: string
   featured_image: string
   published: boolean
   theme?: string
@@ -65,6 +72,7 @@ export default function EditPostPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [tags, setTags] = useState<Tag[]>([])
   const [professionals, setProfessionals] = useState<Professional[]>([])
+  const [users, setUsers] = useState<User[]>([])
 
   const [formData, setFormData] = useState({
     title: "",
@@ -74,6 +82,7 @@ export default function EditPostPage() {
     category_id: "",
     tag_ids: [] as string[],
     professional_id: "",
+    author_id: "",
     featured_image: "",
     published: false,
     theme: "",
@@ -92,8 +101,8 @@ export default function EditPostPage() {
           return
         }
 
-        // Buscar post, categorias, tags e profissionais
-        const [postRes, categoriesRes, tagsRes, professionalsRes] = await Promise.all([
+        // Buscar post, categorias, tags, profissionais e usuários
+        const [postRes, categoriesRes, tagsRes, professionalsRes, usersRes] = await Promise.all([
           fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/posts/id/${id}`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
@@ -104,6 +113,9 @@ export default function EditPostPage() {
             headers: { Authorization: `Bearer ${token}` },
           }),
           fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/professionals?per_page=100`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/admin/users`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
         ])
 
         if (!postRes.ok) {
@@ -122,6 +134,11 @@ export default function EditPostPage() {
           setProfessionals(professionalsData.professionals || [])
         }
 
+        if (usersRes.ok) {
+          const usersData = await usersRes.json()
+          setUsers(usersData.users || [])
+        }
+
         // Extrair IDs das tags do post
         const tagIds = postData.post.tags.map((t: { tag_id: string }) => t.tag_id)
 
@@ -133,6 +150,7 @@ export default function EditPostPage() {
           category_id: postData.post.category_id,
           tag_ids: tagIds,
           professional_id: postData.post.professional_id || "",
+          author_id: postData.post.author_id || "",
           featured_image: postData.post.featured_image || "",
           published: postData.post.published,
           theme: postData.post.theme || "",
@@ -209,6 +227,7 @@ export default function EditPostPage() {
         tags: formData.tag_ids,
         tag_ids: undefined, // Remover tag_ids
         professional_id: formData.professional_id || undefined, // Converter string vazia para undefined
+        author_id: formData.author_id || undefined, // Converter string vazia para undefined
       }
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/posts/${id}`, {
@@ -361,6 +380,26 @@ export default function EditPostPage() {
                           ))}
                         </SelectContent>
                       </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="author">Autor</Label>
+                      <Select value={formData.author_id || "none"} onValueChange={(value) => setFormData((prev) => ({ ...prev, author_id: value === "none" ? "" : value }))}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione um autor" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">Manter autor atual</SelectItem>
+                          {users.map((user) => (
+                            <SelectItem key={user.id} value={user.id}>
+                              {user.name} ({user.email})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Selecione o autor do post. Se não selecionar, o autor atual será mantido.
+                      </p>
                     </div>
 
                     <div>

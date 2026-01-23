@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ChevronUp } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export function ScrollToTop() {
@@ -51,19 +50,40 @@ export function ScrollToTop() {
                     textOrientation: 'mixed'
                 }}
             >
-                Voltar ao topo
+                topo ao Voltar
             </span>
             <button
                 onClick={scrollToTop}
                 className={cn(
-                    "bg-[#928575] hover:bg-[#928575]/80 text-white",
-                    "rounded-full p-3 shadow-lg transition-all duration-200",
+                    "bg-white hover:bg-gray-50",
+                    "rounded-full p-4 shadow-lg transition-all duration-200",
                     "flex items-center justify-center",
-                    "flex-shrink-0"
+                    "flex-shrink-0",
+                    "w-14 h-14",
+                    "relative"
                 )}
                 aria-label="Voltar ao topo"
             >
-                <ChevronUp className="w-5 h-5" />
+                <svg
+                    className="w-6 h-6"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <defs>
+                        <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#8b5cf6" />
+                            <stop offset="100%" stopColor="#ec4899" />
+                        </linearGradient>
+                    </defs>
+                    <path
+                        d="M18 15L12 9L6 15"
+                        stroke="url(#arrowGradient)"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    />
+                </svg>
             </button>
         </div>
     )

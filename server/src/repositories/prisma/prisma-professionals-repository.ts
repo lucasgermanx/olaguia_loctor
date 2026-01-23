@@ -53,22 +53,75 @@ export class PrismaProfessionalsRepository implements ProfessionalsRepository {
       })
     }
 
-    // Filtro de especialidade
+    // Filtro de especialidade - busca no campo title E no array specialties
     if (specialty) {
-      where.title = {
-        contains: specialty,
-        mode: "insensitive",
-      }
+      // Se há filtro de specialty, precisamos buscar também no array JSON specialties
+      // Como o Prisma não suporta busca direta em arrays JSON, vamos usar uma abordagem diferente:
+      // Buscar profissionais que tenham a specialty no title OU que tenham no array specialties
+      // Para o array, vamos usar uma query raw SQL
+      
+      // Primeiro, buscar IDs de profissionais que têm a specialty no array JSON
+      const specialtyLower = specialty.toLowerCase()
+      const professionalsWithSpecialtyInArray = await prisma.$queryRaw<Array<{ id: string }>>`
+        SELECT id 
+        FROM professionals 
+        WHERE specialties IS NOT NULL 
+        AND EXISTS (
+          SELECT 1 
+          FROM jsonb_array_elements_text(specialties) AS specialty_item
+          WHERE LOWER(specialty_item) LIKE ${`%${specialtyLower}%`}
+        )
+      `
+
+      const idsWithSpecialtyInArray = professionalsWithSpecialtyInArray.map(p => p.id)
+
+      // Adicionar condição OR: title contém specialty OU id está na lista de profissionais com specialty no array
+      andConditions.push({
+        OR: [
+          {
+            title: {
+              contains: specialty,
+              mode: "insensitive",
+            }
+          },
+          ...(idsWithSpecialtyInArray.length > 0 ? [{
+            id: {
+              in: idsWithSpecialtyInArray
+            }
+          }] : [])
+        ]
+      })
     }
 
-    // Busca por texto
+    // Busca por texto - também busca no array specialties
     if (search) {
+      const searchLower = search.toLowerCase()
+      
+      // Buscar IDs de profissionais que têm o termo de busca no array JSON specialties
+      const professionalsWithSearchInSpecialties = await prisma.$queryRaw<Array<{ id: string }>>`
+        SELECT id 
+        FROM professionals 
+        WHERE specialties IS NOT NULL 
+        AND EXISTS (
+          SELECT 1 
+          FROM jsonb_array_elements_text(specialties) AS specialty_item
+          WHERE LOWER(specialty_item) LIKE ${`%${searchLower}%`}
+        )
+      `
+
+      const idsWithSearchInSpecialties = professionalsWithSearchInSpecialties.map(p => p.id)
+
       andConditions.push({
         OR: [
           { name: { contains: search, mode: "insensitive" } },
           { title: { contains: search, mode: "insensitive" } },
           { bio: { contains: search, mode: "insensitive" } },
           { city: { contains: search, mode: "insensitive" } },
+          ...(idsWithSearchInSpecialties.length > 0 ? [{
+            id: {
+              in: idsWithSearchInSpecialties
+            }
+          }] : [])
         ]
       })
     }

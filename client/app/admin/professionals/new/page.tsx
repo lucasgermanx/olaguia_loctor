@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import { Badge } from "@/components/ui/badge"
+import RichTextEditor from "@/components/admin/rich-text-editor"
 import { Loader2, Save, Plus, X, ArrowRight } from "lucide-react"
 import Image from "next/image"
 import { FaClock, FaFacebookF, FaLinkedinIn, FaPhoneAlt, FaYoutube } from "react-icons/fa"
@@ -78,6 +80,8 @@ export default function NewProfessionalPage() {
 
   const [specialties, setSpecialties] = useState<string[]>([])
   const [newSpecialty, setNewSpecialty] = useState("")
+  const [healthPlans, setHealthPlans] = useState<string[]>([])
+  const [newHealthPlan, setNewHealthPlan] = useState("")
   const [services, setServices] = useState<Service[]>([])
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
   const [faqs, setFaqs] = useState<FAQ[]>([])
@@ -123,6 +127,18 @@ export default function NewProfessionalPage() {
 
   const removeSpecialty = (index: number) => {
     setSpecialties((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  // Planos de Saúde
+  const addHealthPlan = () => {
+    if (newHealthPlan.trim()) {
+      setHealthPlans((prev) => [...prev, newHealthPlan.trim()])
+      setNewHealthPlan("")
+    }
+  }
+
+  const removeHealthPlan = (index: number) => {
+    setHealthPlans((prev) => prev.filter((_, i) => i !== index))
   }
 
   // Serviços
@@ -249,6 +265,7 @@ export default function NewProfessionalPage() {
       const payload = {
         ...formData,
         specialties,
+        health_plans: healthPlans,
         services,
         testimonials,
         faqs,
@@ -384,6 +401,41 @@ export default function NewProfessionalPage() {
                         required
                         className="text-sm"
                       />
+                      {/* Planos de Saúde */}
+                      <div className="border-t border-gray-200 pt-2 space-y-2">
+                        <Label className="text-xs font-semibold text-gray-600">Planos de Saúde</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder="Nome do plano"
+                            value={newHealthPlan}
+                            onChange={(e) => setNewHealthPlan(e.target.value)}
+                            onKeyPress={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault()
+                                addHealthPlan()
+                              }
+                            }}
+                            className="text-xs"
+                          />
+                          <Button type="button" onClick={addHealthPlan} variant="outline" size="icon">
+                            <Plus size={14} />
+                          </Button>
+                        </div>
+                        {healthPlans.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {healthPlans.map((plan, index) => (
+                              <Badge
+                                key={index}
+                                variant="secondary"
+                                className="text-xs cursor-pointer"
+                                onClick={() => removeHealthPlan(index)}
+                              >
+                                {plan} <X size={12} className="ml-1" />
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                       <Input
                         placeholder="URL do Avatar"
                         name="avatar"
@@ -659,13 +711,12 @@ export default function NewProfessionalPage() {
                               <X size={16} />
                             </Button>
                           </div>
-                          <Textarea
-                            placeholder="Descrição do serviço"
-                            value={service.description}
-                            onChange={(e) => updateService(service.id, "description", e.target.value)}
-                            rows={2}
-                            className="text-sm"
-                          />
+                          <div className="border rounded-md">
+                            <RichTextEditor
+                              value={service.description}
+                              onChange={(value) => updateService(service.id, "description", value)}
+                            />
+                          </div>
                         </div>
                       </div>
                     ))}
