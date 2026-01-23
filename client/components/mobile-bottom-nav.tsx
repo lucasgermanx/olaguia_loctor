@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
@@ -135,6 +135,46 @@ export function MobileBottomNav() {
   const [temas, setTemas] = useState<string[]>([])
   const [tags, setTags] = useState<Tag[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [allProfessionals, setAllProfessionals] = useState<Professional[]>([])
+  const lastCityRef = useRef<string>("")
+
+  const normalize = (value: string) => value.trim().toLowerCase()
+
+  const extractCities = (p: Professional) => {
+    const cityNames: string[] = []
+    if (p.city) cityNames.push(p.city)
+    if (Array.isArray((p as any).additional_cities)) {
+      ; (p as any).additional_cities.forEach((c: any) => {
+        if (c?.city) cityNames.push(c.city)
+      })
+    }
+    return cityNames
+  }
+
+  const splitSpecialtyText = (value: string) => {
+    return value
+      .split(/\r?\n|•|,|;|\s+-\s+/g)
+      .map((s) => s.trim())
+      .filter(Boolean)
+  }
+
+  const extractAreaOptions = (p: Professional) => {
+    const options: string[] = []
+    if ((p as any).title) options.push((p as any).title)
+    if ((p as any).specialty) options.push(...splitSpecialtyText((p as any).specialty))
+    if (Array.isArray((p as any).specialties)) {
+      ; (p as any).specialties.forEach((s: any) => {
+        if (typeof s === "string" && s.trim()) options.push(s.trim())
+      })
+    }
+    return options
+  }
+
+  const matchesCity = (p: Professional, selectedCity: string) => {
+    if (!selectedCity) return true
+    const selected = normalize(selectedCity)
+    return extractCities(p).some((c) => normalize(c) === selected)
+  }
 
   // Carregar dados quando abrir seção de parceiros
   useEffect(() => {
@@ -150,28 +190,33 @@ export function MobileBottomNav() {
     setIsLoading(true)
     try {
       const [professionalsRes, categoriesRes] = await Promise.all([
-        fetch(`${API_URL}/professionals?per_page=100`),
+        fetch(`${API_URL}/professionals?per_page=100&active=true`),
         fetch(`${API_URL}/categories`),
       ])
 
       if (professionalsRes.ok) {
         const data = await professionalsRes.json()
         const professionals = data.professionals || []
+        setAllProfessionals(professionals)
         setProfissionais(professionals)
 
         const cidadesUnicas = [
           ...new Set(
-            professionals.filter((p: Professional) => p.city).map((p: Professional) => p.city)
+            professionals
+              .flatMap((p: Professional) => extractCities(p))
+              .filter(Boolean)
           ),
         ].sort() as string[]
         setCidades(cidadesUnicas)
 
-        const especialidadesUnicas = [
-          ...new Set(
-            professionals.filter((p: Professional) => p.specialty).map((p: Professional) => p.specialty)
-          ),
-        ].sort() as string[]
-        setEspecialidades(especialidadesUnicas)
+        const areaMap = new Map<string, string>()
+        professionals.forEach((p: Professional) => {
+          extractAreaOptions(p).forEach((opt) => {
+            const key = normalize(opt)
+            if (!areaMap.has(key)) areaMap.set(key, opt)
+          })
+        })
+        setEspecialidades(Array.from(areaMap.values()).sort((a, b) => a.localeCompare(b, "pt-BR")))
       }
 
       if (categoriesRes.ok) {
@@ -185,6 +230,29 @@ export function MobileBottomNav() {
       setIsLoading(false)
     }
   }
+
+  useEffect(() => {
+    if (allProfessionals.length === 0) return
+
+    const filtered = allProfessionals.filter((p) => matchesCity(p, cidade))
+    const areaMap = new Map<string, string>()
+
+    filtered.forEach((p) => {
+      extractAreaOptions(p).forEach((opt) => {
+        const key = normalize(opt)
+        if (!areaMap.has(key)) areaMap.set(key, opt)
+      })
+    })
+
+    setEspecialidades(Array.from(areaMap.values()).sort((a, b) => a.localeCompare(b, "pt-BR")))
+
+    if (lastCityRef.current !== cidade) {
+      if (especialidade && !areaMap.has(normalize(especialidade))) {
+        setEspecialidade("")
+      }
+      lastCityRef.current = cidade
+    }
+  }, [cidade, allProfessionals])
 
   const fetchTags = async () => {
     try {
@@ -526,4 +594,3 @@ export function MobileBottomNav() {
     </>
   )
 }
-

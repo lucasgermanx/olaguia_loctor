@@ -37,6 +37,24 @@ import { SocialShare } from "@/components/blog/social-share"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"
 
+const normalizeHealthPlans = (value: unknown): string[] => {
+  const list = Array.isArray(value)
+    ? value
+    : typeof value === "string"
+      ? value.split(/,|\r?\n|;|•/g)
+      : []
+
+  const cleaned = list
+    .map((v) => (typeof v === "string" ? v.trim() : ""))
+    .filter(Boolean)
+    .filter((v) => {
+      const n = v.toLowerCase()
+      return !["nenhum", "nenhuma", "nao atende", "não atende", "nao", "não", "sem"].includes(n)
+    })
+
+  return Array.from(new Set(cleaned))
+}
+
 interface Professional {
   id: string
   name: string
@@ -119,6 +137,20 @@ export default function ProfessionalPage() {
     phone: "",
     message: ""
   })
+
+  useEffect(() => {
+    if (!relatedPostsCarouselApi) return
+
+    const update = () => setRelatedPostsCurrentSlide(relatedPostsCarouselApi.selectedScrollSnap())
+    update()
+    relatedPostsCarouselApi.on("select", update)
+    relatedPostsCarouselApi.on("reInit", update)
+
+    return () => {
+      relatedPostsCarouselApi.off("select", update)
+      relatedPostsCarouselApi.off("reInit", update)
+    }
+  }, [relatedPostsCarouselApi])
 
   const asideRef = useRef<HTMLElement | null>(null);
   const asideContainerRef = useRef<HTMLDivElement | null>(null);
@@ -216,7 +248,7 @@ export default function ProfessionalPage() {
             // Seção de Serviços
             servicesSectionTitle: prof.services_section_title || "",
             servicesSectionSubtitle: prof.services_section_subtitle || "",
-            healthPlans: prof.health_plans || [],
+            healthPlans: normalizeHealthPlans(prof.health_plans),
             socialLinks: {
               facebook: prof.social_facebook,
               instagram: prof.social_instagram,
@@ -305,7 +337,7 @@ export default function ProfessionalPage() {
                     {professional.register && (
                       <p className="text-sm text-gray-600 font-semibold line-clamp-4 mb-1">{professional.register}</p>
                     )}
-                    <p className="text-sm text-gray-700 line-clamp-4 mb-2 whitespace-pre-line">{professional.specialty}</p>
+                    <p className="text-sm text-gray-700 line-clamp-6 mb-2 whitespace-pre-line">{professional.specialty}</p>
                     {professional.healthPlans && professional.healthPlans.length > 0 && (
                       <div className="border-t border-gray-200 pt-2">
                         <p className="text-sm font-semibold text-gray-600 mb-1">Planos de Saúde:</p>
@@ -325,7 +357,6 @@ export default function ProfessionalPage() {
               </div>
             </section>
 
-            <div className="h-[1px] w-full bg-gray-300 px-4" />
             <div className="flex flex-col items-center justify-center md:hidden">
               <p className="text-center text-gray-600 font-lato text-base mb-8 max-w-md mx-auto">Se você já conhece esse profissional/empresa, e quer entrar em contato com ele clique no botão abaixo para conhecer os dados de contato.</p>
               <Button className="bg-[#928575] hover:bg-[#928575]/80 text-white hover:text-white rounded-md flex items-center justify-center text-xs transition-colors">
@@ -369,12 +400,12 @@ export default function ProfessionalPage() {
                         className="flex-1 items-center gap-4"
                       >
                         <div className="flex items-center gap-2">
-                          <div className="flex-shrink-0 w-6 h-6 rounded-lg bg-[#7a6b5a] flex items-center justify-center text-white font-semibold">
+                          <div className="flex-shrink-0 w-8 h-8 rounded-full border border-[#CFC7BA] flex items-center justify-center text-[#7a6b5a]">
                             <ArrowRight className="w-4 h-4" />
                           </div>
-                          <h3 className="font-sans font-normal text-[28px] mb-1 text-neutral-700 line-clamp-1">{painPoint.title}</h3>
+                          <h3 className="font-open-sans font-normal text-[28px] mb-1 text-neutral-700 line-clamp-1">{painPoint.title}</h3>
                         </div>
-                        <p className="font-sans text-[17px] text-neutral-600 line-clamp-2">{painPoint.description}</p>
+                        <p className="font-open-sans text-[17px] text-neutral-600 line-clamp-2">{painPoint.description}</p>
                       </div>
                     ))}
                   </div>
@@ -448,7 +479,7 @@ export default function ProfessionalPage() {
               {/* Imagem grande abaixo dos depoimentos */}
               {professional.galleryImages && professional.galleryImages.length > 1 && (
                 <div className="bg-white shadow-sm">
-                  <div className="relative w-full h-64 md:h-80 overflow-hidden">
+                  <div className="relative w-full h-48 md:h-64 overflow-hidden">
                     <Image
                       src={professional.galleryImages[1] || professional.coverImage}
                       alt="Paciente em atendimento"
@@ -465,13 +496,13 @@ export default function ProfessionalPage() {
                     className="flex-1 items-center gap-4"
                   >
                     <div className="flex items-center gap-2">
-                      <div className="flex-shrink-0 w-6 h-6 rounded-lg flex items-center justify-center text-white font-normal mr-1">
-                        <span className="text-4xl text-[#7a6b5a]">{String(index + 1).padStart(2, "0")}</span>
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full border border-[#CFC7BA] flex items-center justify-center mr-1">
+                        <span className="font-open-sans text-sm text-[#7a6b5a]">{String(index + 1).padStart(2, "0")}</span>
                       </div>
-                      <h3 className="font-sans font-normal text-[28px] mb-1 text-neutral-700 line-clamp-1">{service.title}</h3>
+                      <h3 className="font-open-sans font-normal text-[28px] mb-1 text-neutral-700 line-clamp-1">{service.title}</h3>
                     </div>
-                    <div 
-                      className="font-sans text-[17px] text-neutral-600 line-clamp-2 [&_a]:text-[#7a6b5a] [&_a]:underline [&_a]:hover:text-[#928575]"
+                    <div
+                      className="font-open-sans text-[17px] text-neutral-600 line-clamp-2 [&_a]:text-[#7a6b5a] [&_a]:underline [&_a]:hover:text-[#928575]"
                       dangerouslySetInnerHTML={{ __html: service.description }}
                     />
                   </div>
@@ -483,10 +514,14 @@ export default function ProfessionalPage() {
             {/* <p className="text-center text-[#DDDDDD] font-open-sans text-base mb-3 max-w-md mx-auto">OLÁ <span className="font-open-sans font-extrabold text-[#DDDDDD]">PORTAL</span></p> */}
             <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto -mt-2">
               <h2 className="font-sans text-[32px]/10 line-clamp-2 font-normal text-neutral-700 uppercase text-center mb-8">Artigos relacionados</h2>
-              <Carousel className="w-full mb-8" opts={{ loop: false }} setApi={setRelatedPostsCarouselApi}>
+              <Carousel
+                className="w-full"
+                opts={{ loop: false, align: "start", containScroll: "trimSnaps" }}
+                setApi={setRelatedPostsCarouselApi}
+              >
                 <CarouselContent>
                   {posts.slice(0, 3).map((post) => (
-                    <CarouselItem key={post.id} className="basis-1/2 pb-32 sm:pb-24">
+                    <CarouselItem key={post.id} className="basis-full sm:basis-1/2 pb-6">
                       <Link href={post ? `/blog/${post.slug}` : "#"} className="relative bg-white group block">
                         <div className="relative w-full h-48 sm:h-56">
                           <Image
@@ -497,7 +532,7 @@ export default function ProfessionalPage() {
                           />
                         </div>
                         {post && (
-                          <div className="px-4 bg-white absolute top-[55%] sm:top-[45%] left-0 right-4 sm:right-8 py-4 shadow-md">
+                          <div className="px-4 bg-white py-4 shadow-md">
                             <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-[10px] border-none uppercase">
                               {post.category?.name || "CATEGORIA"}
                             </Badge>
@@ -518,26 +553,21 @@ export default function ProfessionalPage() {
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="left-2 sm:left-4 bg-white/80 hover:bg-white hidden sm:flex rotate-180" />
-                <CarouselNext className="right-2 sm:right-4 bg-white/80 hover:bg-white hidden sm:flex" />
+                <div className="mt-4 flex items-center justify-between px-2">
+                  <CarouselPrevious className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-[#E2DED2] hover:bg-[#D6D0C2] text-[#126861] border border-[#928575]/40 rotate-180 disabled:opacity-50" />
+                  <CarouselNext className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-[#E2DED2] hover:bg-[#D6D0C2] text-[#126861] border border-[#928575]/40 disabled:opacity-50" />
+                </div>
               </Carousel>
               {/* Dots de paginação */}
               <div className="flex justify-center mt-6 space-x-2">
-                {posts.slice(0, 3).map((_, idx) => {
-                  // Com 2 slides visíveis por vez, temos 2 slides: slide 0 (posts 0-1) e slide 1 (post 2)
-                  // Cada dot representa uma postagem, e ao clicar vai para o slide onde ela está
-                  const slideIndex = idx < 2 ? 0 : 1
-                  // Um dot está ativo se o slide atual contém a postagem correspondente
-                  const isActive = (idx < 2 && relatedPostsCurrentSlide === 0) || (idx === 2 && relatedPostsCurrentSlide === 1)
-                  return (
-                    <button
-                      key={idx}
-                      onClick={() => relatedPostsCarouselApi?.scrollTo(slideIndex)}
-                      className={`w-2 h-2 rounded-full transition-colors ${isActive ? 'bg-[#6D758F]' : 'bg-gray-300'}`}
-                      aria-label={`Ir para postagem ${idx + 1}`}
-                    />
-                  )
-                })}
+                {Array.from({ length: Math.ceil(Math.min(posts.length, 3) / 2) }).map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => relatedPostsCarouselApi?.scrollTo(idx)}
+                    className={`w-2 h-2 rounded-full transition-colors ${idx === relatedPostsCurrentSlide ? 'bg-[#6D758F]' : 'bg-gray-300'}`}
+                    aria-label={`Ir para postagem ${idx + 1}`}
+                  />
+                ))}
               </div>
             </section>
 
@@ -631,9 +661,9 @@ export default function ProfessionalPage() {
           </div>
 
           {/* Right Sidebar */}
-          <div ref={asideContainerRef} className="lg:col-span-1">
+          <div className="lg:col-span-1">
             {/* Card principal da barra lateral */}
-            <aside ref={asideRef} className="bg-[#F6F4ED] border border-[#E2DED2] p-4 space-y-4 sticky" style={{ top: `${topOffset}px`, alignSelf: 'flex-start' }}>
+            <aside className="bg-[#F6F4ED] border border-[#E2DED2] p-4 space-y-4 sticky">
               {/* Galeria: 1 imagem grande + 3 pequenas */}
               {professional.galleryImages && professional.galleryImages.length > 0 && (
                 <div className="space-y-2">
@@ -886,4 +916,3 @@ export default function ProfessionalPage() {
     </div>
   )
 }
-

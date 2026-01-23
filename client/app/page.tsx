@@ -184,6 +184,10 @@ export default function Home() {
       .sort((a, b) => (a.slot_index ?? 0) - (b.slot_index ?? 0))
   }
 
+  const getCarouselSlots = (section: string, position: string) => {
+    return getSlots(section, position).slice(0, 5)
+  }
+
   // Função auxiliar para buscar anúncio por posição
   const getAd = (position: string) => {
     return ads.find((ad) => ad.position === position && ad.active)
@@ -192,79 +196,81 @@ export default function Home() {
   return (
     <div className="flex flex-col bg-white overflow-x-hidden">
       {/* Hero Carousel */}
-      <section className="relative w-full h-[300px] sm:h-[300px] lg:h-[350px]">
+      <section className="w-full bg-white">
         {isLoading ? (
-          <div className="w-full h-full flex items-center justify-center">
+          <div className="w-full h-[300px] sm:h-[300px] lg:h-[350px] flex items-center justify-center">
             <div className="animate-spin h-8 w-8 border-4 border-gray-300 border-t-gray-600 rounded-full"></div>
           </div>
         ) : (
-          <>
-            <Carousel
-              className="w-full h-full"
-              opts={{ loop: true }}
-              setApi={setHeroCarouselApi}
-            >
-              <CarouselContent className="h-[300px] sm:h-[300px] lg:h-[350px]">
-                {getSlots("HERO", "CAROUSEL").map((slot, index) => {
-                  const post = slot.post
-                  if (!post) return null
+          <Carousel
+            className="w-full"
+            opts={{ loop: true, align: "start", containScroll: "keepSnaps" }}
+            setApi={setHeroCarouselApi}
+          >
+            <CarouselContent className="h-[300px] sm:h-[300px] lg:h-[350px]">
+              {getSlots("HERO", "CAROUSEL").map((slot, index) => {
+                const post = slot.post
+                if (!post) return null
 
-                  return (
-                    <CarouselItem key={slot.id} className="h-full">
-                      <Link href={`/blog/${post.slug}`} className="relative w-full h-full block">
-                        <div className="relative w-full h-full">
-                          <div>
-                            <Image
-                              src={post.featured_image || placeholderImages.hero}
-                              alt={post.title}
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                          <div className="flex w-full max-w-[1080px] 2xl:max-w-7xl mx-auto">
-                            <div className="absolute top-1/2 -translate-y-1/2 max-sm:left-1/2 max-sm:-translate-x-1/2 w-[calc(100%-2rem)] sm:w-[calc(100%-4rem)] md:w-[calc(100%-8rem)] lg:w-auto lg:max-w-xl">
-                              <div className="bg-white p-4 sm:p-4 md:p-5 shadow-xl border-t-[4px] sm:border-t-[6px] border-[#126861]">
-                                <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 sm:mb-3 text-xs uppercase">
-                                  {post.category?.name || "CATEGORIA"}
-                                </Badge>
-                                <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl 2xl:text-4xl font-open-sans font-semibold mb-3 sm:mb-4 text-gray-900 text-left leading-tight line-clamp-2 uppercase">
-                                  {post.title}
-                                </h1>
-                                {post.excerpt && (
-                                  <p className="text-sm sm:text-base mb-4 sm:mb-6 text-gray-600 text-left line-clamp-2 hidden sm:block">
-                                    {post.excerpt}
-                                  </p>
-                                )}
-                                <div className="text-left">
-                                  <span className="font-lato text-[10px] sm:text-xs italic text-gray-500 border border-gray-400 px-3 py-1.5 uppercase">
-                                    LEIA MAIS
-                                  </span>
-                                </div>
+                return (
+                  <CarouselItem key={slot.id} className="h-full">
+                    <Link href={`/blog/${post.slug}`} className="relative w-full h-full block">
+                      <div className="relative w-full h-full">
+                        <div>
+                          <Image
+                            src={post.featured_image || placeholderImages.hero}
+                            alt={post.title}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="flex w-full max-w-[1080px] 2xl:max-w-7xl mx-auto">
+                          <div className="absolute top-1/2 -translate-y-1/2 max-sm:left-1/2 max-sm:-translate-x-1/2 w-[calc(100%-2rem)] sm:w-[calc(100%-4rem)] md:w-[calc(100%-8rem)] lg:w-auto lg:max-w-xl">
+                            <div className="bg-white p-4 sm:p-4 md:p-5 shadow-xl border-t-[4px] sm:border-t-[6px] border-[#126861]">
+                              <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 sm:mb-3 text-xs uppercase">
+                                {post.category?.name || "CATEGORIA"}
+                              </Badge>
+                              <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl 2xl:text-4xl font-open-sans font-semibold mb-3 sm:mb-4 text-gray-900 text-left leading-tight line-clamp-2 uppercase">
+                                {post.title}
+                              </h1>
+                              {post.excerpt && (
+                                <p className="text-sm sm:text-base mb-4 sm:mb-6 text-gray-600 text-left line-clamp-2 hidden sm:block">
+                                  {post.excerpt}
+                                </p>
+                              )}
+                              <div className="text-left">
+                                <span className="font-lato text-[10px] sm:text-xs italic text-gray-500 border border-gray-400 px-3 py-1.5 uppercase">
+                                  LEIA MAIS
+                                </span>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </Link>
-                    </CarouselItem>
-                  )
-                })}
-              </CarouselContent>
-              <CarouselPrevious className="left-2 sm:left-4 md:left-10 top-1/2 -translate-y-1/2 bg-transparent hover:bg-transparent border-0 rounded-xl hidden sm:flex rotate-180 [&_svg]:!size-12" />
-              <CarouselNext className="right-2 sm:right-4 md:right-12 top-1/2 -translate-y-1/2 bg-transparent hover:bg-transparent border-0 rounded-xl hidden sm:flex [&_svg]:!size-12" />
-            </Carousel>
-            {/* Pagination Dots */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
-              {getSlots("HERO", "CAROUSEL").map((slot, idx) => (
-                <button
-                  key={slot.id}
-                  onClick={() => heroCarouselApi?.scrollTo(idx)}
-                  className={`w-2 h-2 rounded-full transition-all ${idx === heroCurrentSlide ? 'bg-[#6D758F] w-6' : 'bg-gray-300 hover:bg-gray-400'
-                    }`}
-                  aria-label={`Ir para slide ${idx + 1}`}
-                />
-              ))}
+                      </div>
+                    </Link>
+                  </CarouselItem>
+                )
+              })}
+            </CarouselContent>
+
+            <div className="mt-4 flex items-center justify-between px-4 sm:px-6">
+              <CarouselPrevious className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full rotate-180" />
+
+              <div className="flex space-x-2">
+                {getSlots("HERO", "CAROUSEL").map((slot, idx) => (
+                  <button
+                    key={slot.id}
+                    onClick={() => heroCarouselApi?.scrollTo(idx)}
+                    className={`w-2 h-2 rounded-full transition-all ${idx === heroCurrentSlide ? 'bg-[#6D758F] w-6' : 'bg-gray-300 hover:bg-gray-400'
+                      }`}
+                    aria-label={`Ir para slide ${idx + 1}`}
+                  />
+                ))}
+              </div>
+
+              <CarouselNext className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full" />
             </div>
-          </>
+          </Carousel>
         )}
       </section>
 
@@ -497,9 +503,13 @@ export default function Home() {
         <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Os conteúdos mais lidos na Revista OLÁ Guia</p>
 
         <div className="w-full max-w-[1080px] 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-0">
-          <Carousel className="w-full" opts={{ loop: false }} setApi={setReflexaoCarouselApi}>
+          <Carousel
+            className="w-full"
+            opts={{ loop: true, align: "start", containScroll: "keepSnaps" }}
+            setApi={setReflexaoCarouselApi}
+          >
             <CarouselContent>
-              {getSlots("PARA_REFLEXAO", "CAROUSEL").slice(0, 5).map((slot) => {
+              {getCarouselSlots("PARA_REFLEXAO", "CAROUSEL").map((slot) => {
                 const post = slot.post
                 if (!post) return null
 
@@ -528,11 +538,13 @@ export default function Home() {
                 )
               })}
             </CarouselContent>
-            <CarouselPrevious className="left-2 sm:left-4 bg-white/80 hover:bg-white hidden sm:flex rotate-180" />
-            <CarouselNext className="right-2 sm:right-4 bg-white/80 hover:bg-white hidden sm:flex" />
+            <div className="mt-4 flex items-center justify-between px-1 sm:px-2">
+              <CarouselPrevious className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full rotate-180" />
+              <CarouselNext className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full" />
+            </div>
           </Carousel>
           <div className="flex justify-center mt-10 space-x-2">
-            {getSlots("PARA_REFLEXAO", "CAROUSEL").slice(0, 5).map((slot, idx) => (
+            {getCarouselSlots("PARA_REFLEXAO", "CAROUSEL").map((slot, idx) => (
               <button
                 key={slot.id}
                 onClick={() => reflexaoCarouselApi?.scrollTo(idx)}
@@ -663,9 +675,13 @@ export default function Home() {
         </div>
         <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Dicas e segredos para um bom relacionamento</p>
 
-        <Carousel className="w-full pl-4 sm:pl-1" opts={{ loop: false }} setApi={setRelacionamentosCarouselApi}>
+        <Carousel
+          className="w-full pl-4 sm:pl-1"
+          opts={{ loop: true, align: "start", containScroll: "keepSnaps" }}
+          setApi={setRelacionamentosCarouselApi}
+        >
           <CarouselContent>
-            {getSlots("SOBRE_RELACIONAMENTOS", "CAROUSEL").slice(0, 5).map((slot) => {
+            {getCarouselSlots("SOBRE_RELACIONAMENTOS", "CAROUSEL").map((slot) => {
               const post = slot.post
               if (!post) return null
 
@@ -701,11 +717,13 @@ export default function Home() {
               )
             })}
           </CarouselContent>
-          <CarouselPrevious className="left-2 top-1/3 bg-white/80 hover:bg-white hidden sm:flex rotate-180" />
-          <CarouselNext className="right-2 top-1/3 bg-white/80 hover:bg-white hidden sm:flex" />
+          <div className="mt-4 flex items-center justify-between px-1 sm:px-2">
+            <CarouselPrevious className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full rotate-180" />
+            <CarouselNext className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full" />
+          </div>
         </Carousel>
         <div className="flex justify-center mt-4 space-x-2">
-          {getSlots("SOBRE_RELACIONAMENTOS", "CAROUSEL").slice(0, 5).map((slot, idx) => (
+          {getCarouselSlots("SOBRE_RELACIONAMENTOS", "CAROUSEL").map((slot, idx) => (
             <button
               key={slot.id}
               onClick={() => relacionamentosCarouselApi?.scrollTo(idx)}
@@ -733,8 +751,8 @@ export default function Home() {
 
       {/* EMPRESAS & NEGÓCIOS Section */}
       <section className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto py-5 sm:py-12 bg-white">
-        <div className="flex flex-row gap-6">
-          <div>
+        <div className="flex flex-col md:flex-row gap-6">
+          <div className="w-full md:flex-[2] md:basis-2/3">
             <div className="flex items-center w-full mb-5 md:mb-0">
               <div className="h-2 sm:h-3 w-full bg-gray-300" />
               <h2 className="text-3xl sm:text-3xl md:text-3xl lg:text-4xl 2xl:text-5xl text-center font-volkhov md:text-nowrap mx-2 sm:mx-8 lg:mx-12 font-bold text-[#126861]">
@@ -860,7 +878,7 @@ export default function Home() {
             </div>
           </div>
           {/* Right Column - Ad Banner and Smaller Articles */}
-          <div className="space-y-2 border border-[#B6B6B6]/40 p-3 sm:p-4 hidden md:block">
+          <div className="w-full md:flex-[1] md:basis-1/3 md:max-w-[360px] md:ml-auto space-y-2 border border-[#B6B6B6]/40 p-3 sm:p-4 hidden md:block">
             {/* Ad Banner */}
             {(() => {
               const ad = getAd("EMPRESAS_NEGOCIOS_RIGHT")
@@ -960,9 +978,9 @@ export default function Home() {
           })}
         </div>
         <div className="md:hidden w-full max-w-[1080px] 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-0">
-          <Carousel className="w-full" opts={{ loop: false }} setApi={setEsteticaCarouselApi}>
+          <Carousel className="w-full" opts={{ loop: true }} setApi={setEsteticaCarouselApi}>
             <CarouselContent>
-              {getSlots("ESTETICA_BELEZA", "GRID").map((slot) => {
+              {getCarouselSlots("ESTETICA_BELEZA", "GRID").map((slot) => {
                 const post = slot.post
                 if (!post) return null
 
@@ -986,11 +1004,13 @@ export default function Home() {
                 )
               })}
             </CarouselContent>
-            <CarouselPrevious className="left-2 sm:left-4 bg-white/80 hover:bg-white hidden sm:flex" />
-            <CarouselNext className="right-2 sm:right-4 bg-white/80 hover:bg-white hidden sm:flex" />
+            <div className="mt-4 flex items-center justify-between px-1 sm:px-2">
+              <CarouselPrevious className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full rotate-180" />
+              <CarouselNext className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full" />
+            </div>
           </Carousel>
           <div className="flex justify-center mt-4 space-x-2">
-            {getSlots("ESTETICA_BELEZA", "GRID").map((slot, idx) => (
+            {getCarouselSlots("ESTETICA_BELEZA", "GRID").map((slot, idx) => (
               <button
                 key={slot.id}
                 onClick={() => esteticaCarouselApi?.scrollTo(idx)}
@@ -1140,9 +1160,13 @@ export default function Home() {
         </div>
         <p className="text-center font-lato text-sm sm:text-base lg:text-lg text-gray-500 mb-6 sm:mb-8 hidden sm:block">Seleção das melhores receitas para você</p>
         <div className="pl-4 sm:pl-6 lg:pl-0">
-          <Carousel className="w-full" opts={{ loop: false }} setApi={setGastronomiaCarouselApi}>
+          <Carousel
+            className="w-full"
+            opts={{ loop: true, align: "start", containScroll: "keepSnaps" }}
+            setApi={setGastronomiaCarouselApi}
+          >
             <CarouselContent>
-              {getSlots("GASTRONOMIA", "CAROUSEL").map((slot) => {
+              {getCarouselSlots("GASTRONOMIA", "CAROUSEL").map((slot) => {
                 const post = slot.post
                 if (!post) return null
 
@@ -1171,12 +1195,14 @@ export default function Home() {
                 )
               })}
             </CarouselContent>
-            <CarouselPrevious className="left-2 sm:left-4 bg-white/80 hover:bg-white hidden sm:flex rotate-180" />
-            <CarouselNext className="right-2 sm:right-4 bg-white/80 hover:bg-white hidden sm:flex" />
+            <div className="mt-4 flex items-center justify-between px-1 sm:px-2">
+              <CarouselPrevious className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full rotate-180" />
+              <CarouselNext className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full" />
+            </div>
           </Carousel>
         </div>
         <div className="flex justify-center mt-10 space-x-2">
-          {getSlots("GASTRONOMIA", "CAROUSEL").map((slot, idx) => (
+          {getCarouselSlots("GASTRONOMIA", "CAROUSEL").map((slot, idx) => (
             <button
               key={slot.id}
               onClick={() => gastronomiaCarouselApi?.scrollTo(idx)}

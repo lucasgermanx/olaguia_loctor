@@ -94,6 +94,13 @@ export class PrismaPostsRepository implements PostsRepository {
         { title: { contains: search, mode: "insensitive" } },
         { excerpt: { contains: search, mode: "insensitive" } },
         { content: { contains: search, mode: "insensitive" } },
+        { category: { name: { contains: search, mode: "insensitive" } } },
+        { category: { slug: { contains: search, mode: "insensitive" } } },
+        { tags: { some: { tag: { name: { contains: search, mode: "insensitive" } } } } },
+        { tags: { some: { tag: { slug: { contains: search, mode: "insensitive" } } } } },
+        { professional: { name: { contains: search, mode: "insensitive" } } },
+        { professional: { title: { contains: search, mode: "insensitive" } } },
+        { author: { name: { contains: search, mode: "insensitive" } } },
       ]
     }
 

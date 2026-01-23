@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { ChevronDown, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -11,9 +11,11 @@ interface Professional {
   id: string
   name: string
   title: string
-  specialty: string
-  city: string
-  state: string
+  specialty?: string
+  specialties?: string[]
+  city?: string
+  state?: string
+  additional_cities?: { city: string; state?: string }[]
 }
 
 export function ProfessionalSearchBar() {
@@ -26,40 +28,86 @@ export function ProfessionalSearchBar() {
 
   // Dados dinâmicos da API
   const [cidades, setCidades] = useState<string[]>([])
+  const [allProfessionals, setAllProfessionals] = useState<Professional[]>([])
   const [profissionais, setProfissionais] = useState<Professional[]>([])
   const [especialidades, setEspecialidades] = useState<string[]>([])
   const [temas, setTemas] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const lastCityRef = useRef<string>("")
+
+  const normalize = (value: string) => value.trim().toLowerCase()
+
+  const extractCities = (p: Professional) => {
+    const cityNames: string[] = []
+    if (p.city) cityNames.push(p.city)
+    if (Array.isArray(p.additional_cities)) {
+      p.additional_cities.forEach((c) => {
+        if (c?.city) cityNames.push(c.city)
+      })
+    }
+    return cityNames
+  }
+
+  const splitSpecialtyText = (value: string) => {
+    return value
+      .split(/\r?\n|•|,|;|\s+-\s+/g)
+      .map((s) => s.trim())
+      .filter(Boolean)
+  }
+
+  const extractAreaOptions = (p: Professional) => {
+    const options: string[] = []
+    if (p.title) options.push(p.title)
+    if (p.specialty) options.push(...splitSpecialtyText(p.specialty))
+    if (Array.isArray(p.specialties)) {
+      p.specialties.forEach((s) => {
+        if (typeof s === "string" && s.trim()) options.push(s.trim())
+      })
+    }
+    return options
+  }
+
+  const matchesCity = (p: Professional, selectedCity: string) => {
+    if (!selectedCity) return true
+    const selected = normalize(selectedCity)
+    return extractCities(p).some((c) => normalize(c) === selected)
+  }
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Buscar todos os profissionais ativos
         const [professionalsRes, categoriesRes] = await Promise.all([
-          fetch(`${API_URL}/professionals?per_page=1000&active=true`),
+          fetch(`${API_URL}/professionals?per_page=100&active=true`),
           fetch(`${API_URL}/categories`)
         ])
 
         if (professionalsRes.ok) {
           const data = await professionalsRes.json()
-          const professionals = data.professionals || []
-          
-          setProfessionais(professionals)
+          const professionals = (data.professionals || []) as Professional[]
+
+          setAllProfessionals(professionals)
+          setProfissionais(professionals)
 
           // Extrair cidades únicas
-          const cidadesUnicas = [...new Set(
-            professionals
-              .filter((p: Professional) => p.city)
-              .map((p: Professional) => p.city)
-          )].sort()
+          const cidadesUnicas = Array.from(
+            new Set(
+              professionals
+                .flatMap((p) => extractCities(p))
+                .filter(Boolean)
+            )
+          ).sort()
           setCidades(cidadesUnicas)
 
           // Extrair especialidades únicas
-          const especialidadesUnicas = [...new Set(
-            professionals
-              .filter((p: Professional) => p.specialty)
-              .map((p: Professional) => p.specialty)
-          )].sort()
+          const areaMap = new Map<string, string>()
+          professionals.forEach((p) => {
+            extractAreaOptions(p).forEach((opt) => {
+              const key = normalize(opt)
+              if (!areaMap.has(key)) areaMap.set(key, opt)
+            })
+          })
+          const especialidadesUnicas = Array.from(areaMap.values()).sort((a, b) => a.localeCompare(b, "pt-BR"))
           setEspecialidades(especialidadesUnicas)
         }
 
@@ -81,12 +129,36 @@ export function ProfessionalSearchBar() {
     fetchData()
   }, [])
 
+  useEffect(() => {
+    if (allProfessionals.length === 0) return
+
+    const filtered = allProfessionals.filter((p) => matchesCity(p, cidade))
+
+    const areaMap = new Map<string, string>()
+    filtered.forEach((p) => {
+      extractAreaOptions(p).forEach((opt) => {
+        const key = normalize(opt)
+        if (!areaMap.has(key)) areaMap.set(key, opt)
+      })
+    })
+
+    const nextAreas = Array.from(areaMap.values()).sort((a, b) => a.localeCompare(b, "pt-BR"))
+    setEspecialidades(nextAreas)
+
+    if (lastCityRef.current !== cidade) {
+      if (especialidade && !areaMap.has(normalize(especialidade))) {
+        setEspecialidade("")
+      }
+      lastCityRef.current = cidade
+    }
+  }, [cidade, allProfessionals])
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     // Construir URL de busca com filtros
     const params = new URLSearchParams()
-    
+
     if (searchTerm) params.append("search", searchTerm)
     if (cidade) params.append("city", cidade)
     if (profissional) params.append("name", profissional)
@@ -195,8 +267,8 @@ export function ProfessionalSearchBar() {
           </div>
 
           {/* Botão de busca */}
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             className="bg-[#126861] hover:bg-[#0f5650] text-white px-8 h-12 flex items-center gap-2"
             disabled={isLoading}
           >
@@ -208,4 +280,3 @@ export function ProfessionalSearchBar() {
     </section>
   )
 }
-

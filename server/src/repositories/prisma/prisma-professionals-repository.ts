@@ -84,6 +84,12 @@ export class PrismaProfessionalsRepository implements ProfessionalsRepository {
               mode: "insensitive",
             }
           },
+          {
+            specialty: {
+              contains: specialty,
+              mode: "insensitive",
+            }
+          },
           ...(idsWithSpecialtyInArray.length > 0 ? [{
             id: {
               in: idsWithSpecialtyInArray
@@ -115,6 +121,7 @@ export class PrismaProfessionalsRepository implements ProfessionalsRepository {
         OR: [
           { name: { contains: search, mode: "insensitive" } },
           { title: { contains: search, mode: "insensitive" } },
+          { specialty: { contains: search, mode: "insensitive" } },
           { bio: { contains: search, mode: "insensitive" } },
           { city: { contains: search, mode: "insensitive" } },
           ...(idsWithSearchInSpecialties.length > 0 ? [{
@@ -175,4 +182,3 @@ export class PrismaProfessionalsRepository implements ProfessionalsRepository {
     })
   }
 }
-

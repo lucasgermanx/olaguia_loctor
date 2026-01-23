@@ -50,7 +50,7 @@ export function ScrollToTop() {
                     textOrientation: 'mixed'
                 }}
             >
-                topo ao Voltar
+                Voltar ao topo
             </span>
             <button
                 onClick={scrollToTop}
@@ -72,8 +72,8 @@ export function ScrollToTop() {
                 >
                     <defs>
                         <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#8b5cf6" />
-                            <stop offset="100%" stopColor="#ec4899" />
+                            <stop offset="0%" stopColor="#126861" />
+                            <stop offset="100%" stopColor="#0f5650" />
                         </linearGradient>
                     </defs>
                     <path
@@ -88,4 +88,3 @@ export function ScrollToTop() {
         </div>
     )
 }
-

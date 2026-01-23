@@ -27,12 +27,6 @@
 - Dev: `npm run dev` (porta 3000).
 - Build: `npm run build`.
 - Start: `npm run start` (porta 3005).
-- Lint: `npm run lint`.
-
-#### Regras de Qualidade (Client)
-- Não confiar no build como “validador”: o `next.config.mjs` ignora erros de TypeScript e ESLint durante build.
-- Ao fazer mudanças relevantes em TS/React, rode também um typecheck explícito:
-  - `npx tsc -p tsconfig.json --noEmit`
 
 ### Server (`/server`)
 - Entrada: `src/server.ts` chama `app.listen` na `env.PORT` (default 3333).

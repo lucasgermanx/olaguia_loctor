@@ -10,6 +10,18 @@ import { cn } from "@/lib/utils"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"
 
+interface Category {
+  id: string
+  name: string
+  slug: string
+}
+
+interface Tag {
+  id: string
+  name: string
+  slug: string
+}
+
 interface Post {
   id: string
   title: string
@@ -21,6 +33,8 @@ interface Professional {
   name: string
   slug: string
   title: string
+  specialty?: string
+  specialties?: string[]
   city?: string
   state?: string
 }
@@ -42,8 +56,36 @@ export function Header({ isHomePage = false }: HeaderProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [suggestions, setSuggestions] = useState<Post[]>([])
   const [professionalSuggestions, setProfessionalSuggestions] = useState<Professional[]>([])
+  const [categorySuggestions, setCategorySuggestions] = useState<Category[]>([])
+  const [tagSuggestions, setTagSuggestions] = useState<Tag[]>([])
+  const [specialtySuggestions, setSpecialtySuggestions] = useState<string[]>([])
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false)
+  const [allCategories, setAllCategories] = useState<Category[]>([])
+  const [allTags, setAllTags] = useState<Tag[]>([])
   const searchRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const fetchCategoriesAndTags = async () => {
+      try {
+        const [categoriesRes, tagsRes] = await Promise.all([
+          fetch(`${API_URL}/categories`),
+          fetch(`${API_URL}/tags`),
+        ])
+
+        if (categoriesRes.ok) {
+          const data = await categoriesRes.json()
+          setAllCategories(data.categories || [])
+        }
+
+        if (tagsRes.ok) {
+          const data = await tagsRes.json()
+          setAllTags(data.tags || [])
+        }
+      } catch { }
+    }
+
+    fetchCategoriesAndTags()
+  }, [])
 
   // Fetch suggestions
   useEffect(() => {
@@ -51,6 +93,9 @@ export function Header({ isHomePage = false }: HeaderProps) {
       if (searchTerm.trim().length < 2) {
         setSuggestions([])
         setProfessionalSuggestions([])
+        setCategorySuggestions([])
+        setTagSuggestions([])
+        setSpecialtySuggestions([])
         return
       }
 
@@ -62,6 +107,17 @@ export function Header({ isHomePage = false }: HeaderProps) {
           fetch(`${API_URL}/professionals?search=${encodeURIComponent(searchTerm)}&per_page=5&active=true`)
         ])
 
+        const normalizedTerm = searchTerm.trim().toLowerCase()
+        const nextCategorySuggestions = allCategories
+          .filter((c) => c.name.toLowerCase().includes(normalizedTerm) || c.slug.toLowerCase().includes(normalizedTerm))
+          .slice(0, 5)
+        const nextTagSuggestions = allTags
+          .filter((t) => t.name.toLowerCase().includes(normalizedTerm) || t.slug.toLowerCase().includes(normalizedTerm))
+          .slice(0, 5)
+
+        setCategorySuggestions(nextCategorySuggestions)
+        setTagSuggestions(nextTagSuggestions)
+
         if (postsRes.ok) {
           const data = await postsRes.json()
           setSuggestions(data.posts || [])
@@ -69,7 +125,24 @@ export function Header({ isHomePage = false }: HeaderProps) {
 
         if (professionalsRes.ok) {
           const data = await professionalsRes.json()
-          setProfessionalSuggestions(data.professionals || [])
+          const professionals = (data.professionals || []) as Professional[]
+          setProfessionalSuggestions(professionals)
+
+          const specialtySet = new Set<string>()
+          professionals.forEach((p) => {
+            if (p.specialty && p.specialty.trim()) specialtySet.add(p.specialty.trim())
+            if (Array.isArray(p.specialties)) {
+              p.specialties.forEach((s) => {
+                if (typeof s === "string" && s.trim()) specialtySet.add(s.trim())
+              })
+            }
+          })
+
+          const nextSpecialtySuggestions = Array.from(specialtySet)
+            .filter((s) => s.toLowerCase().includes(normalizedTerm))
+            .slice(0, 5)
+
+          setSpecialtySuggestions(nextSpecialtySuggestions)
         }
       } catch (error) {
         console.error("Erro ao buscar sugestões:", error)
@@ -80,7 +153,7 @@ export function Header({ isHomePage = false }: HeaderProps) {
 
     const debounce = setTimeout(fetchSuggestions, 300)
     return () => clearTimeout(debounce)
-  }, [searchTerm])
+  }, [searchTerm, allCategories, allTags])
 
   // Close search on click outside
   useEffect(() => {
@@ -90,6 +163,9 @@ export function Header({ isHomePage = false }: HeaderProps) {
         setSearchTerm("")
         setSuggestions([])
         setProfessionalSuggestions([])
+        setCategorySuggestions([])
+        setTagSuggestions([])
+        setSpecialtySuggestions([])
       }
     }
 
@@ -221,13 +297,23 @@ export function Header({ isHomePage = false }: HeaderProps) {
                 {/* Sugestões de posts e profissionais */}
                 {searchTerm.trim().length > 1 && (
                   <div className="absolute z-50 top-full mt-2 right-0 w-96 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto">
-                    {isLoadingSuggestions && suggestions.length === 0 && professionalSuggestions.length === 0 && (
-                      <div className="px-4 py-3 text-sm text-gray-500">Buscando...</div>
-                    )}
+                    {isLoadingSuggestions &&
+                      suggestions.length === 0 &&
+                      professionalSuggestions.length === 0 &&
+                      categorySuggestions.length === 0 &&
+                      tagSuggestions.length === 0 &&
+                      specialtySuggestions.length === 0 && (
+                        <div className="px-4 py-3 text-sm text-gray-500">Buscando...</div>
+                      )}
 
-                    {!isLoadingSuggestions && suggestions.length === 0 && professionalSuggestions.length === 0 && (
-                      <div className="px-4 py-3 text-sm text-gray-500">Nenhum resultado encontrado.</div>
-                    )}
+                    {!isLoadingSuggestions &&
+                      suggestions.length === 0 &&
+                      professionalSuggestions.length === 0 &&
+                      categorySuggestions.length === 0 &&
+                      tagSuggestions.length === 0 &&
+                      specialtySuggestions.length === 0 && (
+                        <div className="px-4 py-3 text-sm text-gray-500">Nenhum resultado encontrado.</div>
+                      )}
 
                     {/* Profissionais */}
                     {professionalSuggestions.length > 0 && (
@@ -244,6 +330,9 @@ export function Header({ isHomePage = false }: HeaderProps) {
                               setSearchTerm("")
                               setSuggestions([])
                               setProfessionalSuggestions([])
+                              setCategorySuggestions([])
+                              setTagSuggestions([])
+                              setSpecialtySuggestions([])
                             }}
                             className="block px-4 py-3 text-sm hover:bg-gray-100 border-b border-gray-100"
                           >
@@ -273,6 +362,9 @@ export function Header({ isHomePage = false }: HeaderProps) {
                               setSearchTerm("")
                               setSuggestions([])
                               setProfessionalSuggestions([])
+                              setCategorySuggestions([])
+                              setTagSuggestions([])
+                              setSpecialtySuggestions([])
                             }}
                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b border-gray-100"
                           >
@@ -282,19 +374,117 @@ export function Header({ isHomePage = false }: HeaderProps) {
                       </div>
                     )}
 
-                    {(suggestions.length > 0 || professionalSuggestions.length > 0) && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (searchTerm.trim()) {
-                            window.location.href = `/blog?search=${encodeURIComponent(searchTerm)}`
-                          }
-                        }}
-                        className="w-full text-left px-4 py-2 text-sm font-semibold text-[#126861] hover:bg-gray-100 border-t border-gray-200"
-                      >
-                        Ver todos os resultados para "{searchTerm}"
-                      </button>
+                    {/* Categorias */}
+                    {categorySuggestions.length > 0 && (
+                      <div>
+                        <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase bg-gray-50">
+                          Categorias
+                        </div>
+                        {categorySuggestions.map((category) => (
+                          <Link
+                            key={category.id}
+                            href={`/blog?category=${encodeURIComponent(category.slug)}`}
+                            onClick={() => {
+                              setIsSearchOpen(false)
+                              setSearchTerm("")
+                              setSuggestions([])
+                              setProfessionalSuggestions([])
+                              setCategorySuggestions([])
+                              setTagSuggestions([])
+                              setSpecialtySuggestions([])
+                            }}
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b border-gray-100"
+                          >
+                            {category.name}
+                          </Link>
+                        ))}
+                      </div>
                     )}
+
+                    {/* Tags */}
+                    {tagSuggestions.length > 0 && (
+                      <div>
+                        <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase bg-gray-50">
+                          Tags
+                        </div>
+                        {tagSuggestions.map((tag) => (
+                          <Link
+                            key={tag.id}
+                            href={`/blog?tag=${encodeURIComponent(tag.slug)}`}
+                            onClick={() => {
+                              setIsSearchOpen(false)
+                              setSearchTerm("")
+                              setSuggestions([])
+                              setProfessionalSuggestions([])
+                              setCategorySuggestions([])
+                              setTagSuggestions([])
+                              setSpecialtySuggestions([])
+                            }}
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b border-gray-100"
+                          >
+                            {tag.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Especialidades */}
+                    {specialtySuggestions.length > 0 && (
+                      <div>
+                        <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase bg-gray-50">
+                          Especialidades
+                        </div>
+                        {specialtySuggestions.map((specialty) => (
+                          <Link
+                            key={specialty}
+                            href={`/profissionais?search=${encodeURIComponent(specialty)}`}
+                            onClick={() => {
+                              setIsSearchOpen(false)
+                              setSearchTerm("")
+                              setSuggestions([])
+                              setProfessionalSuggestions([])
+                              setCategorySuggestions([])
+                              setTagSuggestions([])
+                              setSpecialtySuggestions([])
+                            }}
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b border-gray-100"
+                          >
+                            {specialty}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+
+                    {(suggestions.length > 0 ||
+                      professionalSuggestions.length > 0 ||
+                      categorySuggestions.length > 0 ||
+                      tagSuggestions.length > 0 ||
+                      specialtySuggestions.length > 0) && (
+                        <div className="border-t border-gray-200">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (searchTerm.trim()) {
+                                window.location.href = `/blog?search=${encodeURIComponent(searchTerm)}`
+                              }
+                            }}
+                            className="w-full text-left px-4 py-2 text-sm font-semibold text-[#126861] hover:bg-gray-100"
+                          >
+                            Ver resultados em artigos para "{searchTerm}"
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (searchTerm.trim()) {
+                                window.location.href = `/profissionais?search=${encodeURIComponent(searchTerm)}`
+                              }
+                            }}
+                            className="w-full text-left px-4 py-2 text-sm font-semibold text-[#126861] hover:bg-gray-100"
+                          >
+                            Ver resultados em profissionais para "{searchTerm}"
+                          </button>
+                        </div>
+                      )}
                   </div>
                 )}
               </div>
