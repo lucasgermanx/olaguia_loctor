@@ -41,7 +41,7 @@ export default function LoginPage() {
           <Link href="/">
             <Image
               src="/images/logo.png"
-              alt="Albuquerque Vianna Falcão Advogados"
+              alt="Logo"
               width={200}
               height={80}
               className="mx-auto"

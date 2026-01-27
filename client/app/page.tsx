@@ -540,19 +540,19 @@ export default function Home() {
             </CarouselContent>
             <div className="mt-4 flex items-center justify-between px-1 sm:px-2">
               <CarouselPrevious className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full rotate-180" />
+              <div className="flex justify-center space-x-2">
+                {getCarouselSlots("PARA_REFLEXAO", "CAROUSEL").map((slot, idx) => (
+                  <button
+                    key={slot.id}
+                    onClick={() => reflexaoCarouselApi?.scrollTo(idx)}
+                    className={`w-2 h-2 rounded-full transition-all ${idx === reflexaoCurrentSlide ? 'bg-[#6D758F] w-6' : 'bg-gray-300 hover:bg-gray-400'}`}
+                    aria-label={`Ir para slide ${idx + 1}`}
+                  />
+                ))}
+              </div>
               <CarouselNext className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full" />
             </div>
           </Carousel>
-          <div className="flex justify-center mt-10 space-x-2">
-            {getCarouselSlots("PARA_REFLEXAO", "CAROUSEL").map((slot, idx) => (
-              <button
-                key={slot.id}
-                onClick={() => reflexaoCarouselApi?.scrollTo(idx)}
-                className={`w-2 h-2 rounded-full transition-all ${idx === reflexaoCurrentSlide ? 'bg-[#6D758F] w-6' : 'bg-gray-300 hover:bg-gray-400'}`}
-                aria-label={`Ir para slide ${idx + 1}`}
-              />
-            ))}
-          </div>
         </div>
       </section>
 
@@ -719,19 +719,19 @@ export default function Home() {
           </CarouselContent>
           <div className="mt-4 flex items-center justify-between px-1 sm:px-2">
             <CarouselPrevious className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full rotate-180" />
+            <div className="flex justify-center space-x-2">
+              {getCarouselSlots("SOBRE_RELACIONAMENTOS", "CAROUSEL").map((slot, idx) => (
+                <button
+                  key={slot.id}
+                  onClick={() => relacionamentosCarouselApi?.scrollTo(idx)}
+                  className={`w-2 h-2 rounded-full transition-all ${idx === relacionamentosCurrentSlide ? 'bg-[#6D758F] w-6' : 'bg-gray-300 hover:bg-gray-400'}`}
+                  aria-label={`Ir para slide ${idx + 1}`}
+                />
+              ))}
+            </div>
             <CarouselNext className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full" />
           </div>
         </Carousel>
-        <div className="flex justify-center mt-4 space-x-2">
-          {getCarouselSlots("SOBRE_RELACIONAMENTOS", "CAROUSEL").map((slot, idx) => (
-            <button
-              key={slot.id}
-              onClick={() => relacionamentosCarouselApi?.scrollTo(idx)}
-              className={`w-2 h-2 rounded-full transition-all ${idx === relacionamentosCurrentSlide ? 'bg-[#6D758F] w-6' : 'bg-gray-300 hover:bg-gray-400'}`}
-              aria-label={`Ir para slide ${idx + 1}`}
-            />
-          ))}
-        </div>
       </section>
 
       {/* Promotional Banner - Ad */}
@@ -1006,19 +1006,19 @@ export default function Home() {
             </CarouselContent>
             <div className="mt-4 flex items-center justify-between px-1 sm:px-2">
               <CarouselPrevious className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full rotate-180" />
+              <div className="flex justify-center space-x-2">
+                {getCarouselSlots("ESTETICA_BELEZA", "GRID").map((slot, idx) => (
+                  <button
+                    key={slot.id}
+                    onClick={() => esteticaCarouselApi?.scrollTo(idx)}
+                    className={`w-2 h-2 rounded-full transition-all ${idx === esteticaCurrentSlide ? 'bg-[#6D758F] w-6' : 'bg-gray-300 hover:bg-gray-400'}`}
+                    aria-label={`Ir para slide ${idx + 1}`}
+                  />
+                ))}
+              </div>
               <CarouselNext className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full" />
             </div>
           </Carousel>
-          <div className="flex justify-center mt-4 space-x-2">
-            {getCarouselSlots("ESTETICA_BELEZA", "GRID").map((slot, idx) => (
-              <button
-                key={slot.id}
-                onClick={() => esteticaCarouselApi?.scrollTo(idx)}
-                className={`w-2 h-2 rounded-full transition-all ${idx === esteticaCurrentSlide ? 'bg-[#6D758F] w-6' : 'bg-gray-300 hover:bg-gray-400'}`}
-                aria-label={`Ir para slide ${idx + 1}`}
-              />
-            ))}
-          </div>
         </div>
 
       </section>
@@ -1197,19 +1197,19 @@ export default function Home() {
             </CarouselContent>
             <div className="mt-4 flex items-center justify-between px-1 sm:px-2">
               <CarouselPrevious className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full rotate-180" />
+              <div className="flex justify-center space-x-2">
+                {getCarouselSlots("GASTRONOMIA", "CAROUSEL").map((slot, idx) => (
+                  <button
+                    key={slot.id}
+                    onClick={() => gastronomiaCarouselApi?.scrollTo(idx)}
+                    className={`w-2 h-2 rounded-full transition-all ${idx === gastronomiaCurrentSlide ? 'bg-[#6D758F] w-6' : 'bg-gray-300 hover:bg-gray-400'}`}
+                    aria-label={`Ir para slide ${idx + 1}`}
+                  />
+                ))}
+              </div>
               <CarouselNext className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full" />
             </div>
           </Carousel>
-        </div>
-        <div className="flex justify-center mt-10 space-x-2">
-          {getCarouselSlots("GASTRONOMIA", "CAROUSEL").map((slot, idx) => (
-            <button
-              key={slot.id}
-              onClick={() => gastronomiaCarouselApi?.scrollTo(idx)}
-              className={`w-2 h-2 rounded-full transition-all ${idx === gastronomiaCurrentSlide ? 'bg-[#6D758F] w-6' : 'bg-gray-300 hover:bg-gray-400'}`}
-              aria-label={`Ir para slide ${idx + 1}`}
-            />
-          ))}
         </div>
       </section>
 

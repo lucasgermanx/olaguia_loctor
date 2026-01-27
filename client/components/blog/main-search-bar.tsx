@@ -221,17 +221,17 @@ export function MainSearchBar() {
   )
 
   return (
-    <section className="bg-[#F3F0E8] py-8 md:py-10">
+    <section className="bg-[#F3F0E8] py-4">
       <div className="w-full mx-auto max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0">
         <div className="max-w-7xl mx-auto">
           <div className="flex text-start items-center justify-start gap-4">
             {/* <h2 className="text-2xl md:text-3xl font-bold text-[#353E5C] mb-4">Pesquisar</h2> */}
-            <p className="text-gray-600 text-sm mb-4">
+            <p className="text-gray-600 text-sm mb-2">
               Encontre Profissionais e Empresas por Cidade e/ou Nome e/ou Especialidade e/ou Tema específico
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-3 uppercase">
+          <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-2 uppercase">
             {/* Cidade */}
             <div className="flex-1 relative">
               <input

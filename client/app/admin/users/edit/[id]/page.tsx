@@ -93,10 +93,11 @@ export default function EditUserPage() {
         return
       }
 
-      // Remover senha se estiver vazia
-      const payload = { ...formData }
-      if (!payload.password) {
-        delete payload.password
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        role: formData.role,
+        ...(formData.password ? { password: formData.password } : {}),
       }
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/admin/user/${id}`, {

@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, type ReactNode } from "react"
 import { useParams } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -720,7 +720,7 @@ export default function ProfessionalPage() {
                   </div>
                   {
                     (() => {
-                      function parsePhones(text: string) {
+                      function parsePhones(text: string): ReactNode[] {
                         const regex = /\(\d{2}\)\s?\d{4,5}-\d{4}/g;
 
                         // divide o texto em partes mantendo os números
@@ -729,7 +729,7 @@ export default function ProfessionalPage() {
                         // extrai os números para reinserir
                         const phones = text.match(regex) || [];
 
-                        const result: string[] = [];
+                        const result: ReactNode[] = [];
 
                         parts.forEach((part: string, index: number) => {
                           result.push(part); // adiciona o texto normal

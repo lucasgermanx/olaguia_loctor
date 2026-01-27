@@ -61,10 +61,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       <div className="flex h-screen bg-gray-100">
         {/* Sidebar */}
         <aside
-          className={`bg-navy-950 text-white w-64 fixed inset-y-0 z-50 transition-transform duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          className={`bg-navy-950 text-white w-64 fixed inset-y-0 z-50 transition-transform duration-300 ease-in-out flex flex-col ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
             } lg:translate-x-0 lg:static`}
         >
-          <div className="p-4 flex justify-between items-center">
+          <div className="p-4 flex justify-between items-center shrink-0">
             <Link href="/admin" className="flex items-center">
               <Image
                 src="/images/logo-olaguia.png"
@@ -85,8 +85,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             )}
           </div>
 
-          <nav className="mt-8">
-            <ul className="space-y-2 px-4">
+          <nav className="mt-8 flex-1 overflow-y-auto">
+            <ul className="space-y-2 px-4 pb-8">
               {navItems.map((item) => (
                 <li key={item.name}>
                   <Link
@@ -102,7 +102,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             </ul>
           </nav>
 
-          <div className="absolute bottom-0 w-full p-4">
+          <div className="w-full p-4 mt-4 shrink-0">
             <Button
               variant="outline"
               className="w-full flex items-center justify-center gap-2 text-white border-white hover:bg-navy-900 bg-transparent"

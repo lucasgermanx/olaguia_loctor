@@ -46,7 +46,7 @@ export class PrismaProfessionalsRepository implements ProfessionalsRepository {
           {
             additional_cities: {
               // Verifica se dentro do array existe algum objeto com essa cidade exata
-              array_contains: [{ city: city }] 
+              array_contains: [{ city: city }]
             },
           },
         ]
@@ -59,7 +59,7 @@ export class PrismaProfessionalsRepository implements ProfessionalsRepository {
       // Como o Prisma não suporta busca direta em arrays JSON, vamos usar uma abordagem diferente:
       // Buscar profissionais que tenham a specialty no title OU que tenham no array specialties
       // Para o array, vamos usar uma query raw SQL
-      
+
       // Primeiro, buscar IDs de profissionais que têm a specialty no array JSON
       const specialtyLower = specialty.toLowerCase()
       const professionalsWithSpecialtyInArray = await prisma.$queryRaw<Array<{ id: string }>>`
@@ -102,7 +102,7 @@ export class PrismaProfessionalsRepository implements ProfessionalsRepository {
     // Busca por texto - também busca no array specialties
     if (search) {
       const searchLower = search.toLowerCase()
-      
+
       // Buscar IDs de profissionais que têm o termo de busca no array JSON specialties
       const professionalsWithSearchInSpecialties = await prisma.$queryRaw<Array<{ id: string }>>`
         SELECT id 

@@ -113,7 +113,7 @@ export default function EditPostPage() {
             headers: { Authorization: `Bearer ${token}` },
           }),
           fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/professionals?per_page=100`),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/admin/users`, {
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/admin/users?per_page=100`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ])
@@ -226,7 +226,7 @@ export default function EditPostPage() {
         ...formData,
         tags: formData.tag_ids,
         tag_ids: undefined, // Remover tag_ids
-        professional_id: formData.professional_id || undefined, // Converter string vazia para undefined
+        professional_id: formData.professional_id,
         author_id: formData.author_id || undefined, // Converter string vazia para undefined
       }
 

@@ -117,7 +117,7 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
     editor.chain().focus().setHorizontalRule().run()
 
     // Aplicar estilo inline através de um wrapper
-    const hr = editor.view.dom.querySelector('hr:last-of-type')
+    const hr = editor.view.dom.querySelector('hr:last-of-type') as HTMLHRElement | null
     if (hr) {
       hr.style.borderWidth = thicknessMap[thickness]
       hr.style.borderColor = '#000000'

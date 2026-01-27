@@ -22,6 +22,8 @@ import { Facebook, Twitter, Instagram, Linkedin, MessageCircle, Search, ChevronD
 import { BlogSidebarNew } from "@/components/blog/blog-sidebar-new"
 import { SocialShare } from "@/components/blog/social-share"
 import { MainSearchBar } from "@/components/blog/main-search-bar"
+import { BlogPostCard } from "@/components/blog/blog-post-card"
+import { RelatedPostCard } from "@/components/blog/related-post-card"
 
 // Definir a URL da API com fallback
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1003';
@@ -64,8 +66,19 @@ interface RelatedPost {
   id: string
   title: string
   slug: string
-  excerpt?: string
-  featured_image?: string
+  excerpt?: string | null
+  featured_image?: string | null
+  published_at?: string | null
+  created_at: string
+  category?: {
+    name: string
+  } | null
+  professional?: {
+    name: string
+  } | null
+  author?: {
+    name: string
+  } | null
 }
 
 export default function BlogPostPage() {
@@ -74,8 +87,6 @@ export default function BlogPostPage() {
   const slug = params?.slug as string
   const [post, setPost] = useState<Post | null>(null)
   const [relatedPosts, setRelatedPosts] = useState<RelatedPost[]>([])
-  const [recentPosts, setRecentPosts] = useState<RelatedPost[]>([])
-  const [servicePosts, setServicePosts] = useState<RelatedPost[]>([])
   const [categories, setCategories] = useState<any[]>([])
   const [tags, setTags] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -121,28 +132,30 @@ export default function BlogPostPage() {
         setPost(postData.post)
 
         if (postData.post) {
-          // Buscar posts relacionados (mesma categoria)
-          const categorySlug = postData.post.category?.slug
-          if (categorySlug) {
-            const relatedRes = await fetch(`${API_URL}/posts?category=${categorySlug}&per_page=3`)
-            if (relatedRes.ok) {
-              const relatedData = await relatedRes.json()
-              setRelatedPosts(relatedData.posts?.filter((p: any) => p.id !== postData.post.id).slice(0, 3) || [])
+          const professionalId = postData.post.professional?.id
+          const authorId = postData.post.author?.id
+
+          const queryParams = new URLSearchParams({
+            per_page: "6",
+            published: "true",
+          })
+
+          if (professionalId) {
+            queryParams.set("professional", professionalId)
+          } else if (authorId) {
+            queryParams.set("author", authorId)
+          } else {
+            const categorySlug = postData.post.category?.slug
+            if (categorySlug) {
+              queryParams.set("category", categorySlug)
             }
           }
 
-          // Buscar posts recentes
-          const recentRes = await fetch(`${API_URL}/posts?per_page=2`)
-          if (recentRes.ok) {
-            const recentData = await recentRes.json()
-            setRecentPosts(recentData.posts?.filter((p: any) => p.id !== postData.post.id).slice(0, 2) || [])
-          }
-
-          // Buscar posts para serviços (últimos 3 posts)
-          const servicesRes = await fetch(`${API_URL}/posts?per_page=3`)
-          if (servicesRes.ok) {
-            const servicesData = await servicesRes.json()
-            setServicePosts(servicesData.posts?.filter((p: any) => p.id !== postData.post.id).slice(0, 3) || [])
+          const relatedRes = await fetch(`${API_URL}/posts?${queryParams.toString()}`)
+          if (relatedRes.ok) {
+            const relatedData: { posts?: RelatedPost[] } = await relatedRes.json()
+            const fetchedPosts = relatedData.posts ?? []
+            setRelatedPosts(fetchedPosts.filter((p) => p.id !== postData.post.id).slice(0, 3))
           }
         }
 
@@ -481,7 +494,7 @@ export default function BlogPostPage() {
               </div>
             </div>
             <div className="mb-3 flex items-center gap-3">
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight uppercase mb-3">
+              <h1 className="text-3xl md:text-4xl font-semibold font-open-sans text-[#353E5C] leading-tight uppercase mb-3">
                 {post.title}
               </h1>
               {post.category && (
@@ -582,7 +595,7 @@ export default function BlogPostPage() {
             {postTags.length > 0 && (
               <div className="mb-8 flex items-center  gap-2">
                 <div className="flex flex-col">
-                  <p className="text-gray-600 font-lato text-base mb-8 mx-auto">Se você quer conhecer mais postagens sobre os temas(tags) que estão abaixos, clique em uma das tags abaixo que o portal vai apresentar as postagens relativas ao tema(tag) escolhido.</p>
+                  <p className="text-gray-600 font-lato text-base mb-8 mx-auto">Explore mais clicando nas TAGS</p>
                   <div className="flex flex-wrap gap-x-2 items-center">
                     <h3 className="text-[10px] font-normal text-white bg-[#928575]/40 w-fit px-4 py-1 rounded-md">TAGS:</h3>
                     {postTags.map((tag: any) => (
@@ -600,8 +613,10 @@ export default function BlogPostPage() {
             )}
             {/* Author Name and Share Buttons */}
             <div className="border-t border-gray-200 pt-6 mb-8">
+              <p className="text-gray-600 font-lato text-base mb-8 mx-auto">Clique abaixo para mais artigos do autor.</p>
+
               <div className="flex items-center justify-between flex-wrap gap-4">
-                <div className="flex items-center gap-4 mb-4">
+                <div className="flex items-center gap-4">
                   <div className="relative w-14 h-14 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
                     {displayAuthor.avatar ? (
                       <Image
@@ -628,44 +643,43 @@ export default function BlogPostPage() {
                   </div>
                 </div>
                 {/* Social Share */}
-                <SocialShare className="border-none" />
+                <SocialShare className="border-none mt-0 pt-0" />
               </div>
             </div>
             {/* Artigos Relacionados */}
             {relatedPosts.length > 0 && (
               <div className="border-t border-gray-200 pt-8 mb-8">
                 <h2 className="text-2xl font-medium text-center text-gray-900 mb-6 uppercase">Artigos Relacionados</h2>
-                <Carousel opts={{ loop: true }} className="w-full flex flex-col">
+                <Carousel opts={{ loop: true }} className="w-full flex flex-col mb-20">
                   <CarouselContent>
-                    {relatedPosts.map((relatedPost) => (
-                      <CarouselItem key={relatedPost.id} className="md:basis-1/2 lg:basis-1/3">
-                        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
-                          {relatedPost.featured_image && (
-                            <div className="relative h-48 w-full">
-                              <Image
-                                src={relatedPost.featured_image}
-                                alt={relatedPost.title}
-                                fill
-                                className="object-cover"
-                              />
-                            </div>
-                          )}
-                          <div className="p-4">
-                            <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2">
-                              {relatedPost.title}
+                    {relatedPosts.map((post) => (
+                      <CarouselItem key={post.title} className="basis-5/6 md:basis-1/2 lg:basis-1/3">
+                        <Link href={`/blog/${post.slug}`} className="relative bg-white group pb-32 block">
+                          <div className="relative w-full h-48 sm:h-56">
+                            <Image
+                              src={post.featured_image}
+                              alt={post.title}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="px-3 sm:px-4 py-3 sm:py-4 bg-white absolute top-[55%] sm:top-[40%] left-0 right-6 sm:right-10 shadow-lg">
+                            <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-[10px] border-none uppercase">
+                              {post.category?.name || "CATEGORIA"}
+                            </Badge>
+                            <h3 className="font-open-sans font-semibold text-base mb-1 text-gray-900 uppercase line-clamp-2">
+                              {post.title}
                             </h3>
-                            {relatedPost.excerpt && (
-                              <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                                {relatedPost.excerpt}
+                            {post.excerpt && (
+                              <p className="text-sm font-open-sans font-medium text-gray-600 mb-2 line-clamp-2">
+                                {post.excerpt}
                               </p>
                             )}
-                            <Link href={`/blog/${relatedPost.slug}`}>
-                              <Button variant="outline" size="sm" className="w-full">
-                                Ler Mais
-                              </Button>
-                            </Link>
+                            <span className="font-lato text-[10px] italic text-gray-500 border border-gray-300 px-2 py-1 uppercase">
+                              LEIA MAIS
+                            </span>
                           </div>
-                        </div>
+                        </Link>
                       </CarouselItem>
                     ))}
                   </CarouselContent>
@@ -674,53 +688,11 @@ export default function BlogPostPage() {
                 </Carousel>
               </div>
             )}
-            {/* Posts Mais Recentes */}
-            {recentPosts.length > 0 && (
-              <div className="border-t border-gray-200 pt-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Posts Mais Recentes</h2>
-                <div className="space-y-6 mx-4">
-                  {recentPosts.map((recentPost) => (
-                    <div key={recentPost.id} className="flex md:flex-row flex-col gap-4">
-                      {recentPost.featured_image && (
-                        <div className="relative w-auto lg:w-80 h-44 flex-shrink-0 rounded overflow-hidden">
-                          <Image
-                            src={recentPost.featured_image}
-                            alt={recentPost.title}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                      )}
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2">
-                          {recentPost.title}
-                        </h3>
-                        {recentPost.excerpt && (
-                          <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                            {recentPost.excerpt}
-                          </p>
-                        )}
-                        <Link href={`/blog/${recentPost.slug}`}>
-                          <Button variant="outline" size="sm" className="bg-[#928575] text-white hover:bg-[#928575]/80 hover:text-white">
-                            VER MAIS SOBRE O ARTIGO
-                          </Button>
-                        </Link>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
           {/* Sidebar - Right Column */}
           <div className="w-full lg:w-1/4 mt-20 hidden lg:block">
             <BlogSidebarNew categories={categories || []} tags={tags || []} />
           </div>
-        </div>
-
-        {/* Compartilhe */}
-        <div className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto px-4 mb-8">
-          <SocialShare title={post?.title || ""} />
         </div>
       </div>
     </div>

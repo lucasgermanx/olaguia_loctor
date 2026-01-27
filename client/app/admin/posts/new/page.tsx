@@ -90,7 +90,7 @@ export default function NewPostPage() {
             headers: { Authorization: `Bearer ${token}` },
           }),
           fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/professionals?per_page=100`),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/admin/users`, {
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:1003"}/admin/users?per_page=100`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ])
