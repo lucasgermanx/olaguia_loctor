@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Search, Plus, ChevronDown, BookOpen, Library, Grid2X2 } from "lucide-react"
 import Image from "next/image"
+import { Button } from "../ui/button"
 
 interface Category {
   id: string
@@ -270,9 +271,9 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
     <div className="w-full space-y-8 lg:sticky lg:self-start border-2 px-6 py-4">
       {/* PESQUISAR */}
       <div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-4 uppercase tracking-wide">Pesquisar</h3>
+        <h3 className="text-2xl font-semibold font-open-sans text-gray-900 mb-4 uppercase tracking-wide">Pesquisar</h3>
         <p className="text-sm text-gray-600 mb-4">
-          Aqui você pode pesquisar por palavras ou expressões que desejar. Pesquise que o portal mostrará artigos relacionados.
+          Pesquisa geral em todo o (palavra ou expressão)
         </p>
         <form
           onSubmit={e => {
@@ -375,7 +376,7 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
       {/* REVISTA */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-2xl font-bold text-gray-900 uppercase tracking-wide">Revista</h3>
+          <h3 className="text-2xl font-semibold font-open-sans text-gray-900 tracking-wide">Revista</h3>
           {/* <button
             onClick={() => setIsRevistaExpanded(prev => !prev)}
             className="w-8 h-8 rounded-full bg-[#928575] flex items-center justify-center hover:bg-[#928575] transition-colors"
@@ -398,7 +399,7 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
         {isRevistaExpanded && (
           <>
             <p className="text-sm text-gray-600 mb-4">
-              Aqui você pode ver todas as matérias já publicadas na revista impressa, é só escolher o tema e clicar!
+              Veja as dicas e curiosidades que você costuma ler na Revista Impressa.
             </p>
             <div className="space-y-2">
               {revistaCategories.map((category) => {
@@ -424,10 +425,9 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
 
       {/* CATEGORIAS DE PARCEIROS */}
       <div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-4 uppercase tracking-wide">CATEGORIAS DE PARCEIROS</h3>
+        <h3 className="text-2xl font-semibold font-open-sans text-gray-900 mb-4 uppercase tracking-wide">CATEGORIAS DE PARCEIROS</h3>
         <p className="text-sm text-gray-600 mb-4">
-          Quer conhecer os profissionais e Empresas parceiras do OLÁ GUIA?
-          Busque pela categoria clicando abaixo.
+          Aqui você busca os anunciantes, pela categoria de serviços.
         </p>
         <div className="space-y-2">
           {[
@@ -476,31 +476,28 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
 
       {/* BIBLIOTECA TÉCNICA */}
       <div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-4 uppercase tracking-wide">Biblioteca Técnica</h3>
+        <h3 className="text-2xl font-semibold font-open-sans text-gray-900 mb-4 uppercase tracking-wide">Biblioteca Técnica</h3>
         <p className="text-sm text-gray-600 mb-4">
-          Esta biblioteca está cheia de conteúdos selecionados para ajudar você, para crescer na sua carreira e no seu negócio. Aproveite clicando nos itens abaixo!
+          Os melhores conceitos, técnicas e ferramentas para a melhoria do seu negócio.
         </p>
         <div className="grid grid-cols-1 gap-2">
           {[
-            "EMPREENDEDORISMO",
-            "FINANÇAS",
-            "VENDAS",
-            "INTERNET",
-            "MARKETING",
-            "PUBLICIDADE",
+            { label: "EMPREENDEDORISMO", value: "empreendedorismo" },
+            { label: "FINANÇAS", value: "financas" },
+            { label: "VENDAS", value: "vendas" },
+            { label: "INTERNET", value: "internet" },
+            { label: "MARKETING", value: "marketing" },
+            { label: "PUBLICIDADE", value: "publicidade" }
           ].map((item) => {
-            const tag = findTagByName(item)
-            const tagSlug = tag?.slug || normalizeSlug(item)
-
             return (
               <Link
-                key={item}
-                href={`/blog?tag=${tagSlug}`}
+                key={item.value}
+                href={`/blog?category=${item.value}`}
                 className="flex items-center gap-2 group"
               >
                 <Library width={20} height={20} className="text-[#928575]" />
                 <span className="text-sm text-gray-700 group-hover:text-[#126861] transition-colors">
-                  {item}
+                  {item.label}
                 </span>
               </Link>
             )
@@ -511,9 +508,9 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
 
       {/* SOBRE NÓS */}
       <div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-4 uppercase tracking-wide">SOBRE NÓS</h3>
+        <h3 className="text-2xl font-semibold font-open-sans text-gray-900 mb-4 uppercase tracking-wide">SOBRE NÓS</h3>
         <p className="text-sm text-gray-600 mb-4">
-          Aqui você encontra um pouco da história do OLÁ GUIA e como a gente pode ajudar você na busca de clientes e aumento das suas vendas
+          Aqui você encontra nossa história e nossa missão.
         </p>
         <div className="space-y-4 border-r border-white/20">
           {getSlots("EMPRESAS_NEGOCIOS", "SIDE").slice(0, 3).map((slot, index) => {
@@ -553,15 +550,23 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
       {/* NEWSLETTER */}
       <div>
         <p className="text-sm text-gray-600 mb-2">
-          Concordo em receber novas notícias através do nosso grupo. Para mais informações consulte nossa:
+          Quer receber notícias e novidades sobre nosso conteúdo?
         </p>
-        <p className="text-sm text-gray-900 mb-3 font-semibold">Entre no nosso grupo</p>
-        <button
+        <p className="text-sm text-gray-900 mb-3 font-semibold">Entre para nossos canais:</p>
+        <div className="flex flex-col gap-3">
+          <Button className="bg-white hover:bg-gray-100 text-[#353E5C] px-5 py-2 rounded-none text-sm font-semibold border border-gray-300">
+            Leitores
+          </Button>
+          <Button className="bg-white hover:bg-gray-100 text-[#353E5C] px-5 py-2 rounded-none text-sm font-semibold border border-gray-300">
+            Parceiros
+          </Button>
+        </div>
+        {/* <button
           className="w-fit bg-[#928575] hover:bg-[#928575]/80 text-white text-xs px-4 py-2 rounded-3xl uppercase"
           type="button"
         >
           ENTRAR NO GRUPO
-        </button>
+        </button> */}
       </div>
     </div>
   )

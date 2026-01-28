@@ -1,5 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
+import { Badge } from "../ui/badge"
 
 interface BlogPostCardProps {
   title: string
@@ -20,11 +21,11 @@ export function BlogPostCard({ title, excerpt, date, author, category, slug, ima
         </div>
       </Link>
       <div className="px-4 pb-4 border border-t-0 pt-4 border-gray-200">
-        <span className="bg-[#C68C0E] text-white px-3 py-1 rounded text-xs font-semibold uppercase">
-          {category || "SAÚDE"}
-        </span>
+        <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white text-[10px] border-none uppercase">
+          {category || "CATEGORIA"}
+        </Badge>
         <Link className="" href={`/blog/${slug}`}>
-          <h3 className="text-base font-bold text-gray-900 mb-2 hover:text-[#126861] transition-colors uppercase leading-tight pt-2 line-clamp-2">
+          <h3 className="text-base font-semibold font-open-sans text-gray-900 mb-2 transition-colors uppercase leading-tight pt-2 line-clamp-2">
             {title}
           </h3>
         </Link>
