@@ -56,7 +56,7 @@ export function AdBanner({
   // Determina a altura baseada no tipo
   const getHeight = () => {
     if (height) return height
-    if (isVertical) return "h-full w-full"
+    if (isVertical) return "w-full h-full"
     // Para horizontais, usa altura automática baseada na proporção da imagem
     return aspectRatio ? "" : "h-auto min-h-[100px] md:min-h-[150px]"
   }

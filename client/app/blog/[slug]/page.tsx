@@ -460,128 +460,139 @@ export default function BlogPostPage() {
         <MainSearchBar />
       </div>
 
-      <div className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto py-8">
-        <div className="flex flex-col lg:flex-row lg:items-start gap-8">
-          {/* Main Content - Left Column */}
-          <div className="w-full lg:w-3/4 lg:flex-shrink-0">
-            {/* Post Title with Category Tag */}
+      {/* Featured Image Banner - Full Width at Top */}
+      {post.featured_image && (
+        <div className="relative w-full h-[300px] md:h-[400px]">
+          <Image
+            src={post.featured_image}
+            alt={post.title}
+            fill
+            className="object-cover"
+          />
+        </div>
+      )}
 
-            {/* Author Header */}
-            <div className="flex items-center gap-4 mb-4">
-              <div className="relative w-14 h-14 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
-                {displayAuthor.avatar ? (
-                  <Image
-                    src={displayAuthor.avatar}
-                    alt={displayAuthor.name}
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-600 text-lg font-bold">
-                    {displayAuthor.name.charAt(0)}
-                  </div>
-                )}
+      <div className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto pt-8">
+        <div className="relative flex flex-col lg:flex-row lg:items-start gap-8">
+          {/* Main Content - Left Column */}
+          <div className="w-full lg:w-3/4">
+            {/* White Content Card - Overlapping the banner */}
+            <div className={`bg-white ${post.featured_image ? 'relative z-10' : ''} p-6 lg:p-8 rounded-lg mb-8`}>
+
+              {/* Author + Category Row */}
+              {/* <div className="flex items-center justify-between mb-4">
+
+              </div> */}
+
+              {/* Author Info */}
+              <div className="flex items-center gap-4">
+                <div className="relative w-14 h-14 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
+                  {displayAuthor.avatar ? (
+                    <Image
+                      src={displayAuthor.avatar}
+                      alt={displayAuthor.name}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-600 text-lg font-bold">
+                      {displayAuthor.name.charAt(0)}
+                    </div>
+                  )}
+                </div>
+                <div>
+                  {displayAuthor.slug ? (
+                    <Link href={`/profissional/${displayAuthor.slug}`}>
+                      <h3 className="font-semibold text-base text-gray-900 hover:text-[#126861]">{displayAuthor.name}</h3>
+                    </Link>
+                  ) : (
+                    <h3 className="font-semibold text-base text-gray-900">{displayAuthor.name}</h3>
+                  )}
+                  <p className="text-xs text-gray-500">{displayAuthor.title}</p>
+                </div>
               </div>
-              <div>
-                {displayAuthor.slug ? (
-                  <Link href={`/profissional/${displayAuthor.slug}`}>
-                    <h3 className="font-semibold text-base text-gray-900 hover:text-[#126861]">{displayAuthor.name}</h3>
-                  </Link>
-                ) : (
-                  <h3 className="font-semibold text-base text-gray-900">{displayAuthor.name}</h3>
-                )}
-                <p className="text-xs text-gray-500">{displayAuthor.title}</p>
-              </div>
-            </div>
-            <div className="mb-3 flex items-center gap-3">
-              <h1 className="text-3xl md:text-4xl font-semibold font-open-sans text-[#353E5C] leading-tight uppercase mb-3">
-                {post.title}
-              </h1>
+
+              {/* Category Badge */}
               {post.category && (
                 <Link
                   href={`/blog?category=${post.category.slug}`}
-                  className="inline-block"
+                  className="inline-block py-5"
                 >
-                  <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] text-white px-3 py-1.5 rounded text-xs font-semibold uppercase hidden md:block">
+                  <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] text-white px-3 py-1.5 rounded text-xs font-semibold uppercase">
                     {post.category.name}
                   </Badge>
                 </Link>
               )}
-            </div>
-            {/* Subtitle/Excerpt */}
-            {post.excerpt && (
-              <p className="text-base text-gray-600 mb-6 line-clamp-2">
-                {post.excerpt}
-              </p>
-            )}
 
-            {/* Featured Image */}
-            {post.featured_image && (
-              <div className="mb-8 relative w-full h-[500px] rounded-lg overflow-hidden">
-                <Image
-                  src={post.featured_image}
-                  alt={post.title}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            )}
-            {/* Controles de Áudio e Fonte */}
-            <div className="mb-8 bg-gray-50 rounded-lg p-4">
-              <div className="flex items-center justify-between gap-6 flex-wrap">
-                {/* Audio Player */}
-                <div className="flex items-center gap-4 flex-1">
-                  <button
-                    onClick={handleSpeak}
-                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors flex-shrink-0`}
-                    title={isSpeaking ? 'Parar áudio' : 'Ouvir conteúdo'}
-                  >
-                    <LuCirclePlay className={`w-12 h-12 ${isSpeaking ? 'text-red-600' : 'text-[#6D758F]'}`} />
-                  </button>
-                  <div className="flex-1 overflow-hidden">
-                    <p className="text-sm font-semibold text-gray-700 mb-1">Ouça agora</p>
-                    <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-[#126861] transition-all"
-                        style={{ width: totalTime > 0 ? `${(currentTime / totalTime) * 100}%` : '0%' }}
-                      ></div>
-                    </div>
-                    <div className="flex justify-between text-xs text-gray-500 mt-1">
-                      <span>{formatTime(currentTime)}</span>
-                      <span>{formatTime(totalTime)}</span>
+              {/* Post Title */}
+              <h1 className="text-3xl md:text-4xl font-semibold font-open-sans text-[#353E5C] leading-tight uppercase mb-3">
+                {post.title}
+              </h1>
+
+              {/* Subtitle/Excerpt */}
+              {post.excerpt && (
+                <p className="text-base text-gray-600 mb-6 line-clamp-2">
+                  {post.excerpt}
+                </p>
+              )}
+
+              {/* Controles de Áudio e Fonte */}
+              <div className="mb-8 rounded-lg p-4">
+                <div className="flex items-center justify-between gap-6 flex-wrap">
+                  {/* Audio Player */}
+                  <div className="flex items-center gap-4 flex-1">
+                    <button
+                      onClick={handleSpeak}
+                      className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors flex-shrink-0`}
+                      title={isSpeaking ? 'Parar áudio' : 'Ouvir conteúdo'}
+                    >
+                      <LuCirclePlay className={`w-12 h-12 ${isSpeaking ? 'text-red-600' : 'text-[#6D758F]'}`} />
+                    </button>
+                    <div className="flex-1 overflow-hidden">
+                      <p className="text-sm font-semibold text-gray-700 mb-1">Ouça agora</p>
+                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-[#126861] transition-all"
+                          style={{ width: totalTime > 0 ? `${(currentTime / totalTime) * 100}%` : '0%' }}
+                        ></div>
+                      </div>
+                      <div className="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>{formatTime(currentTime)}</span>
+                        <span>{formatTime(totalTime)}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                {/* Font Size Controls */}
-                <div className="flex items-center gap-2 border-l border-gray-300 pl-6 md:hidden">
-                  <button
-                    onClick={handleDecreaseFont}
-                    className="w-10 h-10 rounded bg-white border-2 border-gray-300 flex items-center justify-center hover:bg-gray-50 hover:border-[#126861] transition-colors font-bold text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                    title="Fonte Pequena (L)"
-                    disabled={fontSize <= 12}
-                  >
-                    -A
-                  </button>
-                  <button
-                    onClick={() => setFontSize(16)}
-                    className="w-10 h-10 rounded bg-white border-2 border-gray-300 flex items-center justify-center hover:bg-gray-50 hover:border-[#126861] transition-colors font-bold text-gray-700"
-                    title="Fonte Média (A)"
-                  >
-                    A
-                  </button>
-                  <button
-                    onClick={handleIncreaseFont}
-                    className="w-10 h-10 rounded bg-white border-2 border-gray-300 flex items-center justify-center hover:bg-gray-50 hover:border-[#126861] transition-colors font-bold text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                    title="Fonte Grande (C)"
-                    disabled={fontSize >= 32}
-                  >
-                    A+
-                  </button>
+                  {/* Font Size Controls */}
+                  <div className="flex items-center gap-2 border-l border-gray-300 pl-6 md:hidden">
+                    <button
+                      onClick={handleDecreaseFont}
+                      className="w-10 h-10 rounded bg-white border-2 border-gray-300 flex items-center justify-center hover:bg-gray-50 hover:border-[#126861] transition-colors font-bold text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Fonte Pequena (L)"
+                      disabled={fontSize <= 12}
+                    >
+                      -A
+                    </button>
+                    <button
+                      onClick={() => setFontSize(16)}
+                      className="w-10 h-10 rounded bg-white border-2 border-gray-300 flex items-center justify-center hover:bg-gray-50 hover:border-[#126861] transition-colors font-bold text-gray-700"
+                      title="Fonte Média (A)"
+                    >
+                      A
+                    </button>
+                    <button
+                      onClick={handleIncreaseFont}
+                      className="w-10 h-10 rounded bg-white border-2 border-gray-300 flex items-center justify-center hover:bg-gray-50 hover:border-[#126861] transition-colors font-bold text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Fonte Grande (C)"
+                      disabled={fontSize >= 32}
+                    >
+                      A+
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-            {/* Post Content */}
-            <div className="prose prose-lg max-w-none mb-8" style={{ fontSize: `${fontSize}px` }}>
+            {/* Post Content - margem negativa para compensar espaço do card com translate-y */}
+            <div className={`prose prose-lg max-w-none mb-8 ${post.featured_image ? '-mt-[480px] md:-mt-[250px]' : ''}`} style={{ fontSize: `${fontSize}px` }}>
               <div
                 dangerouslySetInnerHTML={{ __html: post.content }}
                 style={{
@@ -595,7 +606,7 @@ export default function BlogPostPage() {
             {postTags.length > 0 && (
               <div className="mb-8 flex items-center  gap-2">
                 <div className="flex flex-col">
-                  <p className="text-gray-600 font-lato text-base mb-8 mx-auto">Explore mais clicando nas TAGS</p>
+                  {/* <p className="text-gray-600 font-lato text-base mb-8 mx-auto">Explore mais clicando nas TAGS</p> */}
                   <div className="flex flex-wrap gap-x-2 items-center">
                     <h3 className="text-[10px] font-normal text-white bg-[#928575]/40 w-fit px-4 py-1 rounded-md">TAGS:</h3>
                     {postTags.map((tag: any) => (

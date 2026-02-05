@@ -18,7 +18,7 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
       {!isAdminRoute && <Footer />}
       {/* Menu mobile apenas nas páginas internas, não na home */}
       {!isAdminRoute && !isHomePage && <MobileBottomNav />}
-      {/* Botão de voltar ao topo em todas as páginas */}
+      {/* Botão de voltar ao topo fixo na tela */}
       {!isAdminRoute && <ScrollToTop />}
     </>
   )

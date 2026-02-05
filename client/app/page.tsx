@@ -253,8 +253,8 @@ export default function Home() {
               })}
             </CarouselContent>
 
-            <div className="mt-4 flex items-center justify-between px-4 sm:px-6">
-              <CarouselPrevious className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full rotate-180" />
+            <div className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-6 md:px-2 mx-auto mt-4 flex items-center justify-between">
+              <CarouselPrevious className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-[#E2DED2] hover:bg-[#D6D0C2] text-[#126861] border border-[#928575]/40 rotate-180" />
 
               <div className="flex space-x-2">
                 {getSlots("HERO", "CAROUSEL").map((slot, idx) => (
@@ -268,7 +268,7 @@ export default function Home() {
                 ))}
               </div>
 
-              <CarouselNext className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full" />
+              <CarouselNext className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-[#E2DED2] hover:bg-[#D6D0C2] text-[#126861] border border-[#928575]/40" />
             </div>
           </Carousel>
         )}
@@ -370,7 +370,7 @@ export default function Home() {
         {/* Main Featured Article Mobile */}
         <div className="grid md:hidden grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 px-4 sm:px-6 lg:px-0">
           {/* Side Articles */}
-          <div className="grid grid-rows-2 gap-1 sm:gap-0 h-auto sm:h-[350px] lg:h-[400px] 2xl:h-[500px]">
+          <div className="grid grid-rows-2 sm:gap-0 h-auto sm:h-[350px] lg:h-[400px] 2xl:h-[500px]">
             {getSlots("EM_DESTAQUE", "SIDE").slice(0, 2).map((slot, index) => {
               const post = slot.post
               if (!post) return null
@@ -379,20 +379,23 @@ export default function Home() {
                 <Link
                   key={slot.id}
                   href={`/blog/${post.slug}`}
-                  className={`flex gap-4 sm:gap-6 lg:gap-10 group ${index === 1 || index === 2 ? "border-t border-[#EEEEEE] sm:py-2 2xl:py-5" : ""}`}
+                  className={`flex gap-5 sm:gap-6 lg:gap-10 group ${index === 1 || index === 2 ? "border-t border-[#EEEEEE] pt-4 sm:py-2 2xl:py-5" : ""}`}
                 >
                   <div className="flex-1">
-                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white text-xs uppercase">
+                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-[10px] border-none uppercase">
                       {post.category?.name || "CATEGORIA"}
                     </Badge>
-                    <h4 className="font-open-sans font-semibold text-base sm:text-lg max-w-full sm:max-w-56 transition-colors uppercase mb-1 line-clamp-2">
+                    <h4 className="font-open-sans font-semibold text-base sm:text-lg/6 mb-1 transition-colors uppercase line-clamp-2">
                       {post.title}
                     </h4>
                     {post.excerpt && (
-                      <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">
+                      <p className="text-xs sm:text-sm font-open-sans font-medium text-gray-600 line-clamp-2">
                         {post.excerpt}
                       </p>
                     )}
+                    {/* <Button className="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 -py-2 px-1 font-lato text-xs italic uppercase rounded-sm">
+                      LEIA MAIS
+                    </Button> */}
                   </div>
                   <div className="relative w-28 h-28 sm:w-40 sm:h-28 flex-shrink-0 self-stretch">
                     <Image
@@ -425,7 +428,7 @@ export default function Home() {
                   <>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                     <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 text-white">
-                      <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 sm:mb-3 text-xs uppercase">
+                      <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-[10px] border-none uppercase">
                         {post.category?.name || "CATEGORIA"}
                       </Badge>
                       <h3 className="text-lg sm:text-xl lg:text-2xl 2xl:text-3xl font-open-sans font-semibold mb-2 sm:mb-3 uppercase line-clamp-2">
@@ -449,17 +452,20 @@ export default function Home() {
                   className={`flex gap-4 sm:gap-6 lg:gap-10 group ${index === 1 || index === 2 ? "border-t border-[#EEEEEE] pt-4 sm:py-2 2xl:py-5" : ""}`}
                 >
                   <div className="flex-1">
-                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-1 2xl:mb-2 text-xs uppercase">
+                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-[10px] border-none uppercase">
                       {post.category?.name || "CATEGORIA"}
                     </Badge>
-                    <h4 className="font-open-sans font-semibold text-base sm:text-lg max-w-full sm:max-w-56 transition-colors uppercase line-clamp-2">
+                    <h4 className="font-open-sans font-semibold text-base sm:text-lg/6 mb-1 transition-colors uppercase line-clamp-2">
                       {post.title}
                     </h4>
                     {post.excerpt && (
-                      <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 mt-1">
+                      <p className="text-xs sm:text-sm font-open-sans font-medium text-gray-600 line-clamp-2">
                         {post.excerpt}
                       </p>
                     )}
+                    {/* <Button className="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 -py-2 px-1 font-lato text-xs italic uppercase rounded-sm">
+                      LEIA MAIS
+                    </Button> */}
                   </div>
                   <div className="relative w-28 h-28 sm:w-40 sm:h-28 2xl:h-32 flex-shrink-0">
                     <Image
@@ -539,7 +545,7 @@ export default function Home() {
               })}
             </CarouselContent>
             <div className="mt-4 flex items-center justify-between px-1 sm:px-2">
-              <CarouselPrevious className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full rotate-180" />
+              <CarouselPrevious className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-[#E2DED2] hover:bg-[#D6D0C2] text-[#126861] border border-[#928575]/40 rotate-180" />
               <div className="flex justify-center space-x-2">
                 {getCarouselSlots("PARA_REFLEXAO", "CAROUSEL").map((slot, idx) => (
                   <button
@@ -550,7 +556,7 @@ export default function Home() {
                   />
                 ))}
               </div>
-              <CarouselNext className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full" />
+              <CarouselNext className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-[#E2DED2] hover:bg-[#D6D0C2] text-[#126861] border border-[#928575]/40" />
             </div>
           </Carousel>
         </div>
@@ -718,7 +724,7 @@ export default function Home() {
             })}
           </CarouselContent>
           <div className="mt-4 flex items-center justify-between px-1 sm:px-2">
-            <CarouselPrevious className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full rotate-180" />
+            <CarouselPrevious className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-[#E2DED2] hover:bg-[#D6D0C2] text-[#126861] border border-[#928575]/40 rotate-180" />
             <div className="flex justify-center space-x-2">
               {getCarouselSlots("SOBRE_RELACIONAMENTOS", "CAROUSEL").map((slot, idx) => (
                 <button
@@ -729,7 +735,7 @@ export default function Home() {
                 />
               ))}
             </div>
-            <CarouselNext className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full" />
+            <CarouselNext className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-[#E2DED2] hover:bg-[#D6D0C2] text-[#126861] border border-[#928575]/40" />
           </div>
         </Carousel>
       </section>
@@ -765,7 +771,7 @@ export default function Home() {
             <div className="hidden md:grid grid-cols-1 gap-6 ">
               {/* Main Articles - Left Column */}
               <div className="lg:col-span-2 space-y-4">
-                {getSlots("EMPRESAS_NEGOCIOS", "MAIN").slice(0, 3).map((slot, index) => {
+                {getSlots("EMPRESAS_NEGOCIOS", "MAIN").slice(0, 4).map((slot, index) => {
                   const post = slot.post
                   if (!post) return null
 
@@ -801,53 +807,17 @@ export default function Home() {
                     </Link>
                   )
                 })}
-                {getSlots("EMPRESAS_NEGOCIOS", "MAIN").slice(1, 2).map((slot, index) => {
-                  const post = slot.post
-                  if (!post) return null
-
-                  return (
-                    <Link
-                      key={slot.id}
-                      href={`/blog/${post.slug}`}
-                      className={`flex flex-col sm:flex-row gap-3 sm:gap-4 group bg-white pb-4`}
-                    >
-                      <div className="relative w-full sm:w-60 md:w-72 h-48 sm:h-auto flex-shrink-0">
-                        <Image
-                          src={post.featured_image || placeholderImages.office}
-                          alt={post.title}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-[10px] mt-0 border-none uppercase">
-                          {post.category?.name || "CATEGORIA"}
-                        </Badge>
-                        <h4 className="font-open-sans font-semibold text-base lg:text-lg/6 text-gray-900 uppercase mb-1 line-clamp-2">
-                          {post.title}
-                        </h4>
-                        <div className="flex items-center font-open-sans font-medium gap-1 text-xs text-gray-500">
-                          {post.excerpt && (
-                            <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 max-w-72">
-                              {post.excerpt}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </Link>
-                  )
-                })}
               </div>
             </div>
             <div className="md:hidden space-y-5 px-4 sm:px-6 lg:px-0">
 
               {/* Smaller Articles */}
-              {getSlots("EMPRESAS_NEGOCIOS", "SIDE").slice(0, 3).map((slot) => {
+              {getSlots("EMPRESAS_NEGOCIOS", "MAIN").slice(0, 4).map((slot, index) => {
                 const post = slot.post
                 if (!post) return null
 
                 return (
-                  <Link key={slot.id} href={`/blog/${post.slug}`} className="flex gap-3 sm:gap-4 group">
+                  <Link key={slot.id} href={`/blog/${post.slug}`} className={`flex gap-3 sm:gap-4 group ${index === 0 || index === 1 || index === 2 ? 'border-b pb-5' : ''}`}>
                     <div className="relative w-32 sm:w-40 h-auto sm:h-28 flex-shrink-0">
                       <Image
                         src={post.featured_image || placeholderImages.office}
@@ -868,9 +838,6 @@ export default function Home() {
                           {post.excerpt}
                         </p>
                       )}
-                      <span className="font-lato text-[10px] italic text-gray-500 border border-gray-300 px-2 py-1 uppercase">
-                        LEIA MAIS
-                      </span>
                     </div>
                   </Link>
                 )
@@ -917,7 +884,7 @@ export default function Home() {
                         {post.title}
                       </h4>
                       {post.excerpt && (
-                        <p className="text-xs font-lato text-gray-600 line-clamp-2 mb-2">
+                        <p className="text-xs font-open-sans text-gray-600 line-clamp-2 mb-2">
                           {post.excerpt}
                         </p>
                       )}
@@ -1005,7 +972,7 @@ export default function Home() {
               })}
             </CarouselContent>
             <div className="mt-4 flex items-center justify-between px-1 sm:px-2">
-              <CarouselPrevious className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full rotate-180" />
+              <CarouselPrevious className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-[#E2DED2] hover:bg-[#D6D0C2] text-[#126861] border border-[#928575]/40 rotate-180" />
               <div className="flex justify-center space-x-2">
                 {getCarouselSlots("ESTETICA_BELEZA", "GRID").map((slot, idx) => (
                   <button
@@ -1016,7 +983,7 @@ export default function Home() {
                   />
                 ))}
               </div>
-              <CarouselNext className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full" />
+              <CarouselNext className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-[#E2DED2] hover:bg-[#D6D0C2] text-[#126861] border border-[#928575]/40" />
             </div>
           </Carousel>
         </div>
@@ -1059,7 +1026,7 @@ export default function Home() {
                         {post.title}
                       </h4>
                       {post.excerpt && (
-                        <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">
+                        <p className="font-open-sans text-xs sm:text-sm text-gray-600 line-clamp-2">
                           {post.excerpt}
                         </p>
                       )}
@@ -1122,7 +1089,7 @@ export default function Home() {
                         {post.title}
                       </h4>
                       {post.excerpt && (
-                        <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">
+                        <p className="font-open-sans text-xs sm:text-sm text-gray-600 line-clamp-2">
                           {post.excerpt}
                         </p>
                       )}
@@ -1196,7 +1163,7 @@ export default function Home() {
               })}
             </CarouselContent>
             <div className="mt-4 flex items-center justify-between px-1 sm:px-2">
-              <CarouselPrevious className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full rotate-180" />
+              <CarouselPrevious className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-[#E2DED2] hover:bg-[#D6D0C2] text-[#126861] border border-[#928575]/40 rotate-180" />
               <div className="flex justify-center space-x-2">
                 {getCarouselSlots("GASTRONOMIA", "CAROUSEL").map((slot, idx) => (
                   <button
@@ -1207,7 +1174,7 @@ export default function Home() {
                   />
                 ))}
               </div>
-              <CarouselNext className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-white/90 hover:bg-white border rounded-full" />
+              <CarouselNext className="static left-auto right-auto top-auto bottom-auto translate-y-0 bg-[#E2DED2] hover:bg-[#D6D0C2] text-[#126861] border border-[#928575]/40" />
             </div>
           </Carousel>
         </div>
@@ -1311,24 +1278,27 @@ export default function Home() {
                   className={`flex gap-4 sm:gap-6 lg:gap-10 group ${index === 1 || index === 2 ? "border-t border-[#EEEEEE] pt-4 sm:py-2 2xl:py-5" : ""}`}
                 >
                   <div className="flex-1">
-                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-1 2xl:mb-2 text-xs">
+                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-[10px] border-none uppercase">
                       {post.category?.name || "CATEGORIA"}
                     </Badge>
-                    <h4 className="font-open-sans font-semibold text-base sm:text-lg max-w-full sm:max-w-56 transition-colors uppercase line-clamp-2">
+                    <h4 className="font-open-sans font-semibold text-base sm:text-lg/6 mb-1 transition-colors uppercase line-clamp-2">
                       {post.title}
                     </h4>
                     {post.excerpt && (
-                      <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 mt-1">
+                      <p className="text-xs sm:text-sm font-open-sans font-medium text-gray-600 line-clamp-2">
                         {post.excerpt}
                       </p>
                     )}
+                    {/* <Button className="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 -py-2 px-1 font-lato text-xs italic uppercase rounded-sm">
+                      LEIA MAIS
+                    </Button> */}
                   </div>
-                  <div className="relative w-32 sm:w-40 h-auto sm:h-28 2xl:h-32 flex-shrink-0">
+                  <div className="relative w-32 sm:w-40 h-28 sm:h-auto flex-shrink-0">
                     <Image
-                      src={post.featured_image || placeholderImages.office}
+                      src={post.featured_image || placeholderImages.boy}
                       alt={post.title}
                       fill
-                      className="object-cover"
+                      className="object-cover rounded-sm"
                     />
                   </div>
                 </Link>
@@ -1378,24 +1348,27 @@ export default function Home() {
                   className={`flex gap-4 sm:gap-6 lg:gap-10 group ${index === 1 || index === 2 ? "border-t border-[#EEEEEE] pt-4 sm:py-2 2xl:py-5" : ""}`}
                 >
                   <div className="flex-1">
-                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-1 2xl:mb-2 text-xs">
+                    <Badge className="bg-[#C68C0E] hover:bg-[#C68C0E] rounded-sm text-white mb-2 text-[10px] border-none uppercase">
                       {post.category?.name || "CATEGORIA"}
                     </Badge>
-                    <h4 className="font-open-sans font-semibold text-base sm:text-lg max-w-full sm:max-w-56 transition-colors uppercase line-clamp-2">
+                    <h4 className="font-open-sans font-semibold text-base sm:text-lg/6 mb-1 transition-colors uppercase line-clamp-2">
                       {post.title}
                     </h4>
                     {post.excerpt && (
-                      <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 mt-1">
+                      <p className="text-xs sm:text-sm font-open-sans font-medium text-gray-600 line-clamp-2">
                         {post.excerpt}
                       </p>
                     )}
+                    {/* <Button className="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 -py-2 px-1 font-lato text-xs italic uppercase rounded-sm">
+                      LEIA MAIS
+                    </Button> */}
                   </div>
-                  <div className="relative w-32 sm:w-40 h-24 sm:h-28 2xl:h-32 flex-shrink-0">
+                  <div className="relative w-32 sm:w-40 h-28 sm:h-auto flex-shrink-0">
                     <Image
-                      src={post.featured_image || placeholderImages.office}
+                      src={post.featured_image || placeholderImages.boy}
                       alt={post.title}
                       fill
-                      className="object-cover"
+                      className="object-cover rounded-sm"
                     />
                   </div>
                 </Link>

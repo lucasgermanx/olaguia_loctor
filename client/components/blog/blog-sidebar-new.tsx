@@ -271,9 +271,9 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
     <div className="w-full space-y-8 lg:sticky lg:self-start border-2 px-6 py-4">
       {/* PESQUISAR */}
       <div>
-        <h3 className="text-2xl font-semibold font-open-sans text-gray-900 mb-4 uppercase tracking-wide">Pesquisar</h3>
+        <h3 className="text-2xl font-semibold font-open-sans text-gray-900 mb-4 tracking-wide">Pesquisar</h3>
         <p className="text-sm text-gray-600 mb-4">
-          Pesquisa geral em todo o (palavra ou expressão)
+          Pesquisa geral em todo o portal (palavra ou expressão)
         </p>
         <form
           onSubmit={e => {
@@ -425,9 +425,9 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
 
       {/* CATEGORIAS DE PARCEIROS */}
       <div>
-        <h3 className="text-2xl font-semibold font-open-sans text-gray-900 mb-4 uppercase tracking-wide">CATEGORIAS DE PARCEIROS</h3>
+        <h3 className="text-2xl font-semibold font-open-sans text-gray-900 mb-4 tracking-wide">Artigos</h3>
         <p className="text-sm text-gray-600 mb-4">
-          Aqui você busca os anunciantes, pela categoria de serviços.
+          Aqui você encontra os artigos organizados por categoria
         </p>
         <div className="space-y-2">
           {[
@@ -476,7 +476,7 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
 
       {/* BIBLIOTECA TÉCNICA */}
       <div>
-        <h3 className="text-2xl font-semibold font-open-sans text-gray-900 mb-4 uppercase tracking-wide">Biblioteca Técnica</h3>
+        <h3 className="text-2xl font-semibold font-open-sans text-gray-900 mb-4 tracking-wide">Biblioteca Técnica</h3>
         <p className="text-sm text-gray-600 mb-4">
           Os melhores conceitos, técnicas e ferramentas para a melhoria do seu negócio.
         </p>
@@ -508,18 +508,18 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
 
       {/* SOBRE NÓS */}
       <div>
-        <h3 className="text-2xl font-semibold font-open-sans text-gray-900 mb-4 uppercase tracking-wide">SOBRE NÓS</h3>
+        <h3 className="text-2xl font-semibold font-open-sans text-gray-900 mb-4 tracking-wide">Sobre Nós</h3>
         <p className="text-sm text-gray-600 mb-4">
           Aqui você encontra nossa história e nossa missão.
         </p>
-        <div className="space-y-4 border-r border-white/20">
+        <div className="space-y-6">
           {getSlots("EMPRESAS_NEGOCIOS", "SIDE").slice(0, 3).map((slot, index) => {
             const post = slot.post
             if (!post) return null
 
             return (
-              <Link key={slot.id} href={`/blog/${post.slug}`} className={`flex gap-3 sm:gap-2 group ${index == 1 ? "border-y border-[#EEEEEE] py-4" : ""}`}>
-                <div className="relative w-16 h-auto flex-shrink-0">
+              <Link key={slot.id} href={`/blog/${post.slug}`} className={`flex flex-col group ${index !== 2 ? "border-b border-[#EEEEEE] pb-4" : ""}`}>
+                <div className="relative w-full h-28 mb-3">
                   <Image
                     src={post.featured_image || "/placeholder.jpg"}
                     alt={post.title}
@@ -527,16 +527,16 @@ export function BlogSidebarNew({ categories, tags }: BlogSidebarNewProps) {
                     className="object-cover"
                   />
                 </div>
-                <div className="flex-1">
-                  <h4 className="font-open-sans font-semibold text-xs sm:text-xs text-gray-700 uppercase line-clamp-2">
+                <div>
+                  <h4 className="font-open-sans font-semibold text-sm text-gray-700 uppercase line-clamp-2 mb-2">
                     {post.title}
                   </h4>
                   {post.excerpt && (
-                    <p className="text-[10px] font-lato text-gray-600 line-clamp-2 mb-1">
+                    <p className="text-xs font-lato text-gray-600 line-clamp-2 mb-3">
                       {post.excerpt}
                     </p>
                   )}
-                  <span className="font-lato text-[8px] italic text-gray-600 border border-gray-300 px-2 py-1 uppercase">
+                  <span className="font-lato text-[10px] italic text-gray-600 border border-gray-300 px-3 py-1 uppercase">
                     LEIA MAIS
                   </span>
                 </div>

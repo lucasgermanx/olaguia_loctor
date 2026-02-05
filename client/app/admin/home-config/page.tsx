@@ -641,7 +641,7 @@ export default function HomeConfigPage() {
               {getSlotsBySection("EMPRESAS_NEGOCIOS")
                 .filter((slot) => slot.position === "MAIN")
                 .sort((a, b) => (a.slot_index ?? 0) - (b.slot_index ?? 0))
-                .slice(0, 3)
+                .slice(0, 4)
                 .map((slot, index) => (
                   <div
                     key={slot.id}

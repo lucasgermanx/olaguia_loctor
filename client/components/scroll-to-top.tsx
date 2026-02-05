@@ -33,53 +33,31 @@ export function ScrollToTop() {
     return (
         <div
             className={cn(
-                "fixed bottom-20 right-4 md:bottom-8 md:right-8 z-50",
-                "flex flex-col items-center gap-2 group",
+                "fixed bottom-0 right-6 z-50",
                 "transition-all duration-300",
                 isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
             )}
         >
-            <span
-                className={cn(
-                    "text-sm font-medium text-neutral-600 whitespace-nowrap",
-                    "opacity-0 group-hover:opacity-100 transition-opacity duration-200",
-                    "mb-1"
-                )}
-                style={{
-                    writingMode: 'vertical-rl',
-                    textOrientation: 'mixed'
-                }}
-            >
-                Voltar ao topo
-            </span>
             <button
                 onClick={scrollToTop}
                 className={cn(
-                    "bg-white hover:bg-gray-50",
-                    "rounded-full p-4 shadow-lg transition-all duration-200",
+                    "p-2 transition-all duration-200",
                     "flex items-center justify-center",
-                    "flex-shrink-0",
-                    "w-14 h-14",
-                    "relative"
+                    "w-8 h-9"
                 )}
+                style={{ backgroundColor: 'rgba(26, 143, 133, 0.5)' }}
                 aria-label="Voltar ao topo"
             >
                 <svg
-                    className="w-6 h-6"
+                    className="w-4 h-4"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                 >
-                    <defs>
-                        <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#126861" />
-                            <stop offset="100%" stopColor="#0f5650" />
-                        </linearGradient>
-                    </defs>
                     <path
-                        d="M18 15L12 9L6 15"
-                        stroke="url(#arrowGradient)"
-                        strokeWidth="2"
+                        d="M5 15L12 8L19 15"
+                        stroke="white"
+                        strokeWidth="2.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                     />

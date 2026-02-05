@@ -350,7 +350,7 @@ export default function ProfessionalPage() {
                   <h2 className="text-[32px] text-neutral-700 font-normal font-sans uppercase mb-3">
                     Sobre
                   </h2>
-                  <div className="text-base leading-relaxed text-gray-600 line-clamp-[26] whitespace-pre-line">
+                  <div className="text-base font-sans leading-relaxed text-gray-600 line-clamp-[26] whitespace-pre-line">
                     {professional.bio}
                   </div>
                 </div>

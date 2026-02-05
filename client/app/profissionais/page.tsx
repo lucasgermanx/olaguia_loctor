@@ -274,8 +274,8 @@ function ProfessionalsPageContent() {
         })
       }
 
-      // Limitar a 3 posts para exibição inicial
-      const displayPosts = filteredPosts.slice(0, 3)
+      // Limitar a 2 posts para exibição inicial
+      const displayPosts = filteredPosts.slice(0, 2)
 
       // Armazenar posts filtrados para TODOS os profissionais relacionados
       setProfessionalPosts(prev => {
@@ -435,57 +435,79 @@ function ProfessionalsPageContent() {
               {professionals.map((professional) => {
                 const posts = professionalPosts[professional.id] || []
 
-                console.log({ additional_cities: professional.additional_cities })
+                // Separar especialidades (título principal e outras)
+                const getSpecialties = (prof: Professional) => {
+                  // O title é a especialidade principal (ex: "FISIOTERAPIA")
+                  const mainSpecialty = prof.title || ''
+                  // specialty contém as outras especialidades separadas por quebra de linha ou vírgula
+                  const otherSpecialties = prof.specialty
+                    ? prof.specialty.split(/\r?\n|,|;/).map(s => s.trim()).filter(s => s && s !== mainSpecialty)
+                    : []
+                  return { mainSpecialty, otherSpecialties }
+                }
 
                 // Componente para renderizar card do profissional
-                const ProfessionalCard = ({ prof }: { prof: Professional }) => (
-                  <Link
-                    href={`/profissional/${prof.slug}`}
-                    className="group block"
-                  >
-                    <div className="border border-gray-200">
-                      <div className="relative w-full aspect-[3/4] mb-4 overflow-hidden bg-gray-100">
-                        {prof.avatar ? (
-                          <Image
-                            src={prof.avatar}
-                            alt={prof.name}
-                            fill
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-400">
-                            <span className="text-4xl">{prof.name.charAt(0)}</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="px-4 pb-4">
-                        <h3 className="text-2xl font-semibold text-gray-900">{prof.name}</h3>
-                        {prof.register && (
-                          <p className="text-sm text-gray-600 font-semibold line-clamp-4 mb-1">{prof.register}</p>
-                        )}
-                        <p className="text-sm text-gray-700 line-clamp-4 mb-2">{prof.title}</p>
+                const ProfessionalCard = ({ prof }: { prof: Professional }) => {
+                  const { mainSpecialty, otherSpecialties } = getSpecialties(prof)
 
-                        <div className="h-[1px] w-full bg-gray-200 my-2" />
-                        <p className="text-sm text-gray-700 line-clamp-4 mb-2">{prof.city}, {prof.state}</p>
-                        {prof.additional_cities && prof.additional_cities.length > 0 && (
-                          <>
-                           {prof.additional_cities.map((city: any) => {
-                            return (
-                              <p key={city.id} className="text-sm text-gray-700 line-clamp-4 mb-1">{city.city}, {city.state}</p>
-                            )
-                           })}
-                          </>
-                        )}
-                        <Button
-                          className="w-full bg-[#126861] hover:bg-[#0f5650] text-white mt-4"
-                          size="sm"
-                        >
-                          Ver Perfil Completo
-                        </Button>
+                  return (
+                    <Link
+                      href={`/profissional/${prof.slug}`}
+                      className="group block"
+                    >
+                      <div className="border border-gray-200">
+                        {/* Foto menor - aspect-square ao invés de aspect-[3/4] */}
+                        <div className="relative w-full aspect-square overflow-hidden bg-gray-100">
+                          {prof.avatar ? (
+                            <Image
+                              src={prof.avatar}
+                              alt={prof.name}
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-400">
+                              <span className="text-4xl">{prof.name.charAt(0)}</span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="px-4 pb-4 pt-3">
+                          {/* Nome */}
+                          <h3 className="text-xl font-semibold text-gray-900">{prof.name}</h3>
+
+                          {/* Registro */}
+                          {prof.register && (
+                            <p className="text-xs text-gray-600 font-semibold mb-2">{prof.register}</p>
+                          )}
+
+                          {/* Especialidade Principal em destaque */}
+                          {/* {mainSpecialty && (
+                            <p className="text-sm font-bold text-gray-800 uppercase tracking-wide mb-1">{mainSpecialty}</p>
+                          )} */}
+
+                          {/* Outras especialidades */}
+                          {otherSpecialties.length > 0 && (
+                            <p className="text-xs text-gray-600 mb-2 line-clamp-3">
+                              {otherSpecialties.join(' - ')}
+                            </p>
+                          )}
+
+                          <div className="h-[1px] w-full bg-gray-200 my-2" />
+
+                          {/* Apenas cidade principal */}
+                          <p className="text-sm text-gray-700">{prof.city}, {prof.state}</p>
+
+                          <Button
+                            className="w-full bg-[#126861] hover:bg-[#0f5650] text-white mt-4"
+                            size="sm"
+                          >
+                            Ver Perfil Completo
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  </Link>
-                )
+                    </Link>
+                  )
+                }
 
                 return (
                   <div key={professional.id} className="border-b border-gray-200 pb-12">
@@ -502,39 +524,18 @@ function ProfessionalsPageContent() {
                           const filteredPosts = professionalPosts[professional.id] || []
                           const hasFilters = searchParams.get("city") || searchParams.get("specialty") || searchParams.get("tag")
                           const isShowingAll = showAllPosts[professional.id]
-                          const displayPosts = isShowingAll ? allPosts : filteredPosts
-                          const hasMorePosts = allPosts.length > filteredPosts.length
+                          // Mostrar apenas 2 posts inicialmente, ou todos se expandido
+                          const displayPosts = isShowingAll ? allPosts : filteredPosts.slice(0, 2)
+                          const hasMorePosts = allPosts.length > 2
 
                           // Posts são buscados de todos os cadastros relacionados
                           const hasSharedPosts = allPosts.length > 0
 
                           return displayPosts.length > 0 ? (
-                            <div className="space-y-6">
-                              <div className="flex items-center justify-between">
-                                <div className="flex-1">
-                                  <h4 className="text-lg font-semibold text-gray-900">
-                                    Artigos publicados:
-                                    {hasFilters && !isShowingAll && filteredPosts.length < allPosts.length && (
-                                      <span className="ml-2 text-sm font-normal text-gray-500">
-                                        ({filteredPosts.length} de {allPosts.length} relacionados)
-                                      </span>
-                                    )}
-                                  </h4>
-                                </div>
-                                {hasFilters && hasMorePosts && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.preventDefault()
-                                      toggleShowAllPosts(professional.id)
-                                    }}
-                                    className="text-[#126861] hover:text-[#0f5650] text-xs"
-                                  >
-                                    {isShowingAll ? "Mostrar apenas relacionados" : `Ver todos (${allPosts.length})`}
-                                  </Button>
-                                )}
-                              </div>
+                            <div className="space-y-4">
+                              <h4 className="text-lg font-semibold text-gray-900">
+                                Artigos publicados:
+                              </h4>
                               {displayPosts.map((post) => (
                                 <Link
                                   key={post.id}
@@ -577,6 +578,23 @@ function ProfessionalsPageContent() {
                                   </div>
                                 </Link>
                               ))}
+
+                              {/* Botão para ver mais artigos */}
+                              {hasMorePosts && (
+                                <div className="flex justify-center pt-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.preventDefault()
+                                      toggleShowAllPosts(professional.id)
+                                    }}
+                                    className="text-[#126861] border-[#126861] hover:bg-[#126861] hover:text-white text-xs"
+                                  >
+                                    {isShowingAll ? "Mostrar menos" : `Clique para mais artigos (${allPosts.length})`}
+                                  </Button>
+                                </div>
+                              )}
                             </div>
                           ) : (
                             <div className="flex items-center justify-center h-full text-gray-400 text-sm">
@@ -657,7 +675,7 @@ function ProfessionalsPageContent() {
       <div className="w-full max-w-[720px] lg:max-w-[1080px] 2xl:max-w-7xl px-4 md:px-0 mx-auto px-4 mb-8">
         <SocialShare title="Profissionais - OLÁ Guia" />
       </div>
-    </div>
+    </div >
   )
 }
 

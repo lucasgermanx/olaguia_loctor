@@ -194,6 +194,20 @@ export function MainSearchBar() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
+    // Se buscar APENAS pelo profissional (sem outros filtros), redirecionar direto para a página
+    if (profissional && !cidade && !especialidade && !tema) {
+      // Buscar profissional que corresponde ao nome digitado
+      const matchingProfessional = allProfessionals.find(
+        (p) => getBaseName(p.name).toLowerCase() === profissional.toLowerCase()
+      )
+
+      if (matchingProfessional && matchingProfessional.slug) {
+        // Redirecionar direto para a página do profissional
+        router.push(`/profissional/${matchingProfessional.slug}`)
+        return
+      }
+    }
+
     // Construir URL de busca com filtros
     const params = new URLSearchParams()
 

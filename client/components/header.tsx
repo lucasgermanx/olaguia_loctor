@@ -253,7 +253,7 @@ export function Header({ isHomePage = false }: HeaderProps) {
 
         {/* Right Side Icons and Login */}
         <div className="hidden md:flex items-center space-x-4">
-          <Button className="bg-transparent border-2 border-[#126861] hover:bg-[#126861] text-[#126861] rounded-full font-semibold px-4 text-xs">
+          <Button onClick={handleOpenContactModal} className="bg-transparent border-2 border-[#126861] hover:bg-[#126861] text-[#126861] rounded-full font-semibold px-4 text-xs">
             ANUNCIE
           </Button>
 
