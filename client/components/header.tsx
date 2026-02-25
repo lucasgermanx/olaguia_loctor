@@ -493,7 +493,10 @@ export function Header({ isHomePage = false }: HeaderProps) {
         </div>
 
         <div className="flex items-center space-x-4">
-          <Button className="md:hidden bg-transparent border-2 border-[#928575] hover:bg-[#928575] text-[#928575] rounded-full font-semibold px-4 h-fit text-[10px]">
+          <Button onClick={() => {
+            setIsMobileMenuOpen(false)
+            handleOpenContactModal()
+          }} className="md:hidden bg-transparent border-2 border-[#928575] hover:bg-[#928575] text-[#928575] rounded-full font-semibold px-4 h-fit text-[10px]">
             ANUNCIE
           </Button>
 
@@ -554,8 +557,13 @@ export function Header({ isHomePage = false }: HeaderProps) {
             >
               CONTATO
             </button>
-            <Button className="bg-[#928575] hover:bg-[#7a6b5a] text-white rounded-full px-6 text-sm w-fit">
-              ANÚNCIE
+            <Button
+              onClick={() => {
+                setIsMobileMenuOpen(false)
+                handleOpenContactModal()
+              }}
+              className="bg-[#928575] hover:bg-[#7a6b5a] text-white rounded-full px-6 text-sm w-fit">
+              ANUNCIE
             </Button>
           </nav>
         </div>

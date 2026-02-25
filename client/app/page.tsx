@@ -947,7 +947,7 @@ export default function Home() {
         <div className="md:hidden w-full max-w-[1080px] 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-0">
           <Carousel className="w-full" opts={{ loop: true }} setApi={setEsteticaCarouselApi}>
             <CarouselContent>
-              {getCarouselSlots("ESTETICA_BELEZA", "GRID").map((slot) => {
+              {getCarouselSlots("ESTETICA_BELEZA", "GRID").slice(0, 7).map((slot) => {
                 const post = slot.post
                 if (!post) return null
 
